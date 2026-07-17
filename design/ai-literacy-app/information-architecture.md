@@ -197,7 +197,10 @@ The future generation action should not be required for v1. The prompt-only path
 
 ### Badge Model
 
-Badges are competence markers, not certificates.
+Badges are **in-loop engagement recognition, not the terminal reward** (resolved by
+`research/2026-07-17-certificate-vs-badge-gamification`; see `validation-model.md`). They keep
+teachers moving between sessions; the reason to finish is the portfolio-worthy readiness
+completion, not a badge.
 
 They should not claim:
 
@@ -205,6 +208,9 @@ They should not claim:
 - PD hours;
 - PKB recognition;
 - government recognition.
+
+v1 issues no self-certificate; the terminal readiness completion is designed PD-credit-*ready*
+(feed-not-issue) so a future official PPG / PKB integration can slot in without a redesign.
 
 Badge examples:
 

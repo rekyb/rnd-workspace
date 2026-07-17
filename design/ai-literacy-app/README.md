@@ -8,6 +8,8 @@ The product direction is grounded in:
 
 - `research/2026-07-14-ai-literacy-upskilling-indonesian-teachers`
 - `research/2026-07-13-onboarding-activation-education-apps`
+- `research/2026-07-16-indonesian-teacher-onboarding-literature`
+- `research/2026-07-17-certificate-vs-badge-gamification` (resolves the cert-vs-badge decision)
 
 ## Product Thesis
 
@@ -31,7 +33,10 @@ Top-level tabs:
 
 There is no separate `Beranda` tab. `Belajar` is the default home after onboarding.
 
-Badges are merged into `Profil`, not a standalone tab. There is no formal certificate in v1.
+Badges are merged into `Profil`, not a standalone tab. Badges are in-loop engagement
+recognition, not the terminal reward. v1 issues **no self-certificate** and makes no official
+PD-credit claim, but the terminal readiness completion is designed **PD-credit-ready** — see
+the resolved certificate-vs-badge decision in `onboarding.md` and `validation-model.md`.
 
 ```mermaid
 flowchart LR

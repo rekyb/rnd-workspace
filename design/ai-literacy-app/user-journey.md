@@ -133,7 +133,9 @@ The readiness check should take around 10-12 minutes and combine:
 - output critique;
 - classroom dilemma.
 
-Passing it unlocks a final badge, not a certificate.
+Passing it produces a **portfolio-worthy readiness completion** — designed PD-credit-*ready*
+(feed-not-issue), not a self-issued certificate. Badges remain in-loop recognition, not this
+terminal reward. See the resolved certificate-vs-badge decision in `onboarding.md`.
 
 ### 7. Return and Reuse
 
@@ -268,6 +270,7 @@ The app should show:
 - Do not make the teacher hunt for the next step.
 - Do not make the dictionary feel blocked by default.
 - Do not hide safety learning inside long policy text.
-- Do not use formal certificate language in v1.
+- Do not use self-issued certificate or official-credit (certification / PD-hour / PKB)
+  language in v1; the terminal reward is a portfolio-worthy readiness completion.
 - Do not require open-ended essays for validation in v1.
 - Do not make in-app generation necessary for the prompt dictionary to be valuable.
