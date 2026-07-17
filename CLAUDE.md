@@ -335,6 +335,20 @@ entry MUST contain, in order:
 End with a `## What worked` section (positive findings worth preserving) and the same
 `## Gaps & caveats` section benchmark uses.
 
+For a **litreview** study, `SYNTHESIS.md` is organized as **themes → design
+implications**, drawn from the verified `evidence.md`. Lead with a `## TL;DR`, then one
+`## Theme N — <name>` section per theme whose findings each carry a **confidence** label
+and `[S#]` citation(s) traced to `evidence.md`. Then, in order:
+
+1. **`## Design implications`** — numbered; what each theme means for what we build.
+2. **`## Refuted / weak claims`** — reproduced from `evidence.md`, kept out of the findings.
+3. **`## Evidence gaps for primary research`** — what the literature could not answer and
+   needs a survey/usability study to resolve.
+4. **`## Sources table (S1..Sn)`** — mirrors `sources.md`.
+
+Every finding MUST trace to a source in `evidence.md`; confidence labels are honest; no
+generalization beyond what the sources support; no fabricated sources or findings.
+
 ## Tooling notes
 
 - **Browsing & capture:** Claude-in-Chrome MCP tools (`navigate`, `computer`,
