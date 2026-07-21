@@ -128,7 +128,7 @@
       box-shadow: none;
     }
 
-    .card:not(.landing-card) > * {
+    .card:not(.landing-card):not(.home-card) > * {
       max-width: 520px;
       width: 100%;
     }
@@ -810,6 +810,51 @@
       opacity: 0;
       animation: springStampIn 0.5s var(--easing-spring) 0.3s forwards;
     }
+
+    .home-card {
+      max-width: 1000px !important;
+      padding: 0 !important;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      background: #f8f9fa;
+      border: 1px solid var(--hair);
+    }
+    .home-sidebar {
+      width: 240px;
+      background: white;
+      border-right: 1px solid var(--hair);
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .home-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: var(--sub);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .home-nav-item.active {
+      background: var(--purple-bg);
+      color: var(--purple);
+    }
+    .home-nav-item:hover:not(.active) {
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .home-main {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
   </style>
 </head>
 <body>
@@ -1227,7 +1272,18 @@
     </div>
 
     <!-- S9: Learning Home (Boundary) -->
-    <div id="learning_home" class="card">
+    <div id="learning_home" class="card home-card">
+      <aside class="home-sidebar">
+        <div style="font-weight: 800; font-size: 20px; color: var(--purple); margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+            <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="Logo" style="height: 24px;">
+        </div>
+        <div class="home-nav-item active"><span class="material-symbols-rounded">home</span> Home</div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">school</span> Courses</div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">emoji_events</span> Achievements</div>
+        <div style="flex: 1;"></div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">settings</span> Settings</div>
+      </aside>
+      <div class="home-main">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
         <div>
           <h1 class="title" style="margin-bottom: 4px;">Welcome back!</h1>
@@ -1250,6 +1306,7 @@
       </div>
 
       <button class="btn btn-primary" style="font-size: 18px;" onclick="goTo('learning_home')">Start Lesson</button>
+      </div>
     </div>
 
     <div id="onboarding-footer" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--surf); border-top: 1px solid var(--hair); padding: 16px 24px; z-index: 100; justify-content: center; align-items: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);">
