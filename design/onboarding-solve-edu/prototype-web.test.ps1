@@ -46,5 +46,9 @@ Assert-Matches 'selectedCountry\s*=\s*null[\s\S]*?global-continue-btn[\s\S]*?dis
 Assert-Matches 'No countries found' 'Empty country results require feedback.'
 Assert-NotMatches 'validateCountry\s*\(' 'Broken validateCountry handler must be removed.'
 Assert-Matches '#country_list\s*\{[^}]*display:\s*flex;[^}]*flex-direction:\s*column;' 'Country results must stack vertically.'
+Assert-Matches 'option\.className\s*=\s*''country-option''' 'Rendered countries require a dedicated option class.'
+Assert-Matches '#country_list:hover\s*\{[^}]*background:\s*transparent;' 'Country list container must not receive hover background.'
+Assert-Matches '#country_list\s*>\s*\.country-option:hover\s*\{[^}]*background:\s*var\(--bg\);' 'Hover styling must target only one country option.'
+Assert-Matches '#country_list\s*>\s*\.country-option\[aria-selected="true"\]\s*\{[^}]*background:\s*var\(--purple-bg\);' 'Selected styling must target only the active country option.'
 
 Write-Output 'PASS: searchable country combobox structure and behavior'
