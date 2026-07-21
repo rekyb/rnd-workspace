@@ -761,6 +761,25 @@
       text-decoration: underline;
       opacity: 1;
     }
+
+    /* S6 Stamp Animation */
+    @keyframes springStampIn {
+      0% { opacity: 0; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    
+    #assigned_content.active > h1.title {
+      opacity: 0;
+      animation: springStampIn 0.5s var(--easing-spring) 0.1s forwards;
+    }
+    #assigned_content.active > p.subtitle {
+      opacity: 0;
+      animation: springStampIn 0.5s var(--easing-spring) 0.2s forwards;
+    }
+    #assigned_content.active > div {
+      opacity: 0;
+      animation: springStampIn 0.5s var(--easing-spring) 0.3s forwards;
+    }
   </style>
 </head>
 <body>
