@@ -316,19 +316,39 @@
       background: var(--purple-bg);
     }
 
-    .btn-primary:hover, .btn-secondary:hover {
+    .btn-outline-light {
+      background: transparent;
+      color: var(--surf);
+      border: 2px solid rgba(255,255,255,0.4);
+      box-shadow: 0 6px 0 rgba(255,255,255,0.2);
+    }
+
+    .btn-outline-light:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.8);
+    }
+
+    .btn-primary:hover, .btn-secondary:hover, .btn-outline-light:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 0 var(--purple-dark);
+    }
+    
+    .btn-outline-light:hover {
+      box-shadow: 0 8px 0 rgba(255,255,255,0.3);
     }
 
     .btn:active {
       transform: scale(0.98);
     }
 
-    .btn-primary:active, .btn-secondary:active {
+    .btn-primary:active, .btn-secondary:active, .btn-outline-light:active {
       transform: translateY(6px);
       box-shadow: 0 0px 0 var(--purple-dark);
       transition: transform 0.05s, box-shadow 0.05s;
+    }
+    
+    .btn-outline-light:active {
+      box-shadow: 0 0px 0 rgba(255,255,255,0.2);
     }
 
     .btn:disabled {
@@ -641,12 +661,21 @@
       font-size: 16px;
       font-weight: 600;
       margin-bottom: 12px;
-      border: 1px solid var(--hair);
+      border: 2px solid var(--hair-dark);
       background: var(--surf);
       color: var(--ink);
+      box-shadow: 0 6px 0 var(--hair-dark);
+      transition: transform 0.2s var(--easing-fast), box-shadow 0.2s var(--easing-fast), background 0.2s;
     }
     .sso-btn:hover {
       background: var(--bg);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 var(--hair-dark);
+    }
+    .sso-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 0px 0 var(--hair-dark);
+      transition: transform 0.05s, box-shadow 0.05s;
     }
 
     .divider {
@@ -837,7 +866,7 @@
           <p class="subtitle" style="text-align: left; margin-bottom: 32px; font-size: 18px;">Master real-world skills, earn verifiable credentials, and unlock new career opportunities.</p>
           <div style="display: flex; flex-direction: column; width: 100%;">
             <button class="btn btn-primary" onclick="startOrganic()">Get started</button>
-            <button class="btn btn-text" style="width: 100%; text-align: center;" onclick="startProgram()">I have a program code</button>
+            <button class="btn btn-secondary" style="width: 100%; text-align: center; margin-top: 16px;" onclick="startProgram()">I have a program code</button>
           </div>
         </div>
         <div class="landing-col-cta">
@@ -864,7 +893,7 @@
           </div>
         </div>
 
-        <a href="https://solveeducation.org/program-reports/" target="_blank" class="btn" style="width: auto; background: transparent; color: var(--surf); border: 2px solid rgba(255,255,255,0.4); text-decoration: none; padding: 14px 32px; border-radius: 99px; font-weight: 700; transition: all 0.2s; margin-top: 16px; display: inline-flex; justify-content: center; align-items: center; gap: 8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.8)';" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255,255,255,0.4)';">See our impact <span class="material-symbols-rounded" style="font-size: 20px;">open_in_new</span></a>
+        <a href="https://solveeducation.org/program-reports/" target="_blank" class="btn btn-outline-light" style="width: auto; text-decoration: none; padding: 14px 32px; border-radius: 99px; font-weight: 700; margin-top: 16px; display: inline-flex; justify-content: center; align-items: center; gap: 8px;">See our impact <span class="material-symbols-rounded" style="font-size: 20px;">open_in_new</span></a>
       </div>
 
       <!-- How It Works Section -->
