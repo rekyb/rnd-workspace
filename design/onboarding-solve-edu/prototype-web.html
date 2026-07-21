@@ -135,7 +135,12 @@
 
     .card.active {
       display: flex;
-      animation: obFadeInUp 0.4s cubic-bezier(0.2, 0, 0, 1) forwards;
+      animation: springSlideUpIn 0.5s var(--easing-spring) forwards;
+    }
+
+    @keyframes springSlideUpIn {
+      0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
     
     .card-flex.active {
@@ -796,8 +801,8 @@
     <button onclick="goBack()" style="background:none; border:none; color: var(--txt); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
       <span class="material-symbols-rounded" style="font-size: 24px;">arrow_back</span>
     </button>
-    <div style="flex: 1; max-width: 400px; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; margin: 0 auto;">
-      <div id="progress-bar" style="width: 0%; height: 100%; background: var(--purple); transition: width 0.3s ease-out;"></div>
+    <div style="flex: 1; max-width: 400px; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; margin: 0 auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+      <div id="progress-bar" style="width: 0%; height: 100%; background: var(--purple); transition: width 0.5s var(--easing-spring);"></div>
     </div>
     <div style="width: 40px;"></div> <!-- Spacer for balance -->
   </header>
