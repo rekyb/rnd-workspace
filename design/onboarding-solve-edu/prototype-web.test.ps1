@@ -27,7 +27,7 @@ foreach ($goalId in $goalIds) {
 
 Write-Output 'PASS: learning-goal card grid structure and behavior'
 
-Assert-Matches 'id="country_search"[^>]*role="combobox"[^>]*aria-autocomplete="list"[^>]*aria-controls="country_list"[^>]*aria-expanded="false"' 'Country input must expose collapsed combobox semantics.'
+Assert-Matches 'id="country_search"[^>]*role="combobox"[^>]*aria-autocomplete="list"[^>]*aria-controls="country_dropdown"[^>]*aria-expanded="false"' 'Country input must control the actual listbox and expose collapsed combobox semantics.'
 Assert-Matches 'id="country_dropdown"[^>]*class="[^\"]*select-hide[^\"]*"[^>]*role="listbox"' 'Country results must start hidden and expose listbox semantics.'
 Assert-Matches 'function\s+handleCountryInput\s*\(' 'Country input handler is required.'
 Assert-Matches 'if\s*\(!query\)' 'Empty country queries must keep results closed.'
@@ -37,6 +37,7 @@ Assert-Matches "event\.key\s*===\s*'ArrowUp'" 'Country results must support Arro
 Assert-Matches "event\.key\s*===\s*'Enter'" 'Country results must support Enter selection.'
 Assert-Matches "event\.key\s*===\s*'Escape'" 'Country results must support Escape closure.'
 Assert-Matches "setAttribute\('aria-activedescendant'" 'Keyboard-active country must be exposed.'
+Assert-Matches 'function\s+handleCountryKeydown\s*\(event\)[\s\S]*?if\s*\(filteredCountries\.length\s*===\s*0\)\s*return' 'Empty country results must ignore keyboard navigation without exposing an active descendant.'
 Assert-Matches 'function\s+selectCountry\s*\(country\)' 'Country selection helper is required.'
 Assert-Matches 'selectedCountry\s*=\s*null[\s\S]*?global-continue-btn[\s\S]*?disabled\s*=\s*true' 'Editing country text must clear selection and disable Continue.'
 Assert-Matches 'No countries found' 'Empty country results require feedback.'
