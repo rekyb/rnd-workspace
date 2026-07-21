@@ -27,11 +27,14 @@ foreach ($goalId in $goalIds) {
 
 Write-Output 'PASS: learning-goal card grid structure and behavior'
 
-Assert-Matches 'id="country_search"[^>]*role="combobox"[^>]*aria-autocomplete="list"[^>]*aria-controls="country_dropdown"[^>]*aria-expanded="false"' 'Country input must control the actual listbox and expose collapsed combobox semantics.'
+Assert-Matches 'id="country_search"[^>]*role="combobox"[^>]*aria-autocomplete="list"[^>]*aria-controls="country_list"[^>]*aria-expanded="false"' 'Country input must control the actual listbox and expose collapsed combobox semantics.'
 Assert-Matches 'id="country_search"[^>]*role="combobox"[^>]*aria-labelledby="country_gate_title"' 'Country combobox must retain the country heading as its accessible name.'
-Assert-Matches 'id="country_dropdown"[^>]*class="[^\"]*select-hide[^\"]*"[^>]*role="listbox"' 'Country results must start hidden and expose listbox semantics.'
+Assert-Matches 'id="country_dropdown"[^>]*class="[^\"]*select-hide[^\"]*"[^>]*role="presentation"' 'Country dropdown must start hidden and remain a presentational container.'
+Assert-Matches 'id="country_list"\s+role="listbox"' 'Country list must be the actual listbox.'
+Assert-Matches 'id="country_list"\s+role="listbox"></div>\s*<div\s+id="country_status"\s+class="country-empty-state"\s+role="status"' 'Country status must be a sibling outside the listbox.'
 Assert-NotMatches 'id="country_combobox"[\s\S]*?expand_more[\s\S]*?id="country_dropdown"' 'Country combobox must not show an expand-more icon before its results listbox.'
 Assert-Matches 'function\s+handleCountryInput\s*\(' 'Country input handler is required.'
+Assert-Matches 'function\s+handleCountryInput\s*\(\)[\s\S]*?input\.removeAttribute\(''aria-activedescendant''\)[\s\S]*?if\s*\(!query\)' 'Editing country text must clear the active descendant before empty-query handling or rerendering.'
 Assert-Matches 'if\s*\(!query\)' 'Empty country queries must keep results closed.'
 Assert-Matches 'function\s+handleCountryKeydown\s*\(event\)' 'Country keyboard handler is required.'
 Assert-Matches "event\.key\s*===\s*'ArrowDown'" 'Country results must support Arrow Down.'
@@ -50,8 +53,8 @@ Assert-Matches 'option\.className\s*=\s*''country-option''' 'Rendered countries 
 Assert-Matches '#country_list:hover\s*\{[^}]*background:\s*transparent;' 'Country list container must not receive hover background.'
 Assert-Matches '#country_list\s*>\s*\.country-option:hover\s*\{[^}]*background:\s*var\(--bg\);' 'Hover styling must target only one country option.'
 Assert-Matches '#country_list\s*>\s*\.country-option\[aria-selected="true"\]\s*\{[^}]*background:\s*var\(--purple-bg\);' 'Selected styling must target only the active country option.'
-Assert-Matches '<div\s+class="country-empty-state"\s+role="status"[^>]*>No countries found</div>' 'Empty country feedback must use a dedicated noninteractive status class.'
-Assert-Matches '#country_list\s*>\s*\.country-empty-state\s*\{[^}]*display:\s*block;[^}]*cursor:\s*default;[^}]*background:\s*transparent;' 'Empty country feedback must reset inherited option interaction styles.'
-Assert-Matches '#country_list\s*>\s*\.country-empty-state:hover\s*\{[^}]*background:\s*transparent;[^}]*cursor:\s*default;' 'Empty country feedback must remain noninteractive on hover.'
+Assert-Matches '#country_dropdown\s*>\s*\.country-empty-state\s*\{[^}]*display:\s*none;[^}]*cursor:\s*default;[^}]*background:\s*transparent;' 'Empty country feedback must reset inherited option interaction styles.'
+Assert-Matches '#country_dropdown\s*>\s*\.country-empty-state:hover\s*\{[^}]*background:\s*transparent;[^}]*cursor:\s*default;' 'Empty country feedback must remain noninteractive on hover.'
+Assert-Matches 'status\.textContent\s*=\s*''No countries found''[\s\S]*?status\.style\.display\s*=\s*''block''' 'No-match rendering must populate and reveal the external live status.'
 
 Write-Output 'PASS: searchable country combobox structure and behavior'
