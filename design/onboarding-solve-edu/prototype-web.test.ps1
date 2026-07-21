@@ -29,6 +29,7 @@ Write-Output 'PASS: learning-goal card grid structure and behavior'
 
 Assert-Matches 'id="country_search"[^>]*role="combobox"[^>]*aria-autocomplete="list"[^>]*aria-controls="country_dropdown"[^>]*aria-expanded="false"' 'Country input must control the actual listbox and expose collapsed combobox semantics.'
 Assert-Matches 'id="country_dropdown"[^>]*class="[^\"]*select-hide[^\"]*"[^>]*role="listbox"' 'Country results must start hidden and expose listbox semantics.'
+Assert-NotMatches 'id="country_combobox"[\s\S]*?expand_more[\s\S]*?id="country_dropdown"' 'Country combobox must not show an expand-more icon before its results listbox.'
 Assert-Matches 'function\s+handleCountryInput\s*\(' 'Country input handler is required.'
 Assert-Matches 'if\s*\(!query\)' 'Empty country queries must keep results closed.'
 Assert-Matches 'function\s+handleCountryKeydown\s*\(event\)' 'Country keyboard handler is required.'
