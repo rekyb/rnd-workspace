@@ -1286,7 +1286,7 @@
       <div class="home-main">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
         <div>
-          <h1 class="title" style="margin-bottom: 4px;">Welcome back!</h1>
+          <h1 id="home_greeting" class="title" style="margin-bottom: 4px;">Welcome back!</h1>
           <p class="subtitle" style="margin-bottom: 0;">You're on a 1-day streak ðŸ”¥</p>
         </div>
         <div style="background: var(--purple-bg); color: var(--purple); padding: 8px 16px; border-radius: 99px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
@@ -1340,7 +1340,10 @@
     };
 
     function updateHeaders(screenId) {
-      if (screenId === 'landing' || screenId === 'sign_in') {
+      if (screenId === 'learning_home') {
+        document.getElementById('global-header').style.display = 'none';
+        document.getElementById('onboarding-header').style.display = 'none';
+      } else if (screenId === 'landing' || screenId === 'sign_in') {
         document.getElementById('global-header').style.display = 'flex';
         document.getElementById('onboarding-header').style.display = 'none';
         document.getElementById('onboarding-footer').style.display = 'none';
@@ -1429,6 +1432,7 @@
       document.getElementById(screenId).classList.add('active');
       window.scrollTo(0, 0);
       updateHeaders(screenId);
+      if (screenId === 'learning_home') renderHomeSection();
     }
 
     function goBack() {
@@ -2007,6 +2011,11 @@
       document.getElementById(optionId)?.scrollIntoView({ block: 'nearest' });
     }
   
+    function renderHomeSection() {
+        const uName = document.getElementById('name_input').value.trim() || 'Learner';
+        document.getElementById('home_greeting').innerText = `Hi, ${uName}!`;
+    }
+
     function populateProfileSummary() {
       const summary = document.getElementById('profile_summary');
       if (summary) {
