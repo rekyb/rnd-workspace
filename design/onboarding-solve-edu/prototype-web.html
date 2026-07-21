@@ -316,6 +316,10 @@
     }
 
     .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary:active, .btn-secondary:active {
       transform: translateY(6px);
       box-shadow: 0 0px 0 var(--purple-dark);
       transition: transform 0.05s, box-shadow 0.05s;
@@ -326,6 +330,7 @@
       color: var(--sub);
       cursor: not-allowed;
       transform: none;
+      box-shadow: none;
     }
 
     .btn-text {

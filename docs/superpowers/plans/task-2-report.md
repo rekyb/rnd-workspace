@@ -47,3 +47,21 @@ Review flagged verbatim duplication of active button press physics (`transform: 
 - Ran `grep` search for `:active` in `prototype-web.html`, confirming `.btn:active` is now the single consolidated rule for button active state physics.
 - Verified specificity ordering: `.btn:active` comes after `.btn-primary:hover, .btn-secondary:hover` to ensure active press transforms correctly override hover transforms when pressed.
 
+---
+
+## Task Review Fixes: Active Press Physics Scope & Disabled Shadow Reset
+
+### Issues Addressed
+1. **Important:** Restricted 3D active button press physics (`transform: translateY(6px); box-shadow: 0 0px 0 var(--purple-dark);`) to 3D primary and secondary buttons (`.btn-primary:active, .btn-secondary:active`) rather than over-generalizing to base `.btn:active`. Restored base `.btn:active { transform: scale(0.98); }` for non-3D button variants (e.g. `.btn-text`).
+2. **Minor:** Added `box-shadow: none;` to `.btn:disabled` so disabled primary and secondary buttons clear their 3D depth shadow and don't collapse when clicked.
+
+### Changes Implemented
+- Updated `prototype-web.html`:
+  - Restored `.btn:active { transform: scale(0.98); }` for standard button active feedback.
+  - Defined `.btn-primary:active, .btn-secondary:active` explicitly with 3D press physics (`transform: translateY(6px); box-shadow: 0 0px 0 var(--purple-dark); transition: transform 0.05s, box-shadow 0.05s;`).
+  - Added `box-shadow: none;` to `.btn:disabled`.
+
+### Verification
+- Verified CSS rules in `prototype-web.html` for `.btn:active`, `.btn-primary:active, .btn-secondary:active`, and `.btn:disabled`.
+- Confirmed specificity hierarchy: `.btn:active` handles non-3D scale press, `.btn-primary:active, .btn-secondary:active` overrides with 3D depth press physics, and `.btn:disabled` clears both `transform` and `box-shadow`.
+
