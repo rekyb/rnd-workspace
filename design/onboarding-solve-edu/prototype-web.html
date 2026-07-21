@@ -361,11 +361,24 @@
       font-weight: 700;
       text-align: center;
       color: var(--ink);
-      transition: border-color 0.2s;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.06);
+      transition: transform 0.3s var(--easing-spring), box-shadow 0.3s var(--easing-spring), border-color 0.2s;
     }
     .code-digit:focus {
       border-color: var(--purple);
       outline: none;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(142, 39, 155, 0.15);
+    }
+    
+    @keyframes keystrokePulse { 
+      0% { transform: scale(1.05); } 
+      50% { transform: scale(0.9); } 
+      100% { transform: scale(1.05); } 
+    }
+    
+    .code-digit.pulse { 
+      animation: keystrokePulse 0.15s var(--easing-fast) forwards; 
     }
     .error-text {
       color: var(--red);
@@ -1517,6 +1530,12 @@
 
     inputs.forEach((input, index) => {
       input.addEventListener('input', (e) => {
+        // Add pulse animation
+        input.classList.remove('pulse');
+        void input.offsetWidth; // trigger reflow
+        input.classList.add('pulse');
+        input.addEventListener('animationend', () => input.classList.remove('pulse'), {once: true});
+        
         if (e.target.value.length === 1 && index < inputs.length - 1) {
           inputs[index + 1].focus();
         }
