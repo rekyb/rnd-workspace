@@ -45,5 +45,6 @@ Assert-Matches 'function\s+selectCountry\s*\(country\)' 'Country selection helpe
 Assert-Matches 'selectedCountry\s*=\s*null[\s\S]*?global-continue-btn[\s\S]*?disabled\s*=\s*true' 'Editing country text must clear selection and disable Continue.'
 Assert-Matches 'No countries found' 'Empty country results require feedback.'
 Assert-NotMatches 'validateCountry\s*\(' 'Broken validateCountry handler must be removed.'
+Assert-Matches '#country_list\s*\{[^}]*display:\s*flex;[^}]*flex-direction:\s*column;' 'Country results must stack vertically.'
 
 Write-Output 'PASS: searchable country combobox structure and behavior'
