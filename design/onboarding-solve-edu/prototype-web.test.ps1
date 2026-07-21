@@ -50,5 +50,8 @@ Assert-Matches 'option\.className\s*=\s*''country-option''' 'Rendered countries 
 Assert-Matches '#country_list:hover\s*\{[^}]*background:\s*transparent;' 'Country list container must not receive hover background.'
 Assert-Matches '#country_list\s*>\s*\.country-option:hover\s*\{[^}]*background:\s*var\(--bg\);' 'Hover styling must target only one country option.'
 Assert-Matches '#country_list\s*>\s*\.country-option\[aria-selected="true"\]\s*\{[^}]*background:\s*var\(--purple-bg\);' 'Selected styling must target only the active country option.'
+Assert-Matches '<div\s+class="country-empty-state"\s+role="status"[^>]*>No countries found</div>' 'Empty country feedback must use a dedicated noninteractive status class.'
+Assert-Matches '#country_list\s*>\s*\.country-empty-state\s*\{[^}]*display:\s*block;[^}]*cursor:\s*default;[^}]*background:\s*transparent;' 'Empty country feedback must reset inherited option interaction styles.'
+Assert-Matches '#country_list\s*>\s*\.country-empty-state:hover\s*\{[^}]*background:\s*transparent;[^}]*cursor:\s*default;' 'Empty country feedback must remain noninteractive on hover.'
 
 Write-Output 'PASS: searchable country combobox structure and behavior'
