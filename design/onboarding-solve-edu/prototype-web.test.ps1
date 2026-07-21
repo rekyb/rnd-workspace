@@ -39,6 +39,7 @@ Assert-Matches "event\.key\s*===\s*'Enter'" 'Country results must support Enter 
 Assert-Matches "event\.key\s*===\s*'Escape'" 'Country results must support Escape closure.'
 Assert-Matches "setAttribute\('aria-activedescendant'" 'Keyboard-active country must be exposed.'
 Assert-Matches 'function\s+handleCountryKeydown\s*\(event\)[\s\S]*?if\s*\(filteredCountries\.length\s*===\s*0\)\s*return' 'Empty country results must ignore keyboard navigation without exposing an active descendant.'
+Assert-Matches "function\s+handleCountryKeydown\s*\(event\)[\s\S]*?event\.key\s*===\s*'Escape'[\s\S]*?closeCountryDropdown\s*\(\)[\s\S]*?if\s*\(filteredCountries\.length\s*===\s*0\)\s*return" 'Escape must close no-match country results before the empty-results navigation guard.'
 Assert-Matches 'function\s+selectCountry\s*\(country\)' 'Country selection helper is required.'
 Assert-Matches 'selectedCountry\s*=\s*null[\s\S]*?global-continue-btn[\s\S]*?disabled\s*=\s*true' 'Editing country text must clear selection and disable Continue.'
 Assert-Matches 'No countries found' 'Empty country results require feedback.'
