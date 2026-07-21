@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pathfinder — Program onboarding prototype</title>
+  <style>
+    :root {
+      --ink: #18251f;
+      --ink-soft: #56645d;
+      --brand: #176b4d;
+      --brand-strong: #0f523a;
+      --brand-soft: #dff4e8;
+      --accent: #f3b64b;
+      --surface: #fffdf8;
+      --surface-raised: #ffffff;
+      --surface-muted: #f3f5f1;
+      --border: #d9ded8;
+      --danger: #a23b32;
+      --success: #176b4d;
+      --white: #ffffff;
+      --overlay-soft: rgba(255, 255, 255, .16);
+      --shadow-color: rgba(24, 37, 31, .10);
+      --shadow-color-soft: rgba(24, 37, 31, .05);
+      --warning-surface: #fff6df;
+      --warning-ink: #674b15;
+      --focus: #8a4b00;
+      --shadow: 0 1rem 3rem var(--shadow-color);
+      --radius-sm: .75rem;
+      --radius: 1.25rem;
+      --radius-lg: 2rem;
+      --space-1: .25rem;
+      --space-2: .5rem;
+      --space-3: .75rem;
+      --space-4: 1rem;
+      --space-5: 1.5rem;
+      --space-6: 2rem;
+      --space-7: 3rem;
+      --content: 68rem;
+      --copy: 42rem;
+      --motion: 180ms ease;
+    }
+
+    * { box-sizing: border-box; }
+    html { color-scheme: light; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, var(--brand-soft), transparent 30rem),
+        var(--surface);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    button, input { font: inherit; }
+    button { min-height: 2.75rem; }
+    button, .card-select { touch-action: manipulation; }
+    button:focus-visible, input:focus-visible, .card-select:focus-visible {
+      outline: .2rem solid var(--focus);
+      outline-offset: .2rem;
+    }
+    [hidden] { display: none !important; }
+
+    .app-shell { min-height: 100vh; min-width: 0; display: grid; grid-template-rows: auto auto 1fr; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      border-bottom: 1px solid color-mix(in srgb, var(--border), transparent 35%);
+      background: color-mix(in srgb, var(--surface), transparent 12%);
+      backdrop-filter: blur(.75rem);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .brand { display: flex; align-items: center; gap: var(--space-3); font-weight: 800; letter-spacing: -.02em; }
+    .brand-mark { width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 50%; color: var(--white); background: var(--brand); }
+
+    .progress-wrap { width: min(9rem, 28vw); }
+    .progress-label { font-size: .75rem; color: var(--ink-soft); margin-bottom: var(--space-1); text-align: right; }
+    .progress-track { height: .4rem; overflow: hidden; border-radius: 99rem; background: var(--border); }
+    .progress-bar { height: 100%; width: 11%; background: var(--brand); border-radius: inherit; transition: width var(--motion); }
+
+    main { width: 100%; min-width: 0; overflow-x: clip; }
+    .screen { min-height: calc(100vh - 5rem); padding: var(--space-6) var(--space-4); animation: enter var(--motion); }
+    .screen-inner { width: min(100%, var(--content)); min-width: 0; max-width: 100%; margin: 0 auto; }
+    .narrow { max-width: var(--copy); }
+    .eyebrow { margin: 0 0 var(--space-3); color: var(--brand); font-weight: 800; text-transform: uppercase; letter-spacing: .1em; font-size: .75rem; }
+    h1, h2, h3 { margin-top: 0; line-height: 1.12; letter-spacing: -.035em; }
+    h1 { font-size: clamp(2.35rem, 8vw, 5.5rem); max-width: 12ch; margin-bottom: var(--space-5); }
+    h2 { font-size: clamp(1.8rem, 5vw, 3.25rem); max-width: 18ch; margin-bottom: var(--space-4); }
+    h3 { font-size: 1.2rem; margin-bottom: var(--space-2); }
+    .lede { color: var(--ink-soft); font-size: 1.08rem; max-width: 54ch; margin: 0 0 var(--space-6); }
+    .helper { color: var(--ink-soft); font-size: .9rem; }
+
+    .hero { display: grid; min-width: 0; gap: var(--space-7); align-items: center; }
+    .hero > * { min-width: 0; }
+    .hero-art { width: 100%; min-width: 0; min-height: 18rem; border-radius: var(--radius-lg); background: var(--brand); color: var(--white); padding: var(--space-6); display: grid; align-content: space-between; overflow: hidden; position: relative; }
+    .hero-art::after { content: ""; position: absolute; width: 16rem; height: 16rem; border-radius: 50%; background: var(--accent); right: -5rem; bottom: -6rem; opacity: .95; }
+    .hero-stat { position: relative; z-index: 1; max-width: 13rem; padding: var(--space-4); border-radius: var(--radius); color: var(--ink); background: var(--white); box-shadow: var(--shadow); transform: rotate(-2deg); }
+    .hero-stat strong { display: block; font-size: 1.5rem; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; margin-top: var(--space-6); }
+    .btn { border: 1px solid transparent; border-radius: 99rem; padding: .8rem 1.25rem; font-weight: 800; cursor: pointer; transition: transform var(--motion), background var(--motion), border-color var(--motion); }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { color: var(--white); background: var(--brand); }
+    .btn-primary:hover { background: var(--brand-strong); }
+    .btn-secondary { color: var(--ink); background: var(--surface-raised); border-color: var(--border); }
+    .btn-quiet { color: var(--brand-strong); background: transparent; padding-inline: var(--space-2); }
+    .btn[disabled] { opacity: .48; cursor: not-allowed; transform: none; }
+
+    .field { display: grid; gap: var(--space-2); margin-top: var(--space-5); }
+    label, legend { font-weight: 800; }
+    input { width: 100%; min-height: 3.25rem; padding: .8rem 1rem; color: var(--ink); background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    input:hover { border-color: var(--ink-soft); }
+    input:disabled { color: var(--ink-soft); background: var(--surface-muted); cursor: not-allowed; }
+    input[aria-invalid="true"] { border-color: var(--danger); }
+    .error { min-height: 1.5rem; margin: var(--space-2) 0 0; color: var(--danger); font-weight: 700; }
+
+    fieldset { border: 0; padding: 0; margin: var(--space-6) 0 0; }
+    .choice-grid, .program-grid { display: grid; gap: var(--space-3); margin-top: var(--space-4); }
+    .choice { position: relative; }
+    .choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .card-select { display: flex; align-items: center; gap: var(--space-3); min-height: 4rem; padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius); background: var(--white); cursor: pointer; transition: border-color var(--motion), transform var(--motion), background var(--motion); }
+    .card-select:hover { transform: translateY(-1px); border-color: var(--brand); }
+    .choice input:checked + .card-select { border-color: var(--brand); background: var(--brand-soft); box-shadow: inset 0 0 0 1px var(--brand); }
+    .choice input:focus-visible + .card-select { outline: .2rem solid var(--focus); outline-offset: .2rem; }
+    .choice-icon { flex: 0 0 2.5rem; width: 2.5rem; height: 2.5rem; display: grid; place-items: center; border-radius: .8rem; background: var(--surface-muted); font-size: 1.25rem; }
+
+    .program-card { display: grid; gap: var(--space-4); padding: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius); background: var(--white); box-shadow: 0 .5rem 1.5rem var(--shadow-color-soft); }
+    .program-card.recommended { border-color: var(--brand); }
+    .badge { width: fit-content; padding: .3rem .65rem; border-radius: 99rem; color: var(--brand-strong); background: var(--brand-soft); font-size: .78rem; font-weight: 800; }
+    .meta { display: flex; flex-wrap: wrap; gap: var(--space-2); color: var(--ink-soft); font-size: .88rem; }
+    .meta span { padding: .35rem .6rem; border-radius: 99rem; background: var(--surface-muted); }
+
+    .preview-layout { display: grid; gap: var(--space-6); }
+    .summary-card { padding: var(--space-5); border-radius: var(--radius); background: var(--brand); color: var(--white); }
+    .summary-card .meta { color: var(--white); }
+    .summary-card .meta span { background: var(--overlay-soft); }
+    .detail-stack { display: grid; gap: var(--space-5); }
+    .detail { padding-bottom: var(--space-5); border-bottom: 1px solid var(--border); }
+    .detail:last-child { border-bottom: 0; }
+    .check-list { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: grid; gap: var(--space-3); }
+    .check-list li { display: grid; grid-template-columns: 1.5rem 1fr; gap: var(--space-2); }
+    .check-list li::before { content: "✓"; color: var(--brand); font-weight: 900; }
+
+    .confirmation-box { padding: var(--space-5); border: 1px solid var(--brand); border-radius: var(--radius); background: var(--brand-soft); }
+    .confirmation-box strong { display: block; font-size: 1.3rem; margin-bottom: var(--space-2); }
+    .otp-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); max-width: 22rem; }
+    .otp-row input { text-align: center; font-size: 1.35rem; font-weight: 800; padding-inline: .25rem; }
+
+    .success-mark { width: 4.5rem; height: 4.5rem; display: grid; place-items: center; border-radius: 50%; margin-bottom: var(--space-5); color: var(--white); background: var(--success); font-size: 2rem; }
+    .welcome-panel { display: grid; gap: var(--space-5); padding: var(--space-6); border-radius: var(--radius-lg); background: var(--brand); color: var(--white); }
+    .module-card { color: var(--ink); background: var(--white); border-radius: var(--radius); padding: var(--space-5); }
+    .assumption { margin-top: var(--space-7); padding: var(--space-4); border-left: .25rem solid var(--accent); background: var(--warning-surface); color: var(--warning-ink); font-size: .86rem; }
+    .prototype-banner { max-width: 100vw; padding: var(--space-3) var(--space-4); color: var(--warning-ink); background: var(--warning-surface); text-align: center; overflow-wrap: anywhere; font-size: .82rem; }
+    .state-panel { padding: var(--space-5); border: 1px dashed var(--border); border-radius: var(--radius); background: var(--surface-muted); }
+    .text-white { color: var(--white); }
+    .space-top { margin-top: var(--space-4); }
+
+    .dev-panel { position: fixed; left: var(--space-3); right: var(--space-3); bottom: var(--space-3); z-index: 10; }
+    .dev-panel details { width: 100%; padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius); background: var(--white); box-shadow: var(--shadow); }
+    .dev-panel summary { cursor: pointer; font-weight: 800; }
+    .dev-buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+    .dev-buttons button { min-height: 2.75rem; border: 1px solid var(--border); border-radius: .5rem; background: var(--surface-muted); cursor: pointer; }
+
+    @keyframes enter { from { opacity: 0; transform: translateY(.5rem); } to { opacity: 1; transform: none; } }
+
+    @media (min-width: 48rem) {
+      .topbar { padding-inline: var(--space-6); }
+      .screen { padding: var(--space-7) var(--space-6); }
+      .hero { grid-template-columns: 1.1fr .9fr; }
+      .choice-grid { grid-template-columns: repeat(2, 1fr); }
+      .program-grid { grid-template-columns: repeat(3, 1fr); }
+      .preview-layout { grid-template-columns: minmax(17rem, .8fr) 1.2fr; align-items: start; }
+      .summary-card { position: sticky; top: 7rem; }
+      .dev-panel { left: auto; width: 22rem; }
+    }
+
+    @media (min-width: 80rem) {
+      .screen { padding-top: 5rem; }
+      .hero-art { min-height: 30rem; }
+      .program-card { padding: var(--space-6); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">P</span><span>Pathfinder</span></div>
+      <div class="progress-wrap" id="progress-wrap">
+        <div class="progress-label" id="progress-label">Step 1 of 9</div>
+        <div class="progress-track" role="progressbar" aria-label="Onboarding progress" aria-valuemin="1" aria-valuemax="9" aria-valuenow="1">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+      </div>
+      <button class="btn btn-quiet" type="button" id="restart-prototype">Restart</button>
+    </header>
+    <div class="prototype-banner" role="note"><strong>Review prototype:</strong> all programs and contact details are fictional. Use test details only. Progress resumes on refresh; no personal details are stored.</div>
+
+    <main id="main-content" tabindex="-1">
+      <section class="screen" id="screen-landing" data-step="1">
+        <div class="screen-inner hero">
+          <div>
+            <p class="eyebrow">Build skills for real work</p>
+            <h1>Find a path that fits your future.</h1>
+            <p class="lede">Explore practical programs, understand the commitment, and choose with confidence before creating an account.</p>
+            <div class="actions">
+              <button class="btn btn-primary" type="button" data-go="age-gate">Find a program</button>
+              <span class="helper">Program-invitation flow is documented separately and is outside this prototype.</span>
+            </div>
+          </div>
+          <div class="hero-art" aria-label="A sample career pathway illustration">
+            <div><p class="eyebrow text-white">Your next chapter</p><h2>Learn by doing. Grow with support.</h2></div>
+            <div class="hero-stat"><span>Typical commitment</span><strong>3 hours/week</strong><span class="helper">Designed around your schedule</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-age-gate" data-step="2" hidden>
+        <div class="screen-inner narrow">
+          <p class="eyebrow">Before we begin</p>
+          <h2>What year were you born?</h2>
+          <p class="lede">We use this only to confirm that the available work-readiness programs are right for your age group.</p>
+          <div class="field">
+            <label for="birth-year">Birth year</label>
+            <input id="birth-year" inputmode="numeric" autocomplete="bday-year" maxlength="4" placeholder="For example, 2005" aria-describedby="age-help age-error">
+            <span class="helper" id="age-help">You must be at least 15 years old to continue.</span>
+          </div>
+          <p class="error" id="age-error" aria-live="polite"></p>
+          <div class="actions">
+            <button class="btn btn-primary" type="button" id="age-continue">Continue</button>
+            <button class="btn btn-secondary" type="button" data-go="landing">Back</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-discovery" data-step="3" hidden>
+        <div class="screen-inner narrow">
+          <p class="eyebrow">A little about you</p>
+          <h2>What would you like your next opportunity to involve?</h2>
+          <p class="lede">Choose what sounds most interesting. There are no right or wrong choices.</p>
+          <fieldset>
+            <legend class="helper">Choose one or more interests</legend>
+            <div class="choice-grid">
+              <div class="choice"><input type="checkbox" id="interest-people" value="people"><label class="card-select" for="interest-people"><span class="choice-icon" aria-hidden="true">💬</span><span><strong>Helping people</strong><br><span class="helper">Support and communication</span></span></label></div>
+              <div class="choice"><input type="checkbox" id="interest-digital" value="digital"><label class="card-select" for="interest-digital"><span class="choice-icon" aria-hidden="true">⌨</span><span><strong>Working digitally</strong><br><span class="helper">Tools, content and data</span></span></label></div>
+              <div class="choice"><input type="checkbox" id="interest-organize" value="organize"><label class="card-select" for="interest-organize"><span class="choice-icon" aria-hidden="true">✓</span><span><strong>Keeping things organised</strong><br><span class="helper">Operations and coordination</span></span></label></div>
+              <div class="choice"><input type="checkbox" id="interest-create" value="create"><label class="card-select" for="interest-create"><span class="choice-icon" aria-hidden="true">✦</span><span><strong>Creating things</strong><br><span class="helper">Ideas, visuals and stories</span></span></label></div>
+            </div>
+          </fieldset>
+          <div class="actions">
+            <button class="btn btn-primary" type="button" id="show-programs">Show my options</button>
+            <button class="btn btn-quiet" type="button" data-go="recommendations">Browse all programs</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-recommendations" data-step="4" hidden>
+        <div class="screen-inner">
+          <p class="eyebrow" id="recommendation-eyebrow">Programs to explore</p>
+          <h2 id="recommendation-title">Three practical ways to move forward.</h2>
+          <p class="lede">Preview the work, time commitment, and outcome before choosing. You can change your mind later.</p>
+          <div class="assumption space-top" role="note">Illustrative fixture: program names, schedules, outcomes, and credentials are examples for flow review, not a live catalogue.</div>
+          <div class="state-panel space-top" id="recommendation-state" hidden aria-live="polite"></div>
+          <div class="program-grid" id="program-grid"></div>
+          <div class="actions"><button class="btn btn-secondary" type="button" data-go="discovery">Edit my interests</button><button class="btn btn-quiet" type="button" id="browse-all">Browse all programs</button></div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-program-preview" data-step="5" hidden>
+        <div class="screen-inner preview-layout">
+          <aside class="summary-card">
+            <span class="badge">Program preview</span>
+            <h2 id="preview-title" class="space-top">Digital Customer Support</h2>
+            <p id="preview-summary">Build the communication and digital skills used to support customers with confidence.</p>
+            <div class="meta" id="preview-meta"></div>
+          </aside>
+          <div class="detail-stack">
+            <div><p class="eyebrow">Know before you join</p><h2>See where this program can take you.</h2></div>
+            <div class="detail"><h3>What you’ll be able to do</h3><ul class="check-list" id="preview-outcomes"></ul></div>
+            <div class="detail"><h3>How the program works</h3><p id="preview-format"></p></div>
+            <div class="detail"><h3>What you need</h3><p>A smartphone or computer, a stable connection for short sessions, and about three hours each week.</p></div>
+            <div class="detail"><h3>What you can earn</h3><p>A completion record and a portfolio-ready example of your work. Completion is required; enrollment does not guarantee a credential.</p></div>
+            <div class="actions">
+              <button class="btn btn-primary" type="button" data-go="program-confirmation">Choose this program</button>
+              <button class="btn btn-secondary" type="button" data-go="recommendations">Explore another program</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-program-confirmation" data-step="6" hidden>
+        <div class="screen-inner narrow">
+          <p class="eyebrow">Your choice</p>
+          <h2>Is this the program you want to join?</h2>
+          <p class="lede">Check the time commitment before continuing. Your place is not reserved until registration is complete.</p>
+          <div class="confirmation-box">
+            <strong id="confirm-title">Digital Customer Support</strong>
+            <div class="meta" id="confirm-meta"></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" type="button" data-go="registration">Confirm and continue</button>
+            <button class="btn btn-secondary" type="button" data-go="recommendations">Change program</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-registration" data-step="7" hidden>
+        <div class="screen-inner narrow">
+          <p class="eyebrow">Keep your program choice</p>
+          <h2 id="registration-title">Save your place in Digital Customer Support.</h2>
+          <p class="lede">Enter your name and mobile number. We’ll send a four-digit code to verify it.</p>
+          <div class="assumption" role="note"><strong>Use test details only.</strong> This local prototype does not send messages or create an account.</div>
+          <div class="field"><label for="full-name">Full name</label><input id="full-name" autocomplete="name" placeholder="Test Learner" aria-describedby="registration-error"></div>
+          <div class="field"><label for="phone">WhatsApp or mobile number</label><input id="phone" type="tel" autocomplete="tel" placeholder="For example, +62 800 0000 0000" aria-describedby="registration-error"></div>
+          <div class="actions"><button class="btn btn-primary" type="button" id="send-otp">Send verification code</button><button class="btn btn-secondary" type="button" data-go="program-confirmation">Back</button></div>
+          <div id="otp-panel" hidden>
+            <div class="field">
+              <label for="otp-1">Verification code</label>
+              <div class="otp-row" aria-label="Four-digit verification code">
+                <input id="otp-1" inputmode="numeric" maxlength="1" aria-label="Digit 1" aria-describedby="registration-error"><input inputmode="numeric" maxlength="1" aria-label="Digit 2" aria-describedby="registration-error"><input inputmode="numeric" maxlength="1" aria-label="Digit 3" aria-describedby="registration-error"><input inputmode="numeric" maxlength="1" aria-label="Digit 4" aria-describedby="registration-error">
+              </div>
+              <span class="helper">Prototype hint: enter any four digits.</span>
+            </div>
+            <p class="error" id="registration-error" aria-live="polite"></p>
+            <div class="actions"><button class="btn btn-primary" type="button" id="verify-otp">Verify and join</button><button class="btn btn-quiet" type="button" id="resend-otp">Resend code</button><button class="btn btn-quiet" type="button" id="use-sms">Use SMS instead</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-enrollment-confirmation" data-step="8" hidden>
+        <div class="screen-inner narrow">
+          <div class="success-mark" aria-hidden="true">✓</div>
+          <p class="eyebrow">You’re enrolled</p>
+          <h2 id="enrolled-title">Your place in Digital Customer Support is confirmed.</h2>
+          <p class="lede">Your program is self-paced, so you can begin whenever you’re ready. We’ve saved your choice to this account.</p>
+          <div class="confirmation-box"><strong>What happens next</strong><p>Meet your learning guide, see the program roadmap, and begin the first module.</p></div>
+          <div class="actions"><button class="btn btn-primary" type="button" id="enrollment-action">Continue to my program</button></div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-program-welcome" data-step="9" hidden>
+        <div class="screen-inner">
+          <div class="welcome-panel">
+            <div><p class="eyebrow text-white">Welcome, <span id="welcome-name">learner</span></p><h2 id="welcome-title">Digital Customer Support</h2><p>You know what you chose and why. Now you can begin at your own pace.</p></div>
+            <div class="module-card"><span class="badge">First up</span><h3 class="space-top">Understanding the customer’s need</h3><p class="helper">Get oriented to the program and see what you’ll create. About 10 minutes.</p><button class="btn btn-primary" type="button" id="start-program">Start program</button></div>
+          </div>
+          <p class="assumption"><strong>Prototype assumption:</strong> program content, duration, credentials, and OTP behaviour are illustrative fixtures. They require confirmation against the live catalogue and enrollment services before build.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="dev-panel">
+    <details>
+      <summary>Prototype controls</summary>
+      <p class="helper">Jump to a screen for review.</p>
+      <div class="dev-buttons" id="dev-buttons"></div>
+      <p class="helper"><strong>Recommendation states</strong></p>
+      <div class="dev-buttons" id="state-buttons"><button type="button" data-state="loading">Loading</button><button type="button" data-state="empty">Empty</button><button type="button" data-state="error">Error</button><button type="button" data-state="long">Long content</button><button type="button" data-state="normal">Reset</button></div>
+      <p class="helper"><strong>Recovery simulations</strong></p>
+      <div class="dev-buttons"><button type="button" id="simulate-age-error">Age service error</button><button type="button" id="simulate-otp-error">OTP delivery error</button><button type="button" id="simulate-enrollment-error">Enrollment error</button></div>
+    </details>
+  </div>
+
+  <script>
+    const screenOrder = ['landing','age-gate','discovery','recommendations','program-preview','program-confirmation','registration','enrollment-confirmation','program-welcome'];
+    const programs = [
+      { id:'support', title:'Digital Customer Support', summary:'Build the communication and digital skills used to support customers with confidence.', duration:'6 weeks', time:'3 hrs/week', language:'English', match:'Best match for helping people', outcomes:['Respond clearly to customer questions','Use common support tools and workflows','Create a portfolio-ready support response'], format:'Short mobile-friendly activities, guided practice, and a practical final project.' },
+      { id:'ops', title:'Digital Operations Assistant', summary:'Learn to organise tasks, records, and simple workflows for a busy team.', duration:'8 weeks', time:'4 hrs/week', language:'English', match:'Strong match for staying organised', outcomes:['Track work with digital tools','Prepare clear updates for a team','Build a simple operating checklist'], format:'Weekly practice, templates you can reuse, and a final workflow project.' },
+      { id:'content', title:'Content & Community Basics', summary:'Practice writing, planning, and publishing useful digital content.', duration:'6 weeks', time:'3 hrs/week', language:'English', match:'Good match for creating things', outcomes:['Plan content for a clear audience','Write useful social posts','Build a small content portfolio'], format:'Short examples, guided creation, peer reflection, and a final content set.' },
+      { id:'sales', title:'Sales Conversation Foundations', summary:'Build confidence explaining value, listening to needs, and following up clearly.', duration:'5 weeks', time:'2 hrs/week', language:'English', match:'A practical communication path', outcomes:['Prepare for a customer conversation','Ask useful discovery questions','Write a clear follow-up message'], format:'Mobile-first examples, guided conversation practice, and a final follow-up project.' }
+    ];
+    let selectedProgram = programs[0];
+    let enrollmentFailed = false;
+
+    const screens = [...document.querySelectorAll('.screen')];
+    const progress = document.querySelector('[role="progressbar"]');
+    const progressBar = document.getElementById('progress-bar');
+    const progressLabel = document.getElementById('progress-label');
+
+    function showScreen(name) {
+      const index = screenOrder.indexOf(name);
+      if (index < 0) return;
+      screens.forEach(screen => { screen.hidden = screen.id !== `screen-${name}`; });
+      const step = index + 1;
+      progress.setAttribute('aria-valuenow', String(step));
+      progressBar.style.width = `${(step / screenOrder.length) * 100}%`;
+      progressLabel.textContent = `Step ${step} of ${screenOrder.length}`;
+      localStorage.setItem('pathfinder-screen', name);
+      document.getElementById('main-content').focus({preventScroll:true});
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function validateAge() {
+      const field = document.getElementById('birth-year');
+      const error = document.getElementById('age-error');
+      const year = Number(field.value);
+      const currentYear = new Date().getFullYear();
+      if (!Number.isInteger(year) || year < 1900 || year > currentYear) {
+        field.setAttribute('aria-invalid','true');
+        error.textContent = 'Enter a valid four-digit birth year.';
+        return;
+      }
+      if (currentYear - year < 15) {
+        field.setAttribute('aria-invalid','true');
+        error.textContent = 'These programs are currently available to learners aged 15 and over.';
+        return;
+      }
+      field.removeAttribute('aria-invalid');
+      error.textContent = '';
+      showScreen('discovery');
+    }
+
+    function renderPrograms(showAll = false) {
+      const selectedInterests = [...document.querySelectorAll('.choice input:checked')].map(item => item.value);
+      const preferredId = selectedInterests.includes('people') ? 'support' : selectedInterests.includes('organize') ? 'ops' : selectedInterests.includes('create') ? 'content' : 'support';
+      const ordered = [...programs].sort((a,b) => (a.id === preferredId ? -1 : b.id === preferredId ? 1 : 0));
+      const visible = showAll ? ordered : ordered.slice(0, 3);
+      document.getElementById('recommendation-eyebrow').textContent = showAll ? 'All programs' : 'Programs to explore';
+      document.getElementById('recommendation-title').textContent = showAll ? 'Browse every available example program.' : 'Three practical ways to move forward.';
+      document.getElementById('recommendation-state').hidden = true;
+      document.getElementById('program-grid').hidden = false;
+      document.getElementById('program-grid').innerHTML = visible.map((program, index) => `
+        <article class="program-card ${index === 0 ? 'recommended' : ''}">
+          ${index === 0 ? '<span class="badge">Recommended for you</span>' : '<span class="badge">Another path</span>'}
+          <div><h3>${program.title}</h3><p class="helper">${program.summary}</p></div>
+          <div class="meta"><span>${program.duration}</span><span>${program.time}</span><span>${program.language}</span></div>
+          <p><strong>${program.match}</strong></p>
+          <button class="btn btn-secondary preview-program" type="button" data-program="${program.id}">Preview program</button>
+        </article>`).join('');
+      document.querySelectorAll('.preview-program').forEach(button => button.addEventListener('click', () => {
+        selectedProgram = programs.find(program => program.id === button.dataset.program);
+        localStorage.setItem('pathfinder-program', selectedProgram.id);
+        populateProgram();
+        showScreen('program-preview');
+      }));
+    }
+
+    function populateProgram() {
+      const meta = `<span>${selectedProgram.duration}</span><span>${selectedProgram.time}</span><span>${selectedProgram.language}</span>`;
+      document.getElementById('preview-title').textContent = selectedProgram.title;
+      document.getElementById('preview-summary').textContent = selectedProgram.summary;
+      document.getElementById('preview-meta').innerHTML = meta;
+      document.getElementById('preview-outcomes').innerHTML = selectedProgram.outcomes.map(outcome => `<li>${outcome}</li>`).join('');
+      document.getElementById('preview-format').textContent = selectedProgram.format;
+      document.getElementById('confirm-title').textContent = selectedProgram.title;
+      document.getElementById('confirm-meta').innerHTML = meta;
+      document.getElementById('registration-title').textContent = `Save your place in ${selectedProgram.title}.`;
+      document.getElementById('enrolled-title').textContent = `Your place in ${selectedProgram.title} is confirmed.`;
+      document.getElementById('welcome-title').textContent = selectedProgram.title;
+    }
+
+    function sendOtp() {
+      const name = document.getElementById('full-name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const error = document.getElementById('registration-error');
+      if (!name || phone.length < 8) {
+        document.getElementById('full-name').setAttribute('aria-invalid', String(!name));
+        document.getElementById('phone').setAttribute('aria-invalid', String(phone.length < 8));
+        document.getElementById('otp-panel').hidden = false;
+        error.textContent = 'Enter your name and a valid mobile number before requesting a code.';
+        return;
+      }
+      document.getElementById('full-name').removeAttribute('aria-invalid');
+      document.getElementById('phone').removeAttribute('aria-invalid');
+      error.textContent = '';
+      document.getElementById('otp-panel').hidden = false;
+      document.getElementById('otp-1').focus();
+    }
+
+    function verifyOtp() {
+      const otpInputs = [...document.querySelectorAll('.otp-row input')];
+      const digits = otpInputs.map(input => input.value.trim()).join('');
+      const error = document.getElementById('registration-error');
+      if (!/^\d{4}$/.test(digits)) {
+        otpInputs.forEach(input => input.setAttribute('aria-invalid', String(!/^\d$/.test(input.value.trim()))));
+        error.textContent = 'Enter all four digits from the verification message.';
+        return;
+      }
+      otpInputs.forEach(input => input.removeAttribute('aria-invalid'));
+      error.textContent = '';
+      const name = document.getElementById('full-name').value.trim().split(' ')[0] || 'learner';
+      document.getElementById('welcome-name').textContent = name;
+      showScreen('enrollment-confirmation');
+    }
+
+    document.addEventListener('click', event => {
+      const target = event.target.closest('[data-go]');
+      if (target) {
+        if (target.dataset.go === 'recommendations') renderPrograms();
+        populateProgram();
+        showScreen(target.dataset.go);
+      }
+    });
+    document.getElementById('age-continue').addEventListener('click', validateAge);
+    document.getElementById('show-programs').addEventListener('click', () => { renderPrograms(); showScreen('recommendations'); });
+    document.getElementById('send-otp').addEventListener('click', sendOtp);
+    document.getElementById('verify-otp').addEventListener('click', verifyOtp);
+    document.getElementById('resend-otp').addEventListener('click', () => { document.getElementById('registration-error').textContent = 'A new prototype code was sent. Enter any four digits.'; });
+    document.getElementById('use-sms').addEventListener('click', () => { document.getElementById('registration-error').textContent = 'SMS selected. A prototype code was sent to the same test number.'; document.getElementById('otp-1').focus(); });
+    document.getElementById('start-program').addEventListener('click', event => { event.target.textContent = 'Program started'; event.target.disabled = true; });
+    document.getElementById('browse-all').addEventListener('click', () => renderPrograms(true));
+    document.getElementById('restart-prototype').addEventListener('click', () => { localStorage.removeItem('pathfinder-screen'); localStorage.removeItem('pathfinder-program'); localStorage.removeItem('pathfinder-interests'); location.reload(); });
+    document.getElementById('simulate-age-error').addEventListener('click', () => { showScreen('age-gate'); document.getElementById('age-error').textContent = 'We could not verify eligibility because the service is unavailable. Try again.'; });
+    document.getElementById('simulate-otp-error').addEventListener('click', () => { showScreen('registration'); document.getElementById('otp-panel').hidden = false; document.getElementById('registration-error').textContent = 'The message could not be delivered. Retry or use the alternative SMS channel.'; });
+    document.getElementById('simulate-enrollment-error').addEventListener('click', () => { enrollmentFailed = true; showScreen('enrollment-confirmation'); document.querySelector('#screen-enrollment-confirmation .eyebrow').textContent = 'Enrollment needs attention'; document.getElementById('enrolled-title').textContent = 'Your verified account is safe, but enrollment could not be completed.'; document.querySelector('#screen-enrollment-confirmation .lede').textContent = 'Retry from this screen; you do not need to repeat program discovery or registration.'; document.getElementById('enrollment-action').textContent = 'Retry enrollment'; });
+    document.getElementById('enrollment-action').addEventListener('click', () => {
+      if (enrollmentFailed) {
+        enrollmentFailed = false;
+        document.querySelector('#screen-enrollment-confirmation .eyebrow').textContent = 'You’re enrolled';
+        document.getElementById('enrolled-title').textContent = `Your place in ${selectedProgram.title} is confirmed.`;
+        document.querySelector('#screen-enrollment-confirmation .lede').textContent = 'Your program is self-paced, so you can begin whenever you’re ready. We’ve saved your choice to this account.';
+        document.getElementById('enrollment-action').textContent = 'Continue to my program';
+        return;
+      }
+      showScreen('program-welcome');
+    });
+    document.querySelectorAll('.choice input').forEach(input => input.addEventListener('change', () => {
+      const selected = [...document.querySelectorAll('.choice input:checked')].map(item => item.value);
+      localStorage.setItem('pathfinder-interests', JSON.stringify(selected));
+    }));
+    document.querySelectorAll('[data-state]').forEach(button => button.addEventListener('click', () => {
+      showScreen('recommendations');
+      const state = button.dataset.state;
+      const panel = document.getElementById('recommendation-state');
+      const grid = document.getElementById('program-grid');
+      if (state === 'normal') { renderPrograms(); return; }
+      panel.hidden = false; grid.hidden = true;
+      const messages = { loading:'Loading programs that match your interests…', empty:'No programs match these preferences yet. Edit your interests or browse all programs.', error:'Programs could not be loaded. Check your connection and try again.', long:'Long-content stress state: program titles and descriptions may expand by forty percent without hiding the next action.' };
+      panel.textContent = messages[state];
+    }));
+
+    document.getElementById('dev-buttons').innerHTML = screenOrder.map(name => `<button type="button" data-go="${name}">${name.replaceAll('-',' ')}</button>`).join('');
+    renderPrograms();
+    populateProgram();
+    const savedProgram = programs.find(program => program.id === localStorage.getItem('pathfinder-program'));
+    if (savedProgram) { selectedProgram = savedProgram; populateProgram(); }
+    try {
+      const savedInterests = JSON.parse(localStorage.getItem('pathfinder-interests') || '[]');
+      document.querySelectorAll('.choice input').forEach(input => { input.checked = savedInterests.includes(input.value); });
+    } catch (error) { localStorage.removeItem('pathfinder-interests'); }
+    const savedScreen = localStorage.getItem('pathfinder-screen');
+    if (savedScreen && screenOrder.includes(savedScreen)) showScreen(savedScreen);
+  </script>
+</body>
+</html>
