@@ -65,3 +65,18 @@ flowchart LR
 - `validation-model.md` defines module validation tools and badge logic.
 - `onboarding.md` details the onboarding boundary flow (IA, journey, and the deferred
   account moment), grounded in the Indonesian-teacher onboarding and audience research.
+- `DESIGN.md` is the component & pattern layer — primitives, domain patterns, and a
+  surface map of every IA screen. Built on top of the design foundations, and it
+  **supersedes** their stale `Sertifikat + Jam PKB` credential framing.
+- `tokens.css` is the canonical token source (light + dark). The only place token
+  *values* live; `DESIGN.md` references token names only. Inlined into prototypes at
+  build time, never linked.
+
+### Design layers
+
+| Layer | Lives in | Owns |
+|---|---|---|
+| Atoms | `research/2026-07-14-…/DESIGN-FOUNDATIONS.md` | colour, type, spacing, shape, motion, iconography, language system, a11y |
+| Values | `tokens.css` | the hexes and sizes themselves |
+| Components | `DESIGN.md` | anatomy, states, rules, surface map |
+| Screens | prototype / `SPEC.md` | composition |

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Micro-Interactions Test - Liquid Flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+  <style>
+    :root {
+      --purple: #8e279b;
+      --purple-hover: #7a2e86;
+      --purple-bg: #f5e9ff;
+      --ink: #1d1826;
+      --sub: #6b6577;
+      --bg: #f8f9fa;
+      --surf: #ffffff;
+      --hair: #e5e5e5;
+      --blue: #2397cb;
+      --blue-bg: #e1f5fe;
+      
+      --font-head: 'Plus Jakarta Sans', sans-serif;
+      --font-body: 'Open Sans', sans-serif;
+      
+      /* The core easing for our "Liquid Flow" */
+      --easing-liquid: cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1, h2, h3 { font-family: var(--font-head); }
+    
+    /* Header & Progress Bar */
+    .header {
+      width: 100%;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      background: var(--surf);
+      border-bottom: 1px solid var(--hair);
+    }
+    .progress-container {
+      width: 100%;
+      max-width: 400px;
+      height: 8px;
+      background: var(--hair);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    #progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--purple);
+      transition: width 0.8s var(--easing-liquid);
+      position: relative;
+    }
+    /* Subtle moving shine on progress bar */
+    #progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: progressShine 2s infinite;
+    }
+    @keyframes progressShine {
+      100% { left: 200%; }
+    }
+
+    /* Screen Transitions */
+    .main-container {
+      flex: 1;
+      width: 100%;
+      max-width: 600px;
+      padding: 40px 24px;
+      position: relative;
+    }
+    .card {
+      background: var(--surf);
+      border-radius: 24px;
+      padding: 40px 32px;
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+    .card.active {
+      display: flex;
+      animation: fadeSlideUpIn 0.6s var(--easing-liquid) forwards;
+    }
+    @keyframes fadeSlideUpIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .title { font-size: 28px; font-weight: 700; margin-bottom: 32px; color: var(--ink); }
+    
+    /* Buttons */
+    .btn {
+      font-family: var(--font-head);
+      padding: 16px 32px;
+      border-radius: 99px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 24px;
+    }
+    .btn-primary {
+      background: var(--purple);
+      color: var(--surf);
+    }
+    .btn-primary:hover {
+      background: var(--purple-hover);
+      box-shadow: 0 8px 16px rgba(142, 39, 155, 0.2);
+    }
+    .btn-primary:active {
+      transform: scale(0.98); /* Very subtle depress */
+    }
+
+    /* Option Cards (Goals / Age) */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+    }
+    .option-card {
+      border: 2px solid var(--hair);
+      border-radius: 16px;
+      padding: 24px 16px;
+      cursor: pointer;
+      transition: box-shadow 0.4s var(--easing-liquid), border-color 0.4s var(--easing-liquid), background 0.4s var(--easing-liquid);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .option-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      border-color: #dcd0e5; /* Soft shift before selection */
+    }
+    .option-card.selected {
+      border-color: var(--purple);
+      background: var(--purple-bg);
+    }
+    
+    /* 6-Digit Code Input */
+    .code-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .code-digit {
+      width: 56px; height: 68px;
+      border: 2px solid var(--hair);
+      border-radius: 12px;
+      font-size: 28px; font-weight: 700; text-align: center;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .code-digit:focus {
+      border-color: var(--purple);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(142, 39, 155, 0.1); /* Soft glow */
+    }
+    .error-shake {
+      animation: gentleShake 0.4s var(--easing-liquid);
+    }
+    @keyframes gentleShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* Success Screen Staggering */
+    .stagger-1 { opacity: 0; animation: fadeSlideUpIn 0.6s var(--easing-liquid) 0.1s forwards; }
+    .stagger-2 { opacity: 0; animation: fadeSlideUpIn 0.6s var(--easing-liquid) 0.2s forwards; }
+    .stagger-3 { opacity: 0; animation: fadeSlideUpIn 0.6s var(--easing-liquid) 0.3s forwards; }
+    
+    .program-card {
+      background: var(--blue-bg);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: left;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      margin-top: 24px;
+    }
+    /* Elegant single shimmer on load */
+    .program-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -150%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+      transform: skewX(-20deg);
+      animation: cardShimmer 1.2s var(--easing-liquid) 0.7s forwards;
+    }
+    @keyframes cardShimmer {
+      100% { left: 150%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="progress-container">
+      <div id="progress-bar"></div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    
+    <!-- Step 1: Code Input -->
+    <div id="step-1" class="card active">
+      <h1 class="title">Enter Program Code</h1>
+      <p style="color: var(--sub); margin-bottom: 32px;">Try entering an incorrect code first to see the gentle shake, then "123456" to proceed.</p>
+      
+      <div class="code-group" id="code-container">
+        <input type="text" maxlength="1" class="code-digit" autofocus>
+        <input type="text" maxlength="1" class="code-digit">
+        <input type="text" maxlength="1" class="code-digit">
+        <input type="text" maxlength="1" class="code-digit">
+        <input type="text" maxlength="1" class="code-digit">
+        <input type="text" maxlength="1" class="code-digit">
+      </div>
+      
+      <button class="btn btn-primary" onclick="verifyCode()">Join Program</button>
+    </div>
+
+    <!-- Step 2: Goal Selection -->
+    <div id="step-2" class="card">
+      <h1 class="title">What do you want to learn?</h1>
+      
+      <div class="options-grid">
+        <div class="option-card" onclick="selectOption(this)">
+          <span class="material-symbols-rounded" style="color: var(--blue); font-size: 32px;">bar_chart</span>
+          <span style="font-weight: 600;">Data Analysis</span>
+        </div>
+        <div class="option-card" onclick="selectOption(this)">
+          <span class="material-symbols-rounded" style="color: var(--purple); font-size: 32px;">forum</span>
+          <span style="font-weight: 600;">Communication</span>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="goToStep(3, 100)">Continue</button>
+    </div>
+
+    <!-- Step 3: Success Screen -->
+    <div id="step-3" class="card" style="background: transparent; box-shadow: none;">
+      <div class="stagger-1" style="width: 120px; height: 120px; border-radius: 50%; background: var(--purple-bg); margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
+        <span style="color: var(--purple); font-weight: 800; font-size: 20px; font-family: var(--font-head);">Koji</span>
+      </div>
+      <h1 class="title stagger-2" style="margin-bottom: 8px;">You're In!</h1>
+      <p class="stagger-2" style="color: var(--sub);">You've successfully joined your cohort.</p>
+      
+      <div class="program-card stagger-3">
+        <div style="font-size: 12px; font-weight: 700; color: var(--blue); text-transform: uppercase;">Program</div>
+        <div style="font-size: 20px; font-weight: 700; color: var(--ink); margin-top: 4px;">Youth Job Readiness</div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 16px;">
+          <span class="material-symbols-rounded" style="color: var(--blue); font-size: 20px;">person</span>
+          <span style="font-size: 14px; font-weight: 500;">Facilitator: Jane Doe</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Progress Bar Initialization
+    setTimeout(() => { document.getElementById('progress-bar').style.width = '33%'; }, 100);
+
+    // Code Input UX
+    const inputs = document.querySelectorAll('.code-digit');
+    inputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        if (e.target.value.length === 1 && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+      });
+    });
+
+    function verifyCode() {
+      let code = Array.from(inputs).map(i => i.value).join('');
+      if (code === '123456') {
+        goToStep(2, 66);
+      } else {
+        const container = document.getElementById('code-container');
+        container.classList.remove('error-shake');
+        void container.offsetWidth; // trigger reflow
+        container.classList.add('error-shake');
+      }
+    }
+
+    function selectOption(el) {
+      document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function goToStep(stepNumber, progressPercentage) {
+      // Hide all steps
+      document.querySelectorAll('.card').forEach(c => {
+        c.classList.remove('active');
+      });
+      // Update progress
+      document.getElementById('progress-bar').style.width = progressPercentage + '%';
+      
+      // Delay slightly for the new step to allow "liquid flow" feel
+      setTimeout(() => {
+        document.getElementById('step-' + stepNumber).classList.add('active');
+      }, 50);
+    }
+  </script>
+</body>
+</html>

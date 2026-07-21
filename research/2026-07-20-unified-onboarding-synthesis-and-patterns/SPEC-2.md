@@ -3,7 +3,7 @@
 - **Source study:** 2026-07-20-unified-onboarding-synthesis-and-patterns
 - **Supersedes:** `SPEC.md` for the onboarding flow
 - **Audience:** Product, design, engineering, research
-- **Status:** Draft for stakeholder review
+- **Status:** Deprecated
 - **Decision date:** 2026-07-21
 
 ## 1. Overview

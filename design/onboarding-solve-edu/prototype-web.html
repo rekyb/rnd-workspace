@@ -1296,7 +1296,7 @@
       
       <div style="background: var(--purple); border-radius: 20px; padding: 24px; color: #fff; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(142,39,155,0.2);">
         <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8;">Up Next</div>
-        <div style="font-size: 24px; font-weight: 700; margin: 8px 0 16px;">Workplace Communication</div>
+        <div id="home_course_title" style="font-size: 24px; font-weight: 700; margin: 8px 0 16px;">Workplace Communication</div>
         <div style="display: flex; align-items: center; gap: 12px;">
           <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.2); border-radius: 99px; overflow: hidden;">
             <div style="width: 40%; height: 100%; background: var(--pri);"></div>
@@ -1305,6 +1305,24 @@
         </div>
       </div>
 
+      <div id="home_program_tasks" style="display: none; background: white; border: 1px solid var(--hair); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+        <div style="font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 8px;"><span id="home_program_name">Youth Job Readiness 2026</span> Tasks</div>
+        <p style="color: var(--sub); font-size: 14px; margin-bottom: 20px;">Complete these tasks to finish your program requirements.</p>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <label style="display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 500; cursor: pointer;">
+            <input type="checkbox" checked disabled style="width: 20px; height: 20px; accent-color: var(--green);"> Complete Registration
+          </label>
+          <label style="display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 500; cursor: pointer;">
+            <input type="checkbox" style="width: 20px; height: 20px; accent-color: var(--purple);"> Take the Baseline Assessment
+          </label>
+          <label style="display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 500; cursor: pointer;">
+            <input type="checkbox" style="width: 20px; height: 20px; accent-color: var(--purple);"> Complete 3 Modules
+          </label>
+          <label style="display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 500; cursor: pointer;">
+            <input type="checkbox" style="width: 20px; height: 20px; accent-color: var(--purple);"> Earn your Certificate
+          </label>
+        </div>
+      </div>
       <button class="btn btn-primary" style="font-size: 18px;" onclick="goTo('learning_home')">Start Lesson</button>
       </div>
     </div>
@@ -2014,6 +2032,26 @@
     function renderHomeSection() {
         const uName = document.getElementById('name_input').value.trim() || 'Learner';
         document.getElementById('home_greeting').innerText = `Hi, ${uName}!`;
+        
+        // Course mapping
+        const courseMap = {
+            'english': 'English for Workplace',
+            'math': 'Practical Math Skills',
+            'workplace': 'Workplace Communication',
+            'digital_literacy': 'Digital Skills for the Modern World',
+            'entrepreneurship': 'Start Your Own Business'
+        };
+        
+        const courseTitle = courseMap[selectedGoal] || 'General Skills Mastery';
+        document.getElementById('home_course_title').innerText = courseTitle;
+        
+        // Program tasks conditional logic
+        if (typeof entryPath !== 'undefined' && entryPath === 'program') {
+            document.getElementById('home_program_tasks').style.display = 'block';
+            document.getElementById('home_program_name').innerText = 'Youth Job Readiness 2026';
+        } else {
+            document.getElementById('home_program_tasks').style.display = 'none';
+        }
     }
 
     function populateProfileSummary() {

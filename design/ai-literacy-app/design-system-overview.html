@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>AI-Literacy App — Design System Overview</title>
+<!--
+  Standalone review page for design/ai-literacy-app/tokens.css + DESIGN.md.
+  Self-contained: no external fonts, scripts, or stylesheets. Open it directly
+  in a browser — no server needed.
+
+  This page is rendered IN the system it documents. The token blocks below are
+  lifted verbatim from tokens.css and verified to match it exactly. If they ever
+  disagree, tokens.css wins — regenerate this page rather than editing it.
+-->
+<style>
+/* ==========================================================================
+   This page is rendered in the system it documents.
+   Tokens below are lifted verbatim from design/ai-literacy-app/tokens.css.
+   ========================================================================== */
+:root{
+  --surface:#FBF9F5; --surface-alt:#F3F0E9; --card:#FFFFFF; --border:#E7E2D8;
+  --ink:#1C1917; --ink-muted:#57534E;
+  --primary:#3D348B; --primary-strong:#2E2769; --primary-tint:#E4E2F5; --on-primary:#FFFFFF;
+  --primary-bright:#7678ED; --on-primary-bright:#1C1917;
+  --deco-orange:#F18701; --deco-red:#F35B04;
+  --win-fill:#F7B801; --win-text:#B45309; --win-bg:#FEF3C7; --win-bg-text:#92400E;
+  --verify-bg:#DBEAFE; --verify-text:#1D4ED8;
+  --safe-text:#0F766E; --safe-bg:#CCFBF1;
+  --danger-text:#B91C1C; --danger-bg:#FEE2E2;
+  --readiness-bg:#39542C; --readiness-fg:#F0FDF4; --readiness-accent:#86EFAC;
+  --elevation-1:0 1px 2px rgba(0,0,0,.06);
+
+  --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
+  --fs-display:28px; --lh-display:34px;
+  --fs-h1:24px; --lh-h1:30px;
+  --fs-h2:20px; --lh-h2:26px;
+  --fs-bodylg:18px; --lh-bodylg:28px;
+  --fs-body:16px; --lh-body:26px;
+  --fs-label:15px; --lh-label:20px;
+  --fs-cap:13px; --lh-cap:18px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px; --sp-7:48px;
+  --r-pill:999px; --r-card:20px; --r-sheet:24px; --r-md:12px; --r-sm:8px;
+  --touch-min:44px; --icon-size:24px; --icon-stroke:1.75px;
+  --dur:180ms; --ease:cubic-bezier(0,0,.2,1);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --surface:#16140F; --surface-alt:#211E18; --card:#262019; --border:#3A342B;
+    --ink:#F5F1EA; --ink-muted:#B8B0A4;
+    --primary:#7678ED; --primary-strong:#9A9CF5; --primary-tint:#1E1B3A; --on-primary:#1C1917;
+    --primary-bright:#7678ED; --on-primary-bright:#1C1917;
+    --deco-orange:#F18701; --deco-red:#F35B04;
+    --win-fill:#F7B801; --win-text:#FBBF24; --win-bg:#3A2A08; --win-bg-text:#FCD34D;
+    --verify-bg:#1E3A5F; --verify-text:#93C5FD;
+    --safe-text:#2DD4BF; --safe-bg:#0F2E2A;
+    --danger-text:#F87171; --danger-bg:#3B1212;
+    --readiness-bg:#39542C; --readiness-fg:#F0FDF4; --readiness-accent:#86EFAC;
+    --elevation-1:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --surface:#16140F; --surface-alt:#211E18; --card:#262019; --border:#3A342B;
+  --ink:#F5F1EA; --ink-muted:#B8B0A4;
+  --primary:#7678ED; --primary-strong:#9A9CF5; --primary-tint:#1E1B3A; --on-primary:#1C1917;
+  --primary-bright:#7678ED; --on-primary-bright:#1C1917;
+  --deco-orange:#F18701; --deco-red:#F35B04;
+  --win-fill:#F7B801; --win-text:#FBBF24; --win-bg:#3A2A08; --win-bg-text:#FCD34D;
+  --verify-bg:#1E3A5F; --verify-text:#93C5FD;
+  --safe-text:#2DD4BF; --safe-bg:#0F2E2A;
+  --danger-text:#F87171; --danger-bg:#3B1212;
+  --readiness-bg:#39542C; --readiness-fg:#F0FDF4; --readiness-accent:#86EFAC;
+  --elevation-1:0 1px 2px rgba(0,0,0,.4);
+}
+:root[data-theme="light"]{
+  --surface:#FBF9F5; --surface-alt:#F3F0E9; --card:#FFFFFF; --border:#E7E2D8;
+  --ink:#1C1917; --ink-muted:#57534E;
+  --primary:#3D348B; --primary-strong:#2E2769; --primary-tint:#E4E2F5; --on-primary:#FFFFFF;
+  --primary-bright:#7678ED; --on-primary-bright:#1C1917;
+  --deco-orange:#F18701; --deco-red:#F35B04;
+  --win-fill:#F7B801; --win-text:#B45309; --win-bg:#FEF3C7; --win-bg-text:#92400E;
+  --verify-bg:#DBEAFE; --verify-text:#1D4ED8;
+  --safe-text:#0F766E; --safe-bg:#CCFBF1;
+  --danger-text:#B91C1C; --danger-bg:#FEE2E2;
+  --readiness-bg:#39542C; --readiness-fg:#F0FDF4; --readiness-accent:#86EFAC;
+  --elevation-1:0 1px 2px rgba(0,0,0,.06);
+}
+
+/* ---------- base ---------- */
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--surface); color:var(--ink);
+  font-family:var(--font); font-size:var(--fs-body); line-height:var(--lh-body);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--primary); text-underline-offset:3px}
+:where(a,button,summary):focus-visible{
+  outline:2px solid var(--primary); outline-offset:2px; border-radius:var(--r-sm);
+}
+svg{width:var(--icon-size); height:var(--icon-size); stroke:currentColor;
+    stroke-width:var(--icon-stroke); fill:none; stroke-linecap:round; stroke-linejoin:round; flex:none}
+code,.mono{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1180px; margin:0 auto; padding:var(--sp-6) var(--sp-4) var(--sp-7)}
+.cols{display:grid; grid-template-columns:1fr; gap:var(--sp-6)}
+@media(min-width:1000px){
+  .cols{grid-template-columns:210px minmax(0,1fr); gap:var(--sp-7); align-items:start}
+  .rail{position:sticky; top:var(--sp-5)}
+}
+.rail nav{display:flex; flex-direction:column; gap:var(--sp-1)}
+.rail a{
+  font-size:var(--fs-cap); line-height:var(--lh-cap); color:var(--ink-muted);
+  text-decoration:none; padding:var(--sp-2) var(--sp-3); border-radius:var(--r-pill);
+  transition:background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.rail a:hover{background:var(--surface-alt); color:var(--ink)}
+.rail .rail-h{
+  font-size:var(--fs-cap); font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink-muted); padding:var(--sp-2) var(--sp-3) var(--sp-1);
+}
+main{display:flex; flex-direction:column; gap:var(--sp-7); min-width:0}
+section{display:flex; flex-direction:column; gap:var(--sp-4); scroll-margin-top:var(--sp-5)}
+
+/* ---------- type roles ---------- */
+h1{font-size:var(--fs-display); line-height:var(--lh-display); font-weight:700; margin:0; text-wrap:balance}
+h2{font-size:var(--fs-h1); line-height:var(--lh-h1); font-weight:700; margin:0; text-wrap:balance}
+h3{font-size:var(--fs-h2); line-height:var(--lh-h2); font-weight:600; margin:0}
+p{margin:0; max-width:65ch}
+.lede{font-size:var(--fs-bodylg); line-height:var(--lh-bodylg); color:var(--ink-muted); max-width:62ch}
+.cap{font-size:var(--fs-cap); line-height:var(--lh-cap); color:var(--ink-muted); margin:0}
+.eyebrow{
+  font-size:var(--fs-cap); font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--primary); margin:0;
+}
+
+/* ---------- header ---------- */
+header.top{display:flex; flex-direction:column; gap:var(--sp-3); padding-bottom:var(--sp-5);
+           border-bottom:1px solid var(--border); margin-bottom:var(--sp-6)}
+.meta{display:flex; flex-wrap:wrap; gap:var(--sp-2); align-items:center}
+.tag{
+  font-family:var(--mono); font-size:var(--fs-cap); line-height:1;
+  padding:7px var(--sp-3); border-radius:var(--r-pill);
+  border:1px solid var(--border); color:var(--ink-muted); background:var(--card);
+}
+.tag.on{background:var(--primary-tint); border-color:transparent; color:var(--primary-strong); font-weight:600}
+
+/* ---------- notice ---------- */
+.notice{
+  background:var(--card); border:1px solid var(--border); border-radius:var(--r-card);
+  padding:var(--sp-5); display:flex; flex-direction:column; gap:var(--sp-3);
+}
+.notice .strike{text-decoration:line-through; color:var(--ink-muted)}
+
+/* ---------- generic table ---------- */
+.tw{overflow-x:auto; border:1px solid var(--border); border-radius:var(--r-card); background:var(--card)}
+table{border-collapse:collapse; width:100%; font-size:var(--fs-label); line-height:var(--lh-label)}
+th,td{text-align:left; padding:var(--sp-3) var(--sp-4); border-bottom:1px solid var(--border); vertical-align:top}
+th{font-weight:700; font-size:var(--fs-cap); letter-spacing:.05em; text-transform:uppercase; color:var(--ink-muted); white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+/* ---------- swatches ---------- */
+.swatches{display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:var(--sp-3)}
+.sw{background:var(--card); border:1px solid var(--border); border-radius:var(--r-card);
+    overflow:hidden; display:flex; flex-direction:column}
+.sw .chip{height:64px; border-bottom:1px solid var(--border)}
+.sw .body{padding:var(--sp-3); display:flex; flex-direction:column; gap:2px}
+.sw .name{font-family:var(--mono); font-size:var(--fs-cap); font-weight:600; color:var(--ink)}
+.sw .hexes{font-family:var(--mono); font-size:11px; line-height:16px; color:var(--ink-muted); font-variant-numeric:tabular-nums}
+.sw .role{font-size:11px; line-height:15px; color:var(--ink-muted)}
+
+/* ---------- callouts (live demo of the meaning rule) ---------- */
+.calls{display:flex; flex-direction:column; gap:var(--sp-3)}
+.call{display:flex; gap:var(--sp-3); align-items:flex-start; padding:var(--sp-4);
+      border-radius:var(--r-card); font-size:var(--fs-body); line-height:var(--lh-body)}
+.call .txt{display:flex; flex-direction:column; gap:var(--sp-1); min-width:0}
+.call .tk{font-family:var(--mono); font-size:var(--fs-cap); opacity:.85}
+.call-verify{background:var(--verify-bg); color:var(--verify-text)}
+.call-safe{background:var(--safe-bg); color:var(--safe-text)}
+.call-danger{background:var(--danger-bg); color:var(--danger-text)}
+.call-win{background:var(--win-bg); color:var(--win-bg-text)}
+
+/* ---------- readiness: the only full-bleed colour on the page ---------- */
+.readiness{
+  background:var(--readiness-bg); color:var(--readiness-fg);
+  border-radius:var(--r-sheet); padding:var(--sp-6);
+  display:flex; flex-direction:column; gap:var(--sp-4);
+}
+.readiness .mark{color:var(--readiness-accent)}
+.readiness h3{color:var(--readiness-fg)}
+.readiness .cap{color:var(--readiness-accent)}
+.readiness ul{margin:0; padding-left:var(--sp-5); display:flex; flex-direction:column; gap:var(--sp-2)}
+.readiness .rt{display:flex; flex-wrap:wrap; gap:var(--sp-2); margin-top:var(--sp-2)}
+.readiness .rt span{font-family:var(--mono); font-size:var(--fs-cap); padding:6px var(--sp-3);
+  border-radius:var(--r-pill); border:1px solid var(--readiness-accent); color:var(--readiness-accent)}
+
+/* ---------- type specimens ---------- */
+.spec{display:flex; flex-direction:column; gap:var(--sp-1); padding:var(--sp-4) 0; border-bottom:1px solid var(--border)}
+.spec:last-child{border-bottom:0}
+.spec .l{font-family:var(--mono); font-size:var(--fs-cap); color:var(--ink-muted); font-variant-numeric:tabular-nums}
+.s-display{font-size:var(--fs-display); line-height:var(--lh-display); font-weight:700}
+.s-h1{font-size:var(--fs-h1); line-height:var(--lh-h1); font-weight:700}
+.s-h2{font-size:var(--fs-h2); line-height:var(--lh-h2); font-weight:600}
+.s-bodylg{font-size:var(--fs-bodylg); line-height:var(--lh-bodylg); font-weight:400}
+.s-body{font-size:var(--fs-body); line-height:var(--lh-body); font-weight:400}
+.s-label{font-size:var(--fs-label); line-height:var(--lh-label); font-weight:600}
+.s-cap{font-size:var(--fs-cap); line-height:var(--lh-cap); font-weight:500}
+
+/* ---------- scale strips ---------- */
+.strip{display:flex; flex-direction:column; gap:var(--sp-2)}
+.bar{display:flex; align-items:center; gap:var(--sp-3)}
+.bar .k{font-family:var(--mono); font-size:var(--fs-cap); color:var(--ink-muted); width:56px; flex:none}
+.bar .fill{height:14px; background:var(--primary); border-radius:var(--r-sm)}
+.bar .v{font-family:var(--mono); font-size:var(--fs-cap); color:var(--ink-muted); font-variant-numeric:tabular-nums}
+
+.shapes{display:grid; grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:var(--sp-3)}
+.shape{background:var(--card); border:1px solid var(--border); padding:var(--sp-4);
+       display:flex; flex-direction:column; align-items:center; gap:var(--sp-3); border-radius:var(--r-card)}
+.shape .demo{width:100%; height:52px; background:var(--primary-tint); border:1px solid var(--primary); }
+.shape .k{font-family:var(--mono); font-size:var(--fs-cap); color:var(--ink-muted)}
+
+/* ---------- component tiers ---------- */
+.pills{display:flex; flex-wrap:wrap; gap:var(--sp-2)}
+.pill{
+  font-size:var(--fs-label); font-weight:600; line-height:1;
+  padding:11px var(--sp-4); border-radius:var(--r-pill);
+  border:1px solid var(--border); background:var(--card); color:var(--ink);
+}
+.tier{display:flex; align-items:baseline; gap:var(--sp-3)}
+.tier .num{font-family:var(--mono); font-size:var(--fs-cap); font-weight:700; color:var(--primary)}
+
+/* ---------- buttons demo ---------- */
+.btns{display:flex; flex-wrap:wrap; gap:var(--sp-3); align-items:center}
+.btn{
+  min-height:var(--touch-min); padding:0 var(--sp-4); border-radius:var(--r-pill);
+  font-family:var(--font); font-size:var(--fs-label); font-weight:600;
+  display:inline-flex; align-items:center; gap:var(--sp-2); cursor:pointer;
+  border:1px solid transparent; transition:background var(--dur) var(--ease);
+}
+.btn-primary{background:var(--primary); color:var(--on-primary)}
+.btn-primary:hover{background:var(--primary-strong)}
+.btn-secondary{background:transparent; border-color:var(--border); color:var(--ink)}
+.btn-secondary:hover{background:var(--surface-alt)}
+.btn-text{background:transparent; color:var(--primary); padding:0 var(--sp-2)}
+.btn-text:hover{background:var(--surface-alt)}
+.btn-icon{width:var(--touch-min); height:var(--touch-min); padding:0; justify-content:center;
+          border-radius:var(--r-pill); background:var(--card); border-color:var(--border); color:var(--ink)}
+
+/* ---------- ol ---------- */
+ol.q{margin:0; padding-left:var(--sp-5); display:flex; flex-direction:column; gap:var(--sp-3); max-width:65ch}
+ul.plain{margin:0; padding-left:var(--sp-5); display:flex; flex-direction:column; gap:var(--sp-2); max-width:65ch}
+
+footer{margin-top:var(--sp-7); padding-top:var(--sp-5); border-top:1px solid var(--border);
+       display:flex; flex-direction:column; gap:var(--sp-2)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
+</style>
+<style>
+/* ---------- theme toggle (local-only; the artifact host supplied its own) ---------- */
+.theme-toggle{
+  min-height:var(--touch-min); padding:0 var(--sp-4); border-radius:var(--r-pill);
+  font-family:var(--font); font-size:var(--fs-cap); font-weight:600;
+  display:inline-flex; align-items:center; gap:var(--sp-2); cursor:pointer;
+  background:var(--card); border:1px solid var(--border); color:var(--ink);
+  transition:background var(--dur) var(--ease);
+}
+.theme-toggle:hover{background:var(--surface-alt)}
+.theme-toggle svg{width:16px; height:16px}
+.theme-toggle .lbl{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">AI-Literacy App · Design System</p>
+  <h1>Tokens &amp; the component layer</h1>
+  <p class="lede">A visual overview of <code>tokens.css</code> and <code>DESIGN.md</code>. This page is rendered
+  <em>in</em> the system it documents — every swatch, button, and callout below is drawn with the real tokens, so
+  switching your theme re-renders the whole thing live.</p>
+  <div class="meta">
+    <span class="tag on">v3 · Indigo velvet · 2026-07-17</span>
+    <span class="tag">Mobile-first</span>
+    <span class="tag">Light + dark peers</span>
+    <span class="tag">Every pair ≥ AA</span>
+    <span class="tag">No self-issued certificate</span>
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-live="polite">
+      <svg id="theme-icon" viewBox="0 0 24 24" aria-hidden="true"></svg>
+      <span class="lbl" id="theme-label">Theme</span>
+    </button>
+  </div>
+  <p class="cap">Dark is a full peer of light, not an afterthought — toggle above to review it.
+  Following your system preference by default.</p>
+</header>
+
+<div class="cols">
+  <aside class="rail">
+    <nav aria-label="Contents">
+      <span class="rail-h">Contents</span>
+      <a href="#layers">Design layers</a>
+      <a href="#override">The override</a>
+      <a href="#neutrals">Neutrals &amp; brand</a>
+      <a href="#warms">The warm ramp</a>
+      <a href="#meaning">Meaning colours</a>
+      <a href="#readiness">Readiness</a>
+      <a href="#contrast">Contrast, verified</a>
+      <a href="#type">Typography</a>
+      <a href="#space">Spacing &amp; shape</a>
+      <a href="#controls">Controls</a>
+      <a href="#tiers">Component tiers</a>
+      <a href="#surfaces">Surface map</a>
+      <a href="#open">Open questions</a>
+    </nav>
+  </aside>
+
+  <main>
+
+    <section id="layers">
+      <h2>Design layers</h2>
+      <p>Four layers, each owning exactly one thing. Values live in one place only; the component layer
+      references token <em>names</em> so a hex change after device validation never rots the prose.</p>
+      <div class="tw"><table>
+        <thead><tr><th>Layer</th><th>Lives in</th><th>Owns</th></tr></thead>
+        <tbody>
+          <tr><td>Atoms</td><td class="n">DESIGN-FOUNDATIONS.md</td><td>Colour, type, spacing, shape, motion, iconography, language, a11y</td></tr>
+          <tr><td>Values</td><td class="n">tokens.css</td><td>The hexes and sizes themselves</td></tr>
+          <tr><td>Components</td><td class="n">DESIGN.md</td><td>Anatomy, states, rules, surface map</td></tr>
+          <tr><td>Screens</td><td class="n">prototype / SPEC.md</td><td>Composition</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="override">
+      <h2>The overrides</h2>
+
+      <div class="notice">
+        <p class="eyebrow">Superseded — Foundations, locked decisions</p>
+        <p class="strike">“Brand direction: <strong>Calm &amp; credible</strong> — deep-teal primary”<br>
+        “Primary hue: <strong>Deep, serious teal #0F766E</strong>”</p>
+        <p><strong>v3 moves the brand to indigo velvet.</strong> A change of brand thesis, not a recolour,
+        overturning a <em>locked</em> foundations decision. It gives the strongest brand contrast the
+        system has had — <code>--primary</code> carries white text at <strong>10.18:1</strong>
+        (teal was 5.47, green 8.47).</p>
+        <p>Four consequences, <em>forced by the semantic model rather than chosen</em>:</p>
+        <ul class="plain">
+          <li><strong>The warm ramp is not the meaning colours.</strong> It lands on top of
+          <code>win</code> and <code>danger</code>, and the three warms collapse into each other under
+          colour-blindness. <code>--win-fill</code> takes amber-flame only; tiger-orange and cayenne-red
+          become <strong>illustration-only</strong> <code>--deco-*</code> tokens. See below.</li>
+          <li><strong><code>danger</code> stays a true red.</strong> The palette’s cayenne fails AA body
+          as text (3.17:1) and is the weaker signal. This one does not bend to the palette.</li>
+          <li><strong><code>safe</code> keeps the v1 teal</strong> — verified clear of both
+          <code>--verify-text</code> (dE 97.0) and the indigo brand (dE 74.9).</li>
+          <li><strong><code>readiness</code> is deep forest green</strong> — dE 83.1 from the brand.
+          Green reads <em>complete/go</em>, and <code>safe</code> has vacated green.</li>
+        </ul>
+        <p class="cap">Palette-native: <code>#3D348B</code> <code>#7678ED</code> <code>#F7B801</code>
+        <code>#F18701</code> <code>#F35B04</code>. A 5-colour ramp cannot fill a theme-aware system, so
+        pressed states, tints, and the readiness pair are derived or carried forward —
+        <code>tokens.css</code> marks which is which.</p>
+      </div>
+
+      <div class="notice">
+        <p class="eyebrow">Superseded — Foundations §5</p>
+        <p class="strike">“Frame the credential in terms teachers know: <strong>‘Sertifikat + Jam PKB’</strong>”</p>
+        <p>Foundations is dated <strong>2026-07-15</strong>; the certificate-vs-badge decision resolved
+        <strong>2026-07-17</strong>. That framing is <strong>not permitted in v1</strong>. No self-issued certificate,
+        and no certification, PD-hour, PKB, or government-recognition claim anywhere in the product.
+        Badges are in-loop recognition; the terminal reward is a portfolio-worthy readiness completion,
+        designed PD-credit-<em>ready</em> rather than PD-credit-<em>claiming</em>.</p>
+        <p class="cap">Everything else in foundations stands unchanged and is authoritative.</p>
+      </div>
+    </section>
+
+    <section id="neutrals">
+      <h2>Neutrals &amp; brand</h2>
+      <p>A warm off-white ground with a deep, serious teal. The neutrals are deliberately hue-biased warm rather
+      than a default grey. Each swatch renders the <em>active</em> theme; both values are listed.</p>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:var(--surface)"></div><div class="body">
+          <span class="name">--surface</span><span class="hexes">#FBF9F5 · #16140F</span><span class="role">Page background</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--surface-alt)"></div><div class="body">
+          <span class="name">--surface-alt</span><span class="hexes">#F3F0E9 · #211E18</span><span class="role">Sections, wells</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--card)"></div><div class="body">
+          <span class="name">--card</span><span class="hexes">#FFFFFF · #262019</span><span class="role">Raised content</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--border)"></div><div class="body">
+          <span class="name">--border</span><span class="hexes">#E7E2D8 · #3A342B</span><span class="role">Dividers, inputs</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--ink)"></div><div class="body">
+          <span class="name">--ink</span><span class="hexes">#1C1917 · #F5F1EA</span><span class="role">Body + headings</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--ink-muted)"></div><div class="body">
+          <span class="name">--ink-muted</span><span class="hexes">#57534E · #B8B0A4</span><span class="role">Secondary text</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--primary)"></div><div class="body">
+          <span class="name">--primary</span><span class="hexes">#3D348B · #7678ED</span><span class="role">Brand — white on it 10.18:1</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--primary-strong)"></div><div class="body">
+          <span class="name">--primary-strong</span><span class="hexes">#2E2769 · #9A9CF5</span><span class="role">Pressed state</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--primary-tint)"></div><div class="body">
+          <span class="name">--primary-tint</span><span class="hexes">#E4E2F5 · #1E1B3A</span><span class="role">Quiet indigo backgrounds</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--primary-bright)"></div><div class="body">
+          <span class="name">--primary-bright</span><span class="hexes">#7678ED · same</span><span class="role">Fill — takes dark ink</span></div></div>
+      </div>
+
+      <p class="cap"><strong>In dark mode <code>--primary</code> and <code>--primary-bright</code> converge</strong>
+      on <code>#7678ED</code> — the deep indigo would vanish against the near-black ground, so the slate-blue
+      carries the chrome. Components lose the light theme’s deep/bright distinction there; shape and weight
+      must carry it instead.</p>
+    </section>
+
+    <section id="warms">
+      <h2>The warm ramp, and why it isn’t the meaning colours</h2>
+      <p>The palette supplies amber → orange → red. That ramp lands <em>exactly</em> on top of
+      <code>win</code> and <code>danger</code> — and only one of the three can be trusted with a signal.</p>
+
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:var(--win-fill)"></div><div class="body">
+          <span class="name">--win-fill</span><span class="hexes">#F7B801 amber-flame</span><span class="role">Promoted to the win signal</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--deco-orange)"></div><div class="body">
+          <span class="name">--deco-orange</span><span class="hexes">#F18701 tiger-orange</span><span class="role">Illustration only</span></div></div>
+        <div class="sw"><div class="chip" style="background:var(--deco-red)"></div><div class="body">
+          <span class="name">--deco-red</span><span class="hexes">#F35B04 cayenne-red</span><span class="role">Illustration only</span></div></div>
+      </div>
+
+      <p>To a person with red-green colour deficiency — <strong>about 8% of men</strong> — the three warms
+      are effectively <em>one colour</em>. Simulated with the Viénot model, measured in Delta-E:</p>
+
+      <div class="tw"><table>
+        <thead><tr><th>Pair</th><th>Normal</th><th>Deuteranopia</th><th>Protanopia</th></tr></thead>
+        <tbody>
+          <tr><td class="n">amber-flame vs tiger-orange</td><td class="n">27.3</td><td class="n">8.3</td><td class="n">7.6</td></tr>
+          <tr><td class="n">tiger-orange vs cayenne-red</td><td class="n">23.8</td><td class="n">7.7</td><td class="n">6.0</td></tr>
+        </tbody>
+      </table></div>
+
+      <p>So mapping <code>win</code>→amber-flame and <code>danger</code>→cayenne would have <strong>halved
+      the win/danger separation</strong> for those users — on the signal that carries the student-data
+      guardrail. <code>#F35B04</code> also fails AA body as text (3.17:1). <code>danger</code> therefore
+      keeps its true red, and the swap we <em>did</em> make improves things:</p>
+
+      <div class="tw"><table>
+        <thead><tr><th>win vs danger</th><th>Normal</th><th>Deuteranopia</th><th>Protanopia</th></tr></thead>
+        <tbody>
+          <tr><td class="n">old #F59E0B vs #B91C1C</td><td class="n">58.4</td><td class="n">23.7</td><td class="n">26.1</td></tr>
+          <tr><td class="n"><strong>new #F7B801 vs #B91C1C</strong></td><td class="n"><strong>73.1</strong></td><td class="n"><strong>26.3</strong></td><td class="n"><strong>29.2</strong></td></tr>
+        </tbody>
+      </table></div>
+
+      <p class="cap">Tiger-orange and cayenne-red are <strong>never</strong> used for buttons, callouts,
+      states, or meaning-bearing icons. They live in illustration and examples — which is where
+      foundations §7 says local character belongs anyway. In an illustration their mutual confusability is
+      harmless; on a control it would corrupt the signal.</p>
+    </section>
+
+    <section id="meaning">
+      <h2>Meaning colours</h2>
+      <p>Semantic, not decorative. Each teaches exactly one thing: amber never appears except on a win, red never
+      except on a never-do. Consistent use is what makes a colour a <em>learnable signal</em>.</p>
+      <p class="cap">Shown as live callouts rather than bare swatches — deliberately. A naked amber chip would break
+      the rule this section exists to document: a meaning colour never appears without an icon and a label beside it.</p>
+      <div class="calls">
+        <div class="call call-verify">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+          <span class="txt"><strong>Selalu verifikasi sebelum dipakai.</strong>
+          <span class="tk">--verify-bg / --verify-text · the check-it habit</span></span>
+        </div>
+        <div class="call call-safe">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span class="txt"><strong>Prompt ini aman — tidak ada data siswa.</strong>
+          <span class="tk">--safe-bg / --safe-text · privacy-safe confirmation · moved off green in v2</span></span>
+        </div>
+        <div class="call call-danger">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          <span class="txt"><strong>Jangan tempelkan data pribadi siswa (nama, nilai) ke AI.</strong>
+          <span class="tk">--danger-bg / --danger-text · a never-do — the coldest copy in the product</span></span>
+        </div>
+        <div class="call call-win">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span class="txt"><strong>Selesai! Anda baru saja menghemat ~40 menit.</strong>
+          <span class="tk">--win-bg / --win-bg-text · in-loop recognition only, never the terminal reward</span></span>
+        </div>
+      </div>
+    </section>
+
+    <section id="readiness">
+      <h2>Readiness</h2>
+      <p>The one place the design system encodes the certificate-vs-badge decision. Badges keep the amber
+      beat; the terminal completion gets a ground of its own — <strong>deep forest green</strong>, measuring
+      dE 83.1 from the indigo brand and clearly distinct from every other claimed colour. Green reads
+      <em>complete/go</em>, and <code>safe</code> has vacated green, so the slot is free.</p>
+
+      <p class="cap"><strong>The mark is a light green, not amber</strong> — deliberately. An amber mark
+      would read as a <em>win</em> and muddy the exact distinction this token exists to make. The brand’s own
+      slate-blue was ruled out too: <code>#7678ED</code> on this ground is 2.29:1, a hard fail.</p>
+
+      <p class="cap"><strong>How grounds get picked.</strong> Every candidate is tested with
+      <strong>Delta-E</strong> against every claimed colour — contrast ratio is the wrong tool, since all
+      dark colours score ≈1.2:1 against each other regardless of hue. That method has killed, across
+      revisions: violet (near-complementary to a green brand), oxblood <code>#4A1520</code>
+      (dE 8.1 from <code>danger-bg</code>), cool slate <code>#171B24</code> (dE 8.7 from <code>ink</code> —
+      reads “screen went dark”), and espresso (dE 9.5 from <code>ink</code>).</p>
+      <p><strong>The distinction is composition, not just hue.</strong> This is the only surface in the product where a
+      colour fills the entire viewport. A badge is a chip inside a screen; this <em>is</em> the screen. Below is the
+      only full-bleed colour block on this page, mirroring that rule.</p>
+
+      <div class="readiness">
+        <svg class="mark" viewBox="0 0 24 24" aria-hidden="true" style="width:40px;height:40px"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        <h3>Anda siap memakai AI dengan aman.</h3>
+        <p style="color:var(--readiness-fg);opacity:.9">Yang sudah Anda tunjukkan:</p>
+        <ul>
+          <li>Membedakan tugas AI yang aman dan berisiko untuk siswa</li>
+          <li>Memeriksa keluaran AI sebelum dipakai di kelas</li>
+          <li>Menulis ulang prompt tanpa data pribadi siswa</li>
+          <li>Memilih prompt yang tepat untuk pekerjaan nyata</li>
+        </ul>
+        <div class="rt">
+          <span>--readiness-bg</span><span>--readiness-fg</span><span>--readiness-accent</span>
+        </div>
+        <p class="cap">Guardrail — no seal, ribbon, ornamental border, or signature line. If the screen
+        <em>looks</em> like a certificate, the guardrail is broken no matter what the copy says.</p>
+      </div>
+    </section>
+
+    <section id="contrast">
+      <h2>Contrast, verified</h2>
+      <p>Computed from the token values, both themes. <strong>Every pair passes AA body (≥4.5:1); nothing fails.</strong>
+      Light is the tighter theme throughout.</p>
+      <div class="tw"><table>
+        <thead><tr><th>Pair</th><th>Light</th><th>Dark</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td class="n">ink / surface</td><td class="n">16.63:1</td><td class="n">16.35:1</td><td>AAA both</td></tr>
+          <tr><td class="n">ink-muted / surface</td><td class="n">7.26:1</td><td class="n">8.57:1</td><td>AAA both</td></tr>
+          <tr><td class="n">ink / card</td><td class="n">17.49:1</td><td class="n">14.31:1</td><td>AAA both</td></tr>
+          <tr><td class="n">ink-muted / card</td><td class="n">7.63:1</td><td class="n">7.51:1</td><td>AAA both</td></tr>
+          <tr><td class="n">on-primary / primary</td><td class="n">10.18:1</td><td class="n">4.73:1</td><td>AAA · AA <strong>← tightest (dark)</strong></td></tr>
+          <tr><td class="n">primary / surface</td><td class="n">9.68:1</td><td class="n">4.98:1</td><td>AAA · AA</td></tr>
+          <tr><td class="n">primary-strong / primary-tint</td><td class="n">10.24:1</td><td class="n">6.64:1</td><td>AAA · AA</td></tr>
+          <tr><td class="n">on-primary-bright / primary-bright</td><td class="n">4.73:1</td><td class="n">4.73:1</td><td>AA both</td></tr>
+          <tr><td class="n">ink / win-fill</td><td class="n">9.84:1</td><td class="n">9.84:1</td><td>AAA both</td></tr>
+          <tr><td class="n">win-text / surface</td><td class="n">4.78:1</td><td class="n">11.02:1</td><td>AA · AAA</td></tr>
+          <tr><td class="n">win-bg-text / win-bg</td><td class="n">6.37:1</td><td class="n">9.62:1</td><td>AA · AAA</td></tr>
+          <tr><td class="n">verify-text / verify-bg</td><td class="n">5.49:1</td><td class="n">6.38:1</td><td>AA both</td></tr>
+          <tr><td class="n">safe-text / surface</td><td class="n">5.20:1</td><td class="n">9.89:1</td><td>AA · AAA</td></tr>
+          <tr><td class="n">safe-text / safe-bg</td><td class="n">4.86:1</td><td class="n">7.81:1</td><td>AA · AAA</td></tr>
+          <tr><td class="n">danger-text / danger-bg</td><td class="n">5.30:1</td><td class="n">5.93:1</td><td>AA both</td></tr>
+          <tr><td class="n">danger-text / surface</td><td class="n">6.15:1</td><td class="n">6.65:1</td><td>AA both</td></tr>
+          <tr><td class="n">readiness-fg / readiness-bg</td><td class="n">8.09:1</td><td class="n">8.09:1</td><td>AAA both</td></tr>
+          <tr><td class="n">readiness-accent / readiness-bg</td><td class="n">6.03:1</td><td class="n">6.03:1</td><td>AA both</td></tr>
+          <tr><td class="n">primary-bright <em>as text</em></td><td class="n">3.52:1</td><td class="n">—</td><td>large/UI only — it is a fill</td></tr>
+        </tbody>
+      </table></div>
+      <p class="cap"><strong>Indigo is the strongest brand contrast the system has had.</strong>
+      <code>on-primary / primary</code> in light: teal <strong>5.47</strong> → green <strong>8.47</strong> →
+      indigo <strong>10.18:1</strong>.</p>
+      <p class="cap"><strong>But the tightest pair has moved into dark mode.</strong> It used to be
+      <code>win-text / surface</code> at 4.78:1 in light; it is now <code>on-primary / primary</code> at
+      <strong>4.73:1 in dark</strong>, because the slate-blue has to carry the chrome there and only just
+      clears the AA floor. That is the pair to watch on a real dark screen — and the reason dark, not light,
+      is now the tighter theme.</p>
+      <p class="cap"><strong>Computed, not device-verified.</strong> The maths confirms the pairs are sound;
+      foundations’ open item about real low-end Android screens in daylight still stands.</p>
+    </section>
+
+    <section id="type">
+      <h2>Typography</h2>
+      <p>One family, weights 400/500/600/700, subsetted for bandwidth. Body never drops below 16px; lesson prose sits
+      at 18px for sunlight and low-end screens.</p>
+      <div>
+        <div class="spec"><span class="l">--fs-display · 28/34 · 700</span><span class="s-display">AI tidak akan menggantikan Anda</span></div>
+        <div class="spec"><span class="l">--fs-h1 · 24/30 · 700</span><span class="s-h1">Anda ngajar di jenjang apa?</span></div>
+        <div class="spec"><span class="l">--fs-h2 · 20/26 · 600</span><span class="s-h2">Prompt pertama Anda</span></div>
+        <div class="spec"><span class="l">--fs-bodylg · 18/28 · 400 · lesson prose</span><span class="s-bodylg">Tuliskan apa yang Anda butuhkan. Instruksi singkat ini disebut prompt.</span></div>
+        <div class="spec"><span class="l">--fs-body · 16/26 · 400 · UI text</span><span class="s-body">Prompt ini menyentuh data siswa. Selesaikan cek privasi dulu.</span></div>
+        <div class="spec"><span class="l">--fs-label · 15/20 · 600 · buttons, chips</span><span class="s-label">Salin prompt</span></div>
+        <div class="spec"><span class="l">--fs-cap · 13/18 · 500 · metadata</span><span class="s-cap">SD · Matematika · 5 menit</span></div>
+      </div>
+      <p class="cap"><strong>Note:</strong> the specimens above are <em>not</em> in Plus Jakarta Sans. The Artifact CSP
+      blocks font CDNs, so rather than fake it, this page falls back to the stack’s next face. Sizes, weights, and
+      rhythm are accurate; letterforms are not. Judge the scale here, not the typeface.</p>
+    </section>
+
+    <section id="space">
+      <h2>Spacing &amp; shape</h2>
+      <h3>Spacing — 8px base rhythm</h3>
+      <div class="strip">
+        <div class="bar"><span class="k">--sp-1</span><span class="fill" style="width:4px"></span><span class="v">4px</span></div>
+        <div class="bar"><span class="k">--sp-2</span><span class="fill" style="width:8px"></span><span class="v">8px</span></div>
+        <div class="bar"><span class="k">--sp-3</span><span class="fill" style="width:12px"></span><span class="v">12px</span></div>
+        <div class="bar"><span class="k">--sp-4</span><span class="fill" style="width:16px"></span><span class="v">16px</span></div>
+        <div class="bar"><span class="k">--sp-5</span><span class="fill" style="width:24px"></span><span class="v">24px</span></div>
+        <div class="bar"><span class="k">--sp-6</span><span class="fill" style="width:32px"></span><span class="v">32px</span></div>
+        <div class="bar"><span class="k">--sp-7</span><span class="fill" style="width:48px"></span><span class="v">48px</span></div>
+      </div>
+
+      <h3>Shape — pill-first</h3>
+      <p>Interactive controls are fully pill; containers are softly rounded. Cards are deliberately
+      <em>not</em> literal pills — 999px would clip rectangular content.</p>
+      <div class="shapes">
+        <div class="shape"><span class="demo" style="border-radius:var(--r-pill)"></span><span class="k">--r-pill · 999</span></div>
+        <div class="shape"><span class="demo" style="border-radius:var(--r-card)"></span><span class="k">--r-card · 20</span></div>
+        <div class="shape"><span class="demo" style="border-radius:var(--r-sheet)"></span><span class="k">--r-sheet · 24</span></div>
+        <div class="shape"><span class="demo" style="border-radius:var(--r-md)"></span><span class="k">--r-md · 12</span></div>
+        <div class="shape"><span class="demo" style="border-radius:var(--r-sm)"></span><span class="k">--r-sm · 8</span></div>
+      </div>
+    </section>
+
+    <section id="controls">
+      <h2>Controls</h2>
+      <p>Live, at real size. Every target is at least <code>--touch-min</code> (44×44) — well past the 24px
+      accessibility floor, because this is one-handed phone use in the field.</p>
+      <div class="btns">
+        <button type="button" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" aria-hidden="true" style="width:20px;height:20px"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          Salin prompt
+        </button>
+        <button type="button" class="btn btn-secondary">Simpan</button>
+        <button type="button" class="btn btn-text">Lewati</button>
+        <button type="button" class="btn btn-icon" aria-label="Simpan prompt">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+      </div>
+      <p class="cap">One primary action per screen. The primary sits in a sticky bottom pill inside the thumb zone;
+      destructive actions stay out of the easy-tap zone.</p>
+    </section>
+
+    <section id="tiers">
+      <h2>Component tiers</h2>
+
+      <div class="tier"><span class="num">TIER 1</span><h3>Primitives</h3></div>
+      <p>Generic, token-driven, no domain knowledge. These mostly <em>apply</em> foundations rather than decide anything.</p>
+      <div class="pills">
+        <span class="pill">Pill button</span><span class="pill">Icon button</span><span class="pill">Chip</span>
+        <span class="pill">Pill input &amp; select</span><span class="pill">Card</span><span class="pill">List row</span>
+        <span class="pill">Bottom sheet</span><span class="pill">Bottom tab bar</span><span class="pill">Callout</span>
+        <span class="pill">Progress indicator</span><span class="pill">Badge chip</span><span class="pill">Focus ring</span>
+      </div>
+
+      <div class="tier" style="margin-top:var(--sp-5)"><span class="num">TIER 2</span><h3>Domain patterns</h3></div>
+      <p>Components only this product has. This is where the design thinking lives.</p>
+      <div class="tw"><table>
+        <thead><tr><th>Pattern</th><th>The rule that matters most</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Path node</strong></td><td>6 types × 3 states. A locked node always explains <em>why</em> and deep-links to the exact check. Instructional, never punitive.</td></tr>
+          <tr><td><strong>Prompt card</strong></td><td>Access (open / learn-first / unlocked) × save — two orthogonal dimensions, not four flat states. <code>unlocked</code> decays to <code>open</code> so the dictionary doesn’t feel more gated over time.</td></tr>
+          <tr><td><strong>Prompt detail</strong></td><td><code>Buat di aplikasi</code> is a dormant slot. The prompt-only path must stay complete — generation-ready, not generation-dependent.</td></tr>
+          <tr><td><strong>Locked explainer</strong></td><td>Names the exact node and deep-links to it. “Go learn more” is a failure. Uses the verify register, not danger — being gated is not a violation.</td></tr>
+          <tr><td><strong>PII guardrail</strong></td><td>The coldest copy in the product: formal, unadorned, no particle, full <code>tidak</code>. When the user can be harmed, wit reads as evasion.</td></tr>
+          <tr><td><strong>Win moment</strong></td><td>Medium — not confetti, not silent. ≤600ms, then out of the way. Amber only, never readiness.</td></tr>
+          <tr><td><strong>Readiness completion</strong></td><td>The only full-viewport colour in the product. No certificate iconography, ever.</td></tr>
+          <tr><td><strong>6 validation checks</strong></td><td>Scenario sorting is tap-to-assign, <em>not drag</em> — drag fails on low-end touch panels and one-handed use.</td></tr>
+          <tr><td><strong>Feedback panel</strong></td><td>Correct answer → why it matters for practice → what next. A wrong answer is not a never-do and must not borrow the danger register.</td></tr>
+          <tr><td><strong>Onboarding step</strong></td><td>One decision per screen. Completes fully offline; nothing leaves the device until the account moment.</td></tr>
+          <tr><td><strong>Account moment</strong></td><td>Loss-framed, never blocks. Protects <em>real professional progress</em> — never “save your badge”.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="surfaces">
+      <h2>Surface map</h2>
+      <p>Every screen in the IA, and its single primary action. A prototype screen that is not on this list is an
+      invented screen — which is exactly what the Principal Designer’s traceability gate exists to catch.</p>
+      <div class="tw"><table>
+        <thead><tr><th>Tab</th><th>Screens</th><th>Count</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Onboarding</strong><br><span class="cap">boundary — no tab bar</span></td>
+              <td>Welcome · Jenjang · Mapel · First need · Ground rule</td><td class="n">5</td></tr>
+          <tr><td><strong>Belajar</strong></td>
+              <td>Current path · Module detail · Unit player · Validation check · Prompt-use moment · Badge milestone · Final readiness check · <strong>Readiness completion</strong> · Account moment <span class="cap">(overlay)</span></td><td class="n">9</td></tr>
+          <tr><td><strong>Prompt</strong></td>
+              <td>Search &amp; filters · Categories · Prompt list · Prompt detail · Saved prompts · Locked explanation</td><td class="n">6</td></tr>
+          <tr><td><strong>Profil</strong></td>
+              <td>Teacher context · Progress · Badges · Saved activity · Settings</td><td class="n">5</td></tr>
+        </tbody>
+      </table></div>
+      <p class="cap">Three tabs — no Beranda, no Badges tab. Badges live inside Profil because they are in-loop
+      recognition, not a destination.</p>
+    </section>
+
+    <section id="open">
+      <h2>Open questions</h2>
+      <p>Recorded, not resolved. Ordered by risk.</p>
+      <ol class="q">
+        <li><strong>The highest-risk assumption.</strong> Whether a readiness completion reads as <em>credible</em>
+        to an Indonesian teacher <strong>without</strong> certificate iconography is untested — and it stacks directly on
+        the cert-vs-badge decision’s own flagged weakness (only 2 directly-Indonesian anchors). If teachers read the
+        no-certificate screen as <em>worthless</em> rather than <em>honest</em>, the terminal motivation collapses and the
+        badge-demotion premise needs revisiting. <strong>First in line for primary research.</strong></li>
+        <li><strong><code>Anda</code> vs <code>kamu</code>.</strong> Teacher-as-learner argues for <code>kamu</code>
+        (Duolingo’s register, which onboarding copies); teacher-as-professional argues for <code>Anda</code>. Not
+        settled by desk research. Settle it with teachers.</li>
+        <li><strong>Hex values on real devices.</strong> Contrast is computed, not device-verified. Test at 360px,
+        one-handed, on a real mid/low-end Android in bright daylight.</li>
+        <li><strong>Does <code>unlocked</code> decaying to <code>open</code> hold up?</strong> It keeps the dictionary
+        from feeling more gated over time — but teachers may want durable proof of what they earned.</li>
+        <li><strong>The brand has changed three times in one day</strong> — teal → green → indigo — and none
+        of the three has been shown to an Indonesian teacher. Brand hue is one of the cheapest things to test
+        and one of the most expensive to get wrong after launch. <strong>The palette is not the risk; the
+        absence of a read from a real teacher is.</strong></li>
+        <li><strong>Two of the five palette colours never appear in the UI.</strong> <code>--deco-orange</code>
+        and <code>--deco-red</code> are illustration-only, because they can’t be told apart from
+        <code>--win-fill</code> under colour-blindness. If the warm ramp was meant to be the brand’s visible
+        signature rather than its illustration palette, that intent is <em>not</em> currently expressed — and
+        it can’t be without weakening the win/danger signal.</li>
+        <li><strong>Dark mode flattens the brand hierarchy.</strong> <code>--primary</code> and
+        <code>--primary-bright</code> converge there, so shape and weight carry a distinction colour carries in
+        light. Combined with the 4.73:1 tightest pair, dark mode is where this brand is under most strain.</li>
+        <li><strong>Indigo’s local reading is untested.</strong> Teal carried calm/credible; green carried
+        marketplace. Indigo is close to the batik-indigo tradition, which may read as locally rooted — or as
+        generic-tech. Unknown either way without a teacher.</li>
+        <li><strong>Bahasa copy and term choices</strong> need a native-speaker educator review — including whether to
+        keep <code>prompt</code> as a loanword or gloss it.</li>
+      </ol>
+    </section>
+
+    <footer>
+      <p class="cap">Generated from <code>design/ai-literacy-app/DESIGN.md</code> and <code>tokens.css</code> ·
+      v1, 2026-07-17. Values are a considered starting point carried from
+      <code>DESIGN-FOUNDATIONS.md</code>, not device-verified.</p>
+      <p class="cap">This overview is a review tool, not a source of truth. When it disagrees with
+      <code>tokens.css</code>, the token file wins.</p>
+    </footer>
+
+  </main>
+</div>
+</div>
+
+<script>
+/* Theme toggle. tokens.css already ships [data-theme="dark"]; this page adds a
+   [data-theme="light"] re-assert so the toggle wins over the OS preference in
+   BOTH directions. Untoggled, the page follows prefers-color-scheme. */
+(function () {
+  var root   = document.documentElement;
+  var btn    = document.getElementById('theme-toggle');
+  var icon   = document.getElementById('theme-icon');
+  var label  = document.getElementById('theme-label');
+  var mql    = window.matchMedia('(prefers-color-scheme: dark)');
+
+  var SUN  = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
+  var MOON = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
+
+  function active() {
+    return root.dataset.theme || (mql.matches ? 'dark' : 'light');
+  }
+
+  function render() {
+    var isDark = active() === 'dark';
+    /* Offer the theme you'd switch TO — the button is an action, not a status. */
+    icon.innerHTML = isDark ? SUN : MOON;
+    label.textContent = isDark ? 'Light' : 'Dark';
+    btn.setAttribute('aria-label', 'Switch to ' + (isDark ? 'light' : 'dark') + ' theme');
+  }
+
+  btn.addEventListener('click', function () {
+    root.dataset.theme = active() === 'dark' ? 'light' : 'dark';
+    render();
+  });
+
+  /* Track the OS only while the user hasn't overridden it. */
+  mql.addEventListener('change', function () {
+    if (!root.dataset.theme) render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
