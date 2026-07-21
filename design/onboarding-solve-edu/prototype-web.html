@@ -289,17 +289,6 @@
       transition: transform 0.2s var(--easing-fast), box-shadow 0.2s var(--easing-fast), background 0.2s;
     }
 
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    .btn:disabled {
-      background: var(--hair);
-      color: var(--sub);
-      cursor: not-allowed;
-      transform: none;
-    }
-
     .btn-primary {
       background: var(--pri);
       color: var(--charcoal);
@@ -308,14 +297,6 @@
 
     .btn-primary:hover {
       background: var(--pri-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 0 var(--purple-dark);
-    }
-
-    .btn-primary:active {
-      transform: translateY(6px);
-      box-shadow: 0 0px 0 var(--purple-dark);
-      transition: transform 0.05s, box-shadow 0.05s;
     }
 
     .btn-secondary {
@@ -327,14 +308,24 @@
 
     .btn-secondary:hover {
       background: var(--purple-bg);
+    }
+
+    .btn-primary:hover, .btn-secondary:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 0 var(--purple-dark);
     }
 
-    .btn-secondary:active {
+    .btn:active {
       transform: translateY(6px);
       box-shadow: 0 0px 0 var(--purple-dark);
       transition: transform 0.05s, box-shadow 0.05s;
+    }
+
+    .btn:disabled {
+      background: var(--hair);
+      color: var(--sub);
+      cursor: not-allowed;
+      transform: none;
     }
 
     .btn-text {
