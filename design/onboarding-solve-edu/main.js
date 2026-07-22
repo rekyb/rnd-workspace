@@ -54,8 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const backBtn = document.getElementById('onboarding-back-btn');
   if (backBtn) {
-    backBtn.addEventListener('mouseover', function() { this.style.background = 'rgba(0,0,0,0.05)'; });
-    backBtn.addEventListener('mouseout', function() { this.style.background = 'transparent'; });
+    backBtn.addEventListener('click', goBack);
   }
   document.getElementById('name_input')?.addEventListener('input', validateName);
   document.getElementById('country_search')?.addEventListener('input', handleCountryInput);
@@ -109,6 +108,7 @@ const progressMap = {
       if (screenId === 'learning_home') {
         document.getElementById('global-header').style.display = 'none';
         document.getElementById('onboarding-header').style.display = 'none';
+        document.getElementById('onboarding-footer').style.display = 'none';
       } else if (screenId === 'landing' || screenId === 'sign_in') {
         document.getElementById('global-header').style.display = 'flex';
         document.getElementById('onboarding-header').style.display = 'none';
@@ -469,7 +469,6 @@ const progressMap = {
         option.id = `country-option-${index}`;
         option.setAttribute('role', 'option');
         option.setAttribute('aria-selected', (index === activeCountryIndex).toString());
-        option.style.cssText = 'padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;';
         option.innerHTML = `<img class="flag-icon" src="https://flagcdn.com/w20/${country.code}.png" alt=""><span>${country.name}</span>`;
         option.addEventListener('mousedown', event => {
           event.preventDefault();

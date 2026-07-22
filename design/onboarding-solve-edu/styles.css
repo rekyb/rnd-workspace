@@ -853,3 +853,15 @@ input {
   flex-direction: column;
   gap: 24px;
 }
+
+#onboarding-back-btn:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.country-option {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
