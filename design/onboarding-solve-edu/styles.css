@@ -205,20 +205,16 @@ input {
 
 .landing-col-text {
   flex: 1.2;
-  padding: 100px 8%;
-  background: transparent;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .landing-col-cta {
   flex: 1;
-  padding: 100px 8%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: var(--surf);
 }
 
 @media (max-width: 768px) {
@@ -226,7 +222,6 @@ input {
     flex-direction: column;
   }
   .landing-col-text, .landing-col-cta {
-    padding: 32px 24px;
     align-items: center;
     text-align: center;
   }
@@ -864,4 +859,64 @@ input {
   align-items: center;
   gap: 12px;
   cursor: pointer;
+}
+
+/* Hero Section Updates */
+#hero-section {
+  min-height: calc(100vh - 80px);
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 40px clamp(24px, 8vw, 150px);
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+#hero-section .landing-col-text {
+  text-align: left;
+}
+
+#hero-section .title {
+  text-align: inherit;
+  font-size: 2.375rem;
+  line-height: 1.2;
+  color: var(--purple);
+}
+
+#hero-section .subtitle {
+  text-align: inherit;
+  font-size: 1.125rem;
+  margin-bottom: 32px;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.hero-buttons .btn {
+  width: 100%;
+  text-align: center;
+}
+
+.hero-buttons .btn-secondary {
+  margin-top: 16px;
+}
+
+.hero-img {
+  max-width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  #hero-section {
+    flex-direction: column;
+  }
+  #hero-section .landing-col-text {
+    text-align: center;
+  }
 }
