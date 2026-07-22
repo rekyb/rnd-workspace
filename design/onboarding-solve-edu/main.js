@@ -7,6 +7,17 @@ const appState = {
   isNameValid: false
 };
 
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, tag => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;'
+  }[tag] || tag));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('age-btn-adult-55')?.addEventListener('click', function() { selectAgeOption(this, 'adult_55_plus', true); });
   document.getElementById('age-btn-young-adult')?.addEventListener('click', function() { selectAgeOption(this, 'young_adult'); });
@@ -79,25 +90,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  renderGoalCards();
 });
 
-
-    
-
-    
-    
-    
-
-    const progressMap = {
-      'landing': 0,
-      'name_gate': 0,
-      'country_gate': 25,
-      'age_gate': 50,
-      'goal_intake': 75,
-      'assigned_content': 75,
-      'save_wall': 100,
-      'learning_home': 100
-    };
+const progressMap = {
+  'landing': 0,
+  'name_gate': 0,
+  'country_gate': 25,
+  'age_gate': 50,
+  'goal_intake': 75,
+  'assigned_content': 75,
+  'save_wall': 100,
+  'learning_home': 100
+};
 
     function updateHeaders(screenId) {
       if (screenId === 'learning_home') {
@@ -151,11 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-        function handleGlobalContinue() {
+    function handleGlobalContinue() {
       const activeCard = document.querySelector('.card.active').id;
       if (activeCard === 'name_gate') {
-        const userName = document.getElementById('name_input').value.trim();
-        document.getElementById('country_gate_title').innerHTML = `<span style="font-size: 16px; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Hi, <span style="color: var(--purple); font-weight: 700;">${userName}</span>!</span>Where are you from?`;
+        const userName = escapeHTML(document.getElementById('name_input').value.trim());
+        document.getElementById('country_gate_title').innerHTML = `<span style="font-size: 1rem; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Hi, <span style="color: var(--purple); font-weight: 700;">${userName}</span>!</span>Where are you from?`;
         goTo('country_gate');
       } else if (activeCard === 'country_gate') {
         goTo('age_gate');
@@ -164,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (activeCard === 'goal_intake') {
         continueFromGoal();
       } else if (activeCard === 'assigned_content') {
-        document.getElementById('name_gate_title').innerHTML = '<span style="font-size: 16px; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Welcome to <span style="color: var(--purple); font-weight: 700;">Youth Job Readiness 2026</span>!</span>What is your name?';
+        document.getElementById('name_gate_title').innerHTML = '<span style="font-size: 1rem; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Welcome to <span style="color: var(--purple); font-weight: 700;">Youth Job Readiness 2026</span>!</span>What is your name?';
         goTo('name_gate');
       }
     }
@@ -206,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startOrganic() {
       appState.entryPath = 'organic';
-      document.getElementById('name_gate_title').innerHTML = '<span style="font-size: 16px; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Welcome!</span>What is your name?';
+      document.getElementById('name_gate_title').innerHTML = '<span style="font-size: 1rem; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Welcome!</span>What is your name?';
       goTo('name_gate');
     }
 
@@ -317,9 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('global-continue-btn').disabled = false;
     }
 
-    document.addEventListener('DOMContentLoaded', renderGoalCards);
-
-        function continueFromGoal() {
+    function continueFromGoal() {
       if (!appState.selectedGoal) return;
       goTo('save_wall');
       populateProfileSummary();
@@ -359,7 +363,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
     document.addEventListener('click', function(e) {
-      const select = document.getElementById('lang-options');
       const langDropdown = document.getElementById('lang-options');
       if (langDropdown && !langDropdown.classList.contains('select-hide') && !e.target.closest('.custom-select')) {
         langDropdown.classList.add('select-hide');
@@ -585,7 +588,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Handle program flow specific copy and UI
         if (typeof appState.entryPath !== 'undefined' && appState.entryPath === 'program') {
-            const uName = document.getElementById('name_input').value.trim() || 'Learner';
+            const uName = escapeHTML(document.getElementById('name_input').value.trim() || 'Learner');
             document.getElementById('save_wall_title').innerHTML = `One more step, <span style="color: var(--purple); font-weight: 700;">${uName}</span>!`;
             document.getElementById('save_wall_subtitle').innerHTML = 'Connect an account to finalize your registration for <span style="color: var(--purple); font-weight: 700;">Youth Job Readiness 2026</span>.';
             
@@ -601,7 +604,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (divider) divider.style.display = 'none';
             
         } else {
-            const uName = document.getElementById('name_input').value.trim() || 'Learner';
+            const uName = escapeHTML(document.getElementById('name_input').value.trim() || 'Learner');
             document.getElementById('save_wall_title').innerHTML = `Almost there, <span style="color: var(--purple); font-weight: 700;">${uName}</span>!`;
             document.getElementById('save_wall_subtitle').innerText = 'Join to save your personalized profile and start learning.';
             
