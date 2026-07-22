@@ -2,9 +2,11 @@ $ErrorActionPreference = 'Stop'
 $prototypePath = Join-Path $PSScriptRoot 'prototype-web.html'
 $stylesPath = Join-Path $PSScriptRoot 'styles.css'
 $dataPath = Join-Path $PSScriptRoot 'data.js'
+$mainPath = Join-Path $PSScriptRoot 'main.js'
 $html = Get-Content -LiteralPath $prototypePath -Raw
 if (Test-Path -LiteralPath $stylesPath) { $html += "`n" + (Get-Content -LiteralPath $stylesPath -Raw) }
 if (Test-Path -LiteralPath $dataPath) { $html += "`n" + (Get-Content -LiteralPath $dataPath -Raw) }
+if (Test-Path -LiteralPath $mainPath) { $html += "`n" + (Get-Content -LiteralPath $mainPath -Raw) }
 
 function Assert-Matches([string]$Pattern, [string]$Message) {
   if ($html -notmatch $Pattern) { throw $Message }
