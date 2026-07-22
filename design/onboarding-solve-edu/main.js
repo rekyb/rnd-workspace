@@ -40,6 +40,45 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('close-code-modal-btn')?.addEventListener('click', () => closeModal('code_entry_modal'));
   document.getElementById('signin-modal-signup-btn')?.addEventListener('click', () => { closeModal('sign_in_modal'); startOrganic(); });
   document.getElementById('signin-btn-facebook')?.addEventListener('click', () => { goTo('learning_home'); closeModal('sign_in_modal'); });
+
+  const backBtn = document.getElementById('onboarding-back-btn');
+  if (backBtn) {
+    backBtn.addEventListener('mouseover', function() { this.style.background = 'rgba(0,0,0,0.05)'; });
+    backBtn.addEventListener('mouseout', function() { this.style.background = 'transparent'; });
+  }
+  document.getElementById('name_input')?.addEventListener('input', validateName);
+  document.getElementById('country_search')?.addEventListener('input', handleCountryInput);
+  document.getElementById('country_search')?.addEventListener('keydown', handleCountryKeydown);
+
+  // Code input UX auto-advance
+  const inputs = document.querySelectorAll('.code-digit');
+  const joinBtn = document.getElementById('join_btn');
+
+  function checkCodeLength() {
+    let code = '';
+    inputs.forEach(i => code += i.value);
+    if (joinBtn) joinBtn.disabled = code.length < 6;
+  }
+
+  inputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      // Add pulse animation
+      input.classList.remove('pulse');
+      void input.offsetWidth; // trigger reflow
+      input.classList.add('pulse');
+      input.addEventListener('animationend', () => input.classList.remove('pulse'), {once: true});
+      
+      if (e.target.value.length === 1 && index < inputs.length - 1) {
+        inputs[index + 1].focus();
+      }
+      checkCodeLength();
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && e.target.value.length === 0 && index > 0) {
+        inputs[index - 1].focus();
+      }
+    });
+  });
 });
 
 
@@ -302,10 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
       document.getElementById('lang-options').classList.toggle('select-hide');
     }
-    function toggleSelectOb(e) {
-      e.stopPropagation();
-      document.getElementById('lang-options-ob').classList.toggle('select-hide');
-    }
+
     
     function selectLang(val, name, imgSrc) {
       document.getElementById('selected-lang').innerText = name;
@@ -320,20 +356,10 @@ document.addEventListener('DOMContentLoaded', () => {
       showSnackbar('Language changed to ' + name);
     }
     
-    function selectLangOb(val, name, imgSrc) {
-      document.getElementById('selected-lang-ob').innerText = name;
-      document.getElementById('selected-flag-ob').src = imgSrc;
-      document.getElementById('lang-options-ob').classList.add('select-hide');
-      
-      document.getElementById('selected-lang').innerText = name;
-      document.getElementById('selected-flag').src = imgSrc;
-      
-      showSnackbar('Language changed to ' + name);
-    }
+
     
     document.addEventListener('click', function(e) {
       const select = document.getElementById('lang-options');
-      const selectOb = document.getElementById('lang-options-ob');
       const langDropdown = document.getElementById('lang-options');
       if (langDropdown && !langDropdown.classList.contains('select-hide') && !e.target.closest('.custom-select')) {
         langDropdown.classList.add('select-hide');
@@ -345,35 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Code input UX auto-advance
-    const inputs = document.querySelectorAll('.code-digit');
-    const joinBtn = document.getElementById('join_btn');
 
-    function checkCodeLength() {
-      let code = '';
-      inputs.forEach(i => code += i.value);
-      joinBtn.disabled = code.length < 6;
-    }
-
-    inputs.forEach((input, index) => {
-      input.addEventListener('input', (e) => {
-        // Add pulse animation
-        input.classList.remove('pulse');
-        void input.offsetWidth; // trigger reflow
-        input.classList.add('pulse');
-        input.addEventListener('animationend', () => input.classList.remove('pulse'), {once: true});
-        
-        if (e.target.value.length === 1 && index < inputs.length - 1) {
-          inputs[index + 1].focus();
-        }
-        checkCodeLength();
-      });
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && e.target.value.length === 0 && index > 0) {
-          inputs[index - 1].focus();
-        }
-      });
-    });
 
     // Scroll listener for sticky header and Sign Up button
     window.addEventListener('scroll', () => {
@@ -599,7 +597,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Hide the entire profile summary and divider
             document.getElementById('profile_summary').style.display = 'none';
-            document.getElementById('save_wall_divider').style.display = 'none';
+            const divider = document.getElementById('save_wall_divider');
+            if (divider) divider.style.display = 'none';
             
         } else {
             const uName = document.getElementById('name_input').value.trim() || 'Learner';
@@ -612,9 +611,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('sso_facebook_text').innerText = 'Continue with Facebook';
             document.getElementById('sso_telegram_text').innerText = 'Continue with Telegram';
             
-            // Hide the entire profile summary and divider
-            document.getElementById('profile_summary').style.display = 'none';
-            document.getElementById('save_wall_divider').style.display = 'none';
+            // Ensure profile summary and divider are visible in organic flow
+            document.getElementById('profile_summary').style.display = 'block';
+            const divider = document.getElementById('save_wall_divider');
+            if (divider) divider.style.display = 'block';
         }
       }
     }
