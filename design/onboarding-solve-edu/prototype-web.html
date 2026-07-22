@@ -15,12 +15,12 @@
   <!-- Global Header -->
   <!-- Global Header -->
   <header id="global-header" class="app-header">
-    <a href="#" class="logo" onclick="goTo('landing')">
+    <a href="#" class="logo" id="logo-link">
       <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="Solve Education!" style="height: 32px; width: auto; vertical-align: middle;">
     </a>
     <div style="display: flex; align-items: center; gap: 16px;">
       <div class="custom-select">
-        <div class="select-selected" onclick="toggleSelect(event)" style="width: 210px; justify-content: space-between; white-space: nowrap;">
+        <div class="select-selected" id="lang-select-selected" style="width: 210px; justify-content: space-between; white-space: nowrap;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <img id="selected-flag" class="flag-icon" src="https://flagcdn.com/w20/us.png" alt="English">
             <span id="selected-lang">English</span>
@@ -28,24 +28,24 @@
           <span class="material-symbols-rounded" style="font-size: 18px;">expand_more</span>
         </div>
         <div class="select-items select-hide" id="lang-options">
-          <div onclick="selectLang('en', 'English', 'https://flagcdn.com/w20/us.png')">
+          <div id="lang-en">
             <img class="flag-icon" src="https://flagcdn.com/w20/us.png" alt="English">
             <span>English</span>
           </div>
-          <div onclick="selectLang('id', 'Bahasa Indonesia', 'https://flagcdn.com/w20/id.png')">
+          <div id="lang-id">
             <img class="flag-icon" src="https://flagcdn.com/w20/id.png" alt="Indonesian">
             <span>Bahasa Indonesia</span>
           </div>
         </div>
       </div>
-      <button class="btn btn-secondary" style="padding: 10px 24px; font-size: 14px; width: auto;" onclick="openSignInModal()">Sign In</button>
-      <button id="header-signup-btn" class="btn btn-primary" style="padding: 10px 24px; font-size: 14px; width: auto; display: none;" onclick="startOrganic()">Get started</button>
+      <button class="btn btn-secondary" style="padding: 10px 24px; font-size: 14px; width: auto;" id="header-signin-btn">Sign In</button>
+      <button id="header-signup-btn" class="btn btn-primary" style="padding: 10px 24px; font-size: 14px; width: auto; display: none;" >Get started</button>
     </div>
   </header>
 
   <!-- Onboarding Header -->
   <header id="onboarding-header" class="app-header" style="display: none; justify-content: flex-start; align-items: center; gap: 16px;">
-    <button onclick="goBack()" style="background:none; border:none; color: var(--txt); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
+    <button id="onboarding-back-btn" style="background:none; border:none; color: var(--txt); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">
       <span class="material-symbols-rounded" style="font-size: 24px;">arrow_back</span>
     </button>
     <div style="flex: 1; max-width: 400px; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; margin: 0 auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
@@ -63,8 +63,8 @@
           <h1 class="title" style="text-align: left; font-size: 38px; line-height: 1.2; color: var(--purple);">Turn practice into proof employers trust</h1>
           <p class="subtitle" style="text-align: left; margin-bottom: 32px; font-size: 18px;">Master real-world skills, earn verifiable credentials, and unlock new career opportunities.</p>
           <div style="display: flex; flex-direction: column; width: 100%;">
-            <button class="btn btn-primary" onclick="startOrganic()">Get started</button>
-            <button class="btn btn-secondary" style="width: 100%; text-align: center; margin-top: 16px;" onclick="startProgram()">I have a program code</button>
+            <button class="btn btn-primary" id="hero-start-organic-btn">Get started</button>
+            <button class="btn btn-secondary" style="width: 100%; text-align: center; margin-top: 16px;" id="hero-start-program-btn">I have a program code</button>
           </div>
         </div>
         <div class="landing-col-cta">
@@ -155,7 +155,7 @@
       <div style="background: #ffffff; padding: 100px 12%; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);">
         <h2 style="font-size: 36px; font-weight: 800; margin-bottom: 24px; color: var(--purple);">Ready to start learning?</h2>
         <p style="font-size: 18px; margin-bottom: 40px; opacity: 0.8; max-width: 600px; margin-left: auto; margin-right: auto;">Join over 1 million learners worldwide. Build skills, earn certificates, and unlock new opportunities.</p>
-        <button class="btn btn-primary" style="width: auto; display: inline-flex; font-size: 18px; padding: 16px 48px; border-radius: 99px; justify-content: center; align-items: center;" onclick="startOrganic()">Get started</button>
+        <button class="btn btn-primary" style="width: auto; display: inline-flex; font-size: 18px; padding: 16px 48px; border-radius: 99px; justify-content: center; align-items: center;" id="bottom-start-organic-btn">Get started</button>
       </div>
 
       <!-- Footer Section -->
@@ -210,7 +210,7 @@
     <!-- S2: Code Entry (Modal) -->
     <div id="code_entry_modal" class="modal-overlay">
       <div class="modal-content text-center">
-        <button class="modal-close" aria-label="Close" onclick="closeModal('code_entry_modal')">
+        <button class="modal-close" aria-label="Close" id="close-code-modal-btn">
           <span class="material-symbols-rounded">close</span>
         </button>
         <h1 class="title" style="margin-top: 8px;">Join your program</h1>
@@ -230,7 +230,7 @@
           Invalid code entered. Please try again.
         </div>
         
-        <button id="join_btn" class="btn btn-primary" onclick="submitCode()" disabled>Join</button>
+        <button id="join_btn" class="btn btn-primary"  disabled>Join</button>
       </div>
     </div>
 
@@ -269,7 +269,7 @@
       <div style="max-width: 900px !important; width: 100%;"><h1 class="title" style="margin-top: 16px;">How would you describe yourself?</h1></div>
       
       <div id="age-primary-options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-top: 48px; max-width: 900px !important;">
-        <div class="option-card" onclick="selectAgeOption(this, 'teen')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;">
+        <div class="option-card" id="age-btn-teen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;">
           <span class="material-symbols-rounded" style="font-size: 48px; color: var(--blue);">backpack</span>
           <div>
             <div style="font-weight: 800; font-size: 20px; margin-bottom: 8px;">I am a teen</div>
@@ -277,7 +277,7 @@
           </div>
         </div>
         
-        <div class="option-card" onclick="selectAgeOption(this, 'young_adult')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;">
+        <div class="option-card" id="age-btn-young-adult" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;">
           <span class="material-symbols-rounded" style="font-size: 48px; color: var(--green);">school</span>
           <div>
             <div style="font-weight: 800; font-size: 20px; margin-bottom: 8px;">I am a young adult</div>
@@ -285,7 +285,7 @@
           </div>
         </div>
         
-        <div class="option-card" onclick="selectAgeOption(this, 'adult')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;">
+        <div class="option-card" id="age-btn-adult" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;">
           <span class="material-symbols-rounded" style="font-size: 48px; color: var(--magenta);">work</span>
           <div>
             <div style="font-weight: 800; font-size: 20px; margin-bottom: 8px;">I am an adult</div>
@@ -297,10 +297,10 @@
       <div id="age-adult-options" style="display: none; flex-direction: column; gap: 16px; margin-top: 32px; max-width: 900px !important; width: 100%;">
         <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Which range fits best?</h2>
         <div style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; width: 100%;">
-          <div class="option-card" onclick="selectAgeOption(this, 'adult_25_34', true)" style="flex: 1; min-width: 120px; padding: 24px 16px;">25-34</div>
-          <div class="option-card" onclick="selectAgeOption(this, 'adult_35_44', true)" style="flex: 1; min-width: 120px; padding: 24px 16px;">35-44</div>
-          <div class="option-card" onclick="selectAgeOption(this, 'adult_45_54', true)" style="flex: 1; min-width: 120px; padding: 24px 16px;">45-54</div>
-          <div class="option-card" onclick="selectAgeOption(this, 'adult_55_plus', true)" style="flex: 1; min-width: 120px; padding: 24px 16px;">55+</div>
+          <div class="option-card" id="age-btn-adult-25" style="flex: 1; min-width: 120px; padding: 24px 16px;">25-34</div>
+          <div class="option-card" id="age-btn-adult-35" style="flex: 1; min-width: 120px; padding: 24px 16px;">35-44</div>
+          <div class="option-card" id="age-btn-adult-45" style="flex: 1; min-width: 120px; padding: 24px 16px;">45-54</div>
+          <div class="option-card" id="age-btn-adult-55" style="flex: 1; min-width: 120px; padding: 24px 16px;">55+</div>
         </div>
       </div>
       
@@ -365,26 +365,26 @@
           <p id="save_wall_subtitle" class="subtitle" style="text-align: center;">Join to save your personalized profile and start learning.</p>
           
           <div id="save_wall_divider" style="width: 100%; height: 1px; background: var(--hair); margin: 24px 0;"></div>
-          <button class="sso-btn" onclick="goTo('learning_home')">
+          <button class="sso-btn" id="sso-btn-google">
             <svg width="20" height="20" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z" fill="#4285F4"></path><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z" fill="#34A853"></path><path d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z" fill="#FBBC05"></path><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.59A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z" fill="#EA4335"></path></svg>
             <span id="sso_google_text">Continue with Google</span>
           </button>
-          <button class="sso-btn" onclick="goTo('learning_home')">
+          <button class="sso-btn" id="sso-btn-apple">
             <svg width="18" height="20" viewBox="0 0 16 19" fill="#000"><path d="M13.3 10.1c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8C3.4 4.6 1.9 5.5 1.1 7c-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.7 2.5 3 2.4 1.2-.1 1.7-.8 3.1-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.5-1-2.6-3.9zM11 3c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.6 2.8-1.4z"></path></svg>
             <span id="sso_apple_text">Continue with Apple</span>
           </button>
-          <button class="sso-btn" onclick="goTo('learning_home')">
+          <button class="sso-btn" id="sso-btn-facebook">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.89v2.26h3.32l-.53 3.5h-2.8V24C19.62 23.1 24 18.1 24 12.07z"/></svg>
             <span id="sso_facebook_text">Continue with Facebook</span>
           </button>
-          <button class="sso-btn" onclick="goTo('learning_home')">
+          <button class="sso-btn" id="sso-btn-telegram">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#229ED9"><path d="M11.94 0C5.33 0 0 5.34 0 11.95c0 6.6 5.33 11.94 11.94 11.94 6.6 0 11.95-5.34 11.95-11.94C23.89 5.34 18.54 0 11.94 0zm6.54 8.24l-2.2 10.37c-.16.73-.59.9-1.2.56l-3.32-2.45-1.6 1.54c-.18.18-.32.32-.66.32l.24-3.38 6.16-5.56c.26-.24-.06-.37-.41-.14l-7.61 4.79-3.28-.99c-.71-.22-.72-.7.15-1.04l12.83-4.94c.59-.22 1.11.13.9.92z"/></svg>
             <span id="sso_telegram_text">Continue with Telegram</span>
           </button>
           
           <div style="margin-top: 24px; text-align: center; width: 100%;">
             <span style="color: var(--sub); font-size: 15px;">Already have an account? </span>
-            <button class="btn-text" style="display: inline; margin-top: 0;" onclick="openSignInModal()">Sign In</button>
+            <button class="btn-text" style="display: inline; margin-top: 0;" id="save-wall-signin-btn">Sign In</button>
           </div>
         </div>
 
@@ -394,32 +394,32 @@
     <!-- S8: Sign In (Modal) -->
     <div id="sign_in_modal" class="modal-overlay">
       <div class="modal-content text-center">
-        <button class="back-button" aria-label="Close" onclick="closeModal('sign_in_modal')" style="position: absolute; top: 16px; left: 16px;">
+        <button class="back-button" aria-label="Close" id="close-signin-modal-btn" style="position: absolute; top: 16px; left: 16px;">
           <span class="material-symbols-rounded">close</span>
         </button>
         <h1 class="title" style="margin-top: 16px;">Login</h1>
         <div style="height: 1px; background: var(--hair); margin: 24px 0;"></div>
         
-        <button class="sso-btn" onclick="goTo('learning_home'); closeModal('sign_in_modal');">
+        <button class="sso-btn" id="signin-btn-google">
           <svg width="20" height="20" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z" fill="#4285F4"></path><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z" fill="#34A853"></path><path d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z" fill="#FBBC05"></path><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.59A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z" fill="#EA4335"></path></svg>
           Login with Google
         </button>
-        <button class="sso-btn" onclick="goTo('learning_home'); closeModal('sign_in_modal');">
+        <button class="sso-btn" id="signin-btn-apple">
           <svg width="18" height="20" viewBox="0 0 16 19" fill="#000"><path d="M13.3 10.1c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8C3.4 4.6 1.9 5.5 1.1 7c-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.7 2.5 3 2.4 1.2-.1 1.7-.8 3.1-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.5-1-2.6-3.9zM11 3c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.6 2.8-1.4z"></path></svg>
           Login with Apple
         </button>
-        <button class="sso-btn" onclick="goTo('learning_home'); closeModal('sign_in_modal');">
+        <button class="sso-btn" id="signin-btn-facebook">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.89v2.26h3.32l-.53 3.5h-2.8V24C19.62 23.1 24 18.1 24 12.07z"/></svg>
           Login with Facebook
         </button>
-        <button class="sso-btn" onclick="goTo('learning_home'); closeModal('sign_in_modal');">
+        <button class="sso-btn" id="signin-btn-telegram">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="#229ED9"><path d="M11.94 0C5.33 0 0 5.34 0 11.95c0 6.6 5.33 11.94 11.94 11.94 6.6 0 11.95-5.34 11.95-11.94C23.89 5.34 18.54 0 11.94 0zm6.54 8.24l-2.2 10.37c-.16.73-.59.9-1.2.56l-3.32-2.45-1.6 1.54c-.18.18-.32.32-.66.32l.24-3.38 6.16-5.56c.26-.24-.06-.37-.41-.14l-7.61 4.79-3.28-.99c-.71-.22-.72-.7.15-1.04l12.83-4.94c.59-.22 1.11.13.9.92z"/></svg>
           Login with Telegram
         </button>
         
         <div style="margin-top: 24px;">
           <span style="color: var(--sub); font-size: 15px;">New user? </span>
-          <button class="btn-text" style="display: inline; margin-top: 0;" onclick="closeModal('sign_in_modal'); startOrganic();">Sign up</button>
+          <button class="btn-text" style="display: inline; margin-top: 0;" id="signin-modal-signup-btn">Sign up</button>
         </div>
       </div>
     </div>
@@ -476,13 +476,13 @@
           </label>
         </div>
       </div>
-      <button class="btn btn-primary" style="font-size: 18px;" onclick="goTo('learning_home')">Start Lesson</button>
+      <button class="btn btn-primary" style="font-size: 18px;" id="start-lesson-btn">Start Lesson</button>
       </div>
     </div>
 
     <div id="onboarding-footer" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--surf); border-top: 1px solid var(--hair); padding: 16px 24px; z-index: 100; justify-content: center; align-items: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);">
       <div style="max-width: 520px; width: 100%; display: flex; justify-content: center;">
-        <button id="global-continue-btn" class="btn btn-primary" style="width: 100%;" onclick="handleGlobalContinue()">Continue</button>
+        <button id="global-continue-btn" class="btn btn-primary" style="width: 100%;" >Continue</button>
       </div>
     </div>
   </main>
@@ -493,583 +493,6 @@
   </div>
 
   <script src="data.js"></script>
-  <script>
-    let entryPath = 'organic';
-
-    let historyStack = [];
-    let selectedCountry = null;
-    let isNameValid = false;
-
-    const progressMap = {
-      'landing': 0,
-      'name_gate': 0,
-      'country_gate': 25,
-      'age_gate': 50,
-      'goal_intake': 75,
-      'assigned_content': 75,
-      'save_wall': 100,
-      'learning_home': 100
-    };
-
-    function updateHeaders(screenId) {
-      if (screenId === 'learning_home') {
-        document.getElementById('global-header').style.display = 'none';
-        document.getElementById('onboarding-header').style.display = 'none';
-      } else if (screenId === 'landing' || screenId === 'sign_in') {
-        document.getElementById('global-header').style.display = 'flex';
-        document.getElementById('onboarding-header').style.display = 'none';
-        document.getElementById('onboarding-footer').style.display = 'none';
-      } else {
-        document.getElementById('global-header').style.display = 'none';
-        document.getElementById('onboarding-header').style.display = 'flex';
-        let prog = progressMap[screenId] || 0;
-        if (entryPath === 'program') {
-            const programProgressMap = {
-                'assigned_content': 20,
-                'name_gate': 40,
-                'country_gate': 60,
-                'age_gate': 80,
-                'save_wall': 100,
-                'learning_home': 100
-            };
-            prog = programProgressMap[screenId] || 0;
-        }
-        document.getElementById('progress-bar').style.width = prog + '%';
-        
-        const footer = document.getElementById('onboarding-footer');
-        const btn = document.getElementById('global-continue-btn');
-        
-        if (['name_gate', 'country_gate', 'age_gate', 'goal_intake', 'assigned_content'].includes(screenId)) {
-          footer.style.display = 'flex';
-          if (screenId === 'name_gate') {
-            btn.disabled = !isNameValid;
-            btn.innerText = 'Continue';
-          } else if (screenId === 'country_gate') {
-            btn.disabled = !selectedCountry;
-            btn.innerText = 'Continue';
-          } else if (screenId === 'age_gate') {
-            btn.disabled = !selectedAgeCategory;
-            btn.innerText = 'Continue';
-          } else if (screenId === 'goal_intake') {
-            btn.disabled = !selectedGoal;
-            btn.innerText = 'Continue';
-          } else if (screenId === 'assigned_content') {
-            btn.disabled = false;
-            btn.innerText = 'Continue';
-          }
-        } else {
-          footer.style.display = 'none';
-        }
-      }
-    }
-
-        function handleGlobalContinue() {
-      const activeCard = document.querySelector('.card.active').id;
-      if (activeCard === 'name_gate') {
-        const userName = document.getElementById('name_input').value.trim();
-        document.getElementById('country_gate_title').innerHTML = `<span style="font-size: 16px; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Hi, <span style="color: var(--purple); font-weight: 700;">${userName}</span>!</span>Where are you from?`;
-        goTo('country_gate');
-      } else if (activeCard === 'country_gate') {
-        goTo('age_gate');
-      } else if (activeCard === 'age_gate') {
-        continueFromAge();
-      } else if (activeCard === 'goal_intake') {
-        continueFromGoal();
-      } else if (activeCard === 'assigned_content') {
-        document.getElementById('name_gate_title').innerHTML = '<span style="font-size: 16px; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Welcome to <span style="color: var(--purple); font-weight: 700;">Youth Job Readiness 2026</span>!</span>What is your name?';
-        goTo('name_gate');
-      }
-    }
-
-    function hideAll() {
-      const cards = document.querySelectorAll('.card');
-      cards.forEach(c => c.classList.remove('active'));
-    }
-
-    function goTo(screenId, isBack = false) {
-      const current = document.querySelector('.card.active');
-      if (!isBack && current && current.id !== screenId && current.id !== 'landing') {
-        if (historyStack.length === 0 || historyStack[historyStack.length - 1] !== current.id) {
-          historyStack.push(current.id);
-        }
-      } else if (screenId === 'landing') {
-        historyStack = [];
-      }
-
-      hideAll();
-      // Reset errors when navigating
-      document.getElementById('code_error').style.display = 'none';
-      document.getElementById('code-group').style.animation = 'none';
-      
-      document.getElementById(screenId).classList.add('active');
-      window.scrollTo(0, 0);
-      updateHeaders(screenId);
-      if (screenId === 'learning_home') renderHomeSection();
-    }
-
-    function goBack() {
-      if (historyStack.length > 0) {
-        const prev = historyStack.pop();
-        goTo(prev, true);
-      } else {
-        goTo('landing');
-      }
-    }
-
-    function startOrganic() {
-      entryPath = 'organic';
-      document.getElementById('name_gate_title').innerHTML = '<span style="font-size: 16px; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Welcome!</span>What is your name?';
-      goTo('name_gate');
-    }
-
-    function startProgram() {
-      entryPath = 'program';
-      document.getElementById('code_entry_modal').classList.add('show');
-    }
-
-    function openSignInModal() {
-      // Just in case they were in a card, but sign in modal floats above everything.
-      document.getElementById('sign_in_modal').classList.add('show');
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('show');
-    }
-
-    function submitCode() {
-      const inputs = document.querySelectorAll('.code-digit');
-      let code = '';
-      inputs.forEach(i => code += i.value);
-      
-      if (code === '123456') {
-        document.getElementById('code_error').style.display = 'none';
-        closeModal('code_entry_modal');
-        goTo('assigned_content');
-      } else {
-        document.getElementById('code_error').style.display = 'block';
-        const group = document.getElementById('code-group');
-        group.style.animation = 'none';
-        void group.offsetWidth; // trigger reflow
-        group.style.animation = 'obShake 0.4s';
-      }
-    }
-
-    function showAdultOptions() {
-      document.getElementById('age-adult-options').style.display = 'flex';
-      setTimeout(() => {
-        document.getElementById('age-adult-options').scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 50);
-    }
-
-    function hideAdultOptions() {
-      document.getElementById('age-adult-options').style.display = 'none';
-    }
-
-    let selectedAgeCategory = null;
-    function selectAgeOption(element, category, isAdultSubOption = false) {
-      if (isAdultSubOption) {
-        const peers = document.getElementById('age-adult-options').querySelectorAll('.option-card');
-        peers.forEach(p => p.classList.remove('selected'));
-        selectedAgeCategory = category;
-        document.getElementById('global-continue-btn').disabled = false;
-      } else {
-        const peers = document.getElementById('age-primary-options').querySelectorAll('.option-card');
-        peers.forEach(p => p.classList.remove('selected'));
-        
-        if (category === 'adult') {
-          showAdultOptions();
-          selectedAgeCategory = null;
-          document.getElementById('global-continue-btn').disabled = true;
-          const subPeers = document.getElementById('age-adult-options').querySelectorAll('.option-card');
-          subPeers.forEach(p => p.classList.remove('selected'));
-        } else {
-          hideAdultOptions();
-          selectedAgeCategory = category;
-          document.getElementById('global-continue-btn').disabled = false;
-        }
-      }
-      element.classList.add('selected');
-    }
-
-    function continueFromAge() {
-      if (!selectedAgeCategory) return;
-      if (entryPath === 'organic') {
-        goTo('goal_intake');
-      } else {
-        goTo('save_wall');
-        populateProfileSummary();
-      }
-    }
-
-    let selectedGoal = null;
-
-    function renderGoalCards() {
-      const grid = document.getElementById('goal_grid');
-      if (!grid) return;
-
-      grid.innerHTML = '';
-      goalOptions.forEach(goal => {
-        const card = document.createElement('button');
-        const isSelected = selectedGoal === goal.id;
-        card.type = 'button';
-        card.className = `goal-card${isSelected ? ' selected' : ''}`;
-        card.setAttribute('aria-pressed', isSelected.toString());
-        card.innerHTML = `
-          <span class="material-symbols-rounded" style="color: ${goal.color};">${goal.icon}</span>
-          <span class="goal-card-title">${goal.title}</span>
-        `;
-        card.addEventListener('click', () => selectGoal(goal.id));
-        grid.appendChild(card);
-      });
-    }
-
-    function selectGoal(goalId) {
-      selectedGoal = goalId;
-      renderGoalCards();
-      document.getElementById('global-continue-btn').disabled = false;
-    }
-
-    document.addEventListener('DOMContentLoaded', renderGoalCards);
-
-        function continueFromGoal() {
-      if (!selectedGoal) return;
-      goTo('save_wall');
-      populateProfileSummary();
-    }
-
-    let snackbarTimeout;
-    function showSnackbar(msg) {
-      const sb = document.getElementById('snackbar');
-      document.getElementById('snackbar_text').innerText = msg;
-      sb.classList.add('show');
-      
-      clearTimeout(snackbarTimeout);
-      snackbarTimeout = setTimeout(() => {
-        sb.classList.remove('show');
-      }, 4000);
-    }
-    
-    function toggleSelect(e) {
-      e.stopPropagation();
-      document.getElementById('lang-options').classList.toggle('select-hide');
-    }
-    function toggleSelectOb(e) {
-      e.stopPropagation();
-      document.getElementById('lang-options-ob').classList.toggle('select-hide');
-    }
-    
-    function selectLang(val, name, imgSrc) {
-      document.getElementById('selected-lang').innerText = name;
-      document.getElementById('selected-flag').src = imgSrc;
-      document.getElementById('lang-options').classList.add('select-hide');
-      
-      const obLang = document.getElementById('selected-lang-ob');
-      const obFlag = document.getElementById('selected-flag-ob');
-      if (obLang) obLang.innerText = name;
-      if (obFlag) obFlag.src = imgSrc;
-      
-      showSnackbar('Language changed to ' + name);
-    }
-    
-    function selectLangOb(val, name, imgSrc) {
-      document.getElementById('selected-lang-ob').innerText = name;
-      document.getElementById('selected-flag-ob').src = imgSrc;
-      document.getElementById('lang-options-ob').classList.add('select-hide');
-      
-      document.getElementById('selected-lang').innerText = name;
-      document.getElementById('selected-flag').src = imgSrc;
-      
-      showSnackbar('Language changed to ' + name);
-    }
-    
-    document.addEventListener('click', function(e) {
-      const select = document.getElementById('lang-options');
-      const selectOb = document.getElementById('lang-options-ob');
-      const langDropdown = document.getElementById('lang-options');
-      if (langDropdown && !langDropdown.classList.contains('select-hide') && !e.target.closest('.custom-select')) {
-        langDropdown.classList.add('select-hide');
-      }
-      
-      const countryDropdown = document.getElementById('country_dropdown');
-      if (countryDropdown && !countryDropdown.classList.contains('select-hide') && !e.target.closest('#country_combobox')) {
-        closeCountryDropdown();
-      }
-    });
-
-    // Code input UX auto-advance
-    const inputs = document.querySelectorAll('.code-digit');
-    const joinBtn = document.getElementById('join_btn');
-
-    function checkCodeLength() {
-      let code = '';
-      inputs.forEach(i => code += i.value);
-      joinBtn.disabled = code.length < 6;
-    }
-
-    inputs.forEach((input, index) => {
-      input.addEventListener('input', (e) => {
-        // Add pulse animation
-        input.classList.remove('pulse');
-        void input.offsetWidth; // trigger reflow
-        input.classList.add('pulse');
-        input.addEventListener('animationend', () => input.classList.remove('pulse'), {once: true});
-        
-        if (e.target.value.length === 1 && index < inputs.length - 1) {
-          inputs[index + 1].focus();
-        }
-        checkCodeLength();
-      });
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && e.target.value.length === 0 && index > 0) {
-          inputs[index - 1].focus();
-        }
-      });
-    });
-
-    // Scroll listener for sticky header and Sign Up button
-    window.addEventListener('scroll', () => {
-      const header = document.querySelector('.app-header');
-      const signupBtn = document.getElementById('header-signup-btn');
-      const hero = document.getElementById('hero-section');
-      
-      let threshold = 500;
-      if (hero) {
-        // threshold is the bottom of the hero section, offset slightly by header height
-        threshold = hero.offsetHeight - 80; 
-      }
-      
-      // Header shadow appears immediately on scroll
-      if (window.scrollY > 10) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-
-      // Sign Up button only appears after scrolling past hero section
-      if (window.scrollY > threshold) {
-        signupBtn.style.display = 'block';
-      } else {
-        signupBtn.style.display = 'none';
-      }
-    });
-
-    // New Onboarding Logic
-
-    function validateName() {
-      const input = document.getElementById('name_input');
-      const val = input.value.trim();
-      const regex = /^[a-zA-Z0-9\/\.\-'\s]{3,50}$/;
-      isNameValid = regex.test(val);
-      
-      const errorEl = document.getElementById('name_error');
-      if (val.length > 0 && !isNameValid) {
-        errorEl.style.display = 'block';
-      } else {
-        errorEl.style.display = 'none';
-      }
-      updateHeaders('name_gate');
-    }
-
-    let activeCountryIndex = -1;
-    let filteredCountries = [];
-
-    function handleCountryInput() {
-      const input = document.getElementById('country_search');
-      const query = input.value.trim();
-      input.removeAttribute('aria-activedescendant');
-      selectedCountry = null;
-      document.getElementById('country_select_flag').style.display = 'none';
-      document.getElementById('global-continue-btn').disabled = true;
-      activeCountryIndex = -1;
-
-      if (!query) {
-        closeCountryDropdown();
-        document.getElementById('country_list').innerHTML = '';
-        document.getElementById('country_status').textContent = '';
-        document.getElementById('country_status').style.display = 'none';
-        return;
-      }
-
-      renderCountryList(query);
-      const dropdown = document.getElementById('country_dropdown');
-      dropdown.classList.remove('select-hide');
-      input.setAttribute('aria-expanded', 'true');
-    }
-
-    function renderCountryList(filterText) {
-      const list = document.getElementById('country_list');
-      const status = document.getElementById('country_status');
-      const query = filterText.toLowerCase();
-      filteredCountries = allCountries.filter(country =>
-        country.name.toLowerCase().includes(query)
-      );
-      list.innerHTML = '';
-      status.textContent = '';
-      status.style.display = 'none';
-
-      if (filteredCountries.length === 0) {
-        status.textContent = 'No countries found';
-        status.style.display = 'block';
-        return;
-      }
-
-      filteredCountries.forEach((country, index) => {
-        const option = document.createElement('div');
-        option.className = 'country-option';
-        option.id = `country-option-${index}`;
-        option.setAttribute('role', 'option');
-        option.setAttribute('aria-selected', (index === activeCountryIndex).toString());
-        option.style.cssText = 'padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;';
-        option.innerHTML = `<img class="flag-icon" src="https://flagcdn.com/w20/${country.code}.png" alt=""><span>${country.name}</span>`;
-        option.addEventListener('mousedown', event => {
-          event.preventDefault();
-          selectCountry(country);
-        });
-        list.appendChild(option);
-      });
-    }
-
-    function selectCountry(country) {
-      selectedCountry = country;
-      const input = document.getElementById('country_search');
-      const flag = document.getElementById('country_select_flag');
-      input.value = country.name;
-      flag.src = `https://flagcdn.com/w20/${country.code}.png`;
-      flag.alt = '';
-      flag.style.display = 'block';
-      document.getElementById('global-continue-btn').disabled = false;
-      closeCountryDropdown();
-    }
-
-    function closeCountryDropdown() {
-      const input = document.getElementById('country_search');
-      document.getElementById('country_dropdown').classList.add('select-hide');
-      input.setAttribute('aria-expanded', 'false');
-      input.removeAttribute('aria-activedescendant');
-      activeCountryIndex = -1;
-    }
-
-    function handleCountryKeydown(event) {
-      if (document.getElementById('country_dropdown').classList.contains('select-hide')) return;
-      if (event.key === 'Escape') {
-        closeCountryDropdown();
-        return;
-      }
-      if (filteredCountries.length === 0) return;
-
-      if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        activeCountryIndex = Math.min(activeCountryIndex + 1, filteredCountries.length - 1);
-      } else if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        activeCountryIndex = Math.max(activeCountryIndex - 1, 0);
-      } else if (event.key === 'Enter' && activeCountryIndex >= 0) {
-        event.preventDefault();
-        selectCountry(filteredCountries[activeCountryIndex]);
-        return;
-      } else {
-        return;
-      }
-
-      renderCountryList(document.getElementById('country_search').value.trim());
-      const optionId = `country-option-${activeCountryIndex}`;
-      document.getElementById('country_search').setAttribute('aria-activedescendant', optionId);
-      document.getElementById(optionId)?.scrollIntoView({ block: 'nearest' });
-    }
-  
-    function renderHomeSection() {
-        const uName = document.getElementById('name_input').value.trim() || 'Learner';
-        document.getElementById('home_greeting').innerText = `Hi, ${uName}!`;
-        
-        // Course mapping
-        const courseMap = {
-            'english': 'English for Workplace',
-            'math': 'Practical Math Skills',
-            'workplace': 'Workplace Communication',
-            'digital_literacy': 'Digital Skills for the Modern World',
-            'entrepreneurship': 'Start Your Own Business'
-        };
-        
-        const courseTitle = courseMap[selectedGoal] || 'General Skills Mastery';
-        document.getElementById('home_course_title').innerText = courseTitle;
-        
-        // Program tasks conditional logic
-        if (typeof entryPath !== 'undefined' && entryPath === 'program') {
-            document.getElementById('home_program_tasks').style.display = 'block';
-            document.getElementById('home_program_name').innerText = 'Youth Job Readiness 2026';
-        } else {
-            document.getElementById('home_program_tasks').style.display = 'none';
-        }
-    }
-
-    function populateProfileSummary() {
-      const summary = document.getElementById('profile_summary');
-      if (summary) {
-        summary.style.display = 'block';
-        
-        const nameInput = document.getElementById('name_input');
-        const userName = nameInput ? nameInput.value.trim() : '';
-        document.getElementById('summary_name').innerText = userName || 'Learner';
-        
-        if (typeof selectedCountry !== 'undefined' && selectedCountry) {
-          document.getElementById('summary_country').innerText = selectedCountry.name;
-        }
-        
-        const ageLabels = {
-          'teen': 'Teen (13-17)',
-          'young_adult': 'Young Adult (18-24)',
-          'adult_25_34': 'Adult (25-34)',
-          'adult_35_44': 'Adult (35-44)',
-          'adult_45_54': 'Adult (45-54)',
-          'adult_55_plus': 'Adult (55+)'
-        };
-        if (typeof selectedAgeCategory !== 'undefined' && selectedAgeCategory) {
-          document.getElementById('summary_age').innerText = ageLabels[selectedAgeCategory] || 'Not specified';
-        }
-
-        if (typeof selectedGoal !== 'undefined' && selectedGoal && typeof goalOptions !== 'undefined') {
-          const goalObj = goalOptions.find(g => g.id === selectedGoal);
-          if (goalObj) {
-            document.getElementById('summary_goal').innerText = goalObj.title;
-          } else {
-            document.getElementById('summary_goal').innerText = 'Not specified';
-          }
-        }
-        
-        // Handle program flow specific copy and UI
-        if (typeof entryPath !== 'undefined' && entryPath === 'program') {
-            const uName = document.getElementById('name_input').value.trim() || 'Learner';
-            document.getElementById('save_wall_title').innerHTML = `One more step, <span style="color: var(--purple); font-weight: 700;">${uName}</span>!`;
-            document.getElementById('save_wall_subtitle').innerHTML = 'Connect an account to finalize your registration for <span style="color: var(--purple); font-weight: 700;">Youth Job Readiness 2026</span>.';
-            
-            // SSO buttons
-            document.getElementById('sso_google_text').innerText = 'Connect with Google';
-            document.getElementById('sso_apple_text').innerText = 'Connect with Apple';
-            document.getElementById('sso_facebook_text').innerText = 'Connect with Facebook';
-            document.getElementById('sso_telegram_text').innerText = 'Connect with Telegram';
-            
-            // Hide the entire profile summary and divider
-            document.getElementById('profile_summary').style.display = 'none';
-            document.getElementById('save_wall_divider').style.display = 'none';
-            
-        } else {
-            const uName = document.getElementById('name_input').value.trim() || 'Learner';
-            document.getElementById('save_wall_title').innerHTML = `Almost there, <span style="color: var(--purple); font-weight: 700;">${uName}</span>!`;
-            document.getElementById('save_wall_subtitle').innerText = 'Join to save your personalized profile and start learning.';
-            
-            // SSO buttons
-            document.getElementById('sso_google_text').innerText = 'Continue with Google';
-            document.getElementById('sso_apple_text').innerText = 'Continue with Apple';
-            document.getElementById('sso_facebook_text').innerText = 'Continue with Facebook';
-            document.getElementById('sso_telegram_text').innerText = 'Continue with Telegram';
-            
-            // Hide the entire profile summary and divider
-            document.getElementById('profile_summary').style.display = 'none';
-            document.getElementById('save_wall_divider').style.display = 'none';
-        }
-      }
-    }
-    
-  </script>
+  <script src="main.js"></script>
 </body>
 </html>
