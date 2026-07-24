@@ -133,11 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const progressMap = {
   'landing': 0,
-  'name_gate': 0,
-  'country_gate': 25,
-  'age_gate': 50,
-  'goal_intake': 75,
-  'assigned_content': 75,
+  'name_gate': 10,
+  'country_gate': 28,
+  'age_gate': 46,
+  'gender_gate': 64,
+  'goal_intake': 82,
   'save_wall': 100,
   'learning_home': 100
 };
@@ -160,10 +160,11 @@ const progressMap = {
         let prog = progressMap[screenId] || 0;
         if (appState.entryPath === 'program') {
             const programProgressMap = {
-                'assigned_content': 20,
-                'name_gate': 40,
-                'country_gate': 60,
-                'age_gate': 80,
+                'assigned_content': 17,
+                'name_gate': 33,
+                'country_gate': 50,
+                'age_gate': 67,
+                'gender_gate': 83,
                 'save_wall': 100,
                 'learning_home': 100
             };

@@ -132,3 +132,17 @@ Assert-Matches "'age_gate',\s*'gender_gate'" 'Gender gate must show the onboardi
 Assert-Matches "screenId\s*===\s*'gender_gate'[\s\S]*?disabled\s*=\s*!appState\.selectedGender" 'Continue must stay disabled until a gender is chosen.'
 
 Write-Output 'PASS: gender gate routing'
+
+Assert-Matches "const\s+progressMap\s*=\s*\{[^}]*'name_gate':\s*10" 'First gate must show a visible progress sliver.'
+Assert-Matches "const\s+progressMap\s*=\s*\{[^}]*'country_gate':\s*28" 'Organic country step weighting.'
+Assert-Matches "const\s+progressMap\s*=\s*\{[^}]*'age_gate':\s*46" 'Organic age step weighting.'
+Assert-Matches "const\s+progressMap\s*=\s*\{[^}]*'gender_gate':\s*64" 'Organic gender step weighting.'
+Assert-Matches "const\s+progressMap\s*=\s*\{[^}]*'goal_intake':\s*82" 'Organic goal step weighting.'
+Assert-NotMatches "const\s+progressMap\s*=\s*\{[^}]*'assigned_content'" 'Dead organic assigned-content weighting must be removed.'
+Assert-Matches "programProgressMap\s*=\s*\{[^}]*'assigned_content':\s*17" 'Program assigned-content weighting.'
+Assert-Matches "programProgressMap\s*=\s*\{[^}]*'name_gate':\s*33" 'Program name weighting.'
+Assert-Matches "programProgressMap\s*=\s*\{[^}]*'country_gate':\s*50" 'Program country weighting.'
+Assert-Matches "programProgressMap\s*=\s*\{[^}]*'age_gate':\s*67" 'Program age weighting.'
+Assert-Matches "programProgressMap\s*=\s*\{[^}]*'gender_gate':\s*83" 'Program gender weighting.'
+
+Write-Output 'PASS: progress bar weighting'
