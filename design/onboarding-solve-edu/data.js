@@ -27,7 +27,7 @@ const allCountries = [
   { name: "Bulgaria", code: "bg" },
   { name: "Burkina Faso", code: "bf" },
   { name: "Burundi", code: "bi" },
-  { name: "CÃ´te d'Ivoire", code: "ci" },
+  { name: "Côte d'Ivoire", code: "ci" },
   { name: "Cabo Verde", code: "cv" },
   { name: "Cambodia", code: "kh" },
   { name: "Cameroon", code: "cm" },
@@ -202,7 +202,7 @@ const goalOptions = [
   { id: 'project', title: 'Project management', icon: 'assignment', color: 'var(--green)' },
   { id: 'marketing', title: 'Digital marketing', icon: 'campaign', color: 'var(--red)' },
   { id: 'communication', title: 'Communication', icon: 'forum', color: 'var(--purple)' },
-  { id: 'language', title: 'Learn a new language', icon: 'language', color: 'var(--blue)' }
+  { id: 'language', title: 'Language skills', icon: 'language', color: 'var(--blue)' }
 ];
 
 window.allCountries = allCountries;

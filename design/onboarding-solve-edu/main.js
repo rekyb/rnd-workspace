@@ -60,6 +60,40 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('country_search')?.addEventListener('input', handleCountryInput);
   document.getElementById('country_search')?.addEventListener('keydown', handleCountryKeydown);
 
+  document.getElementById('save_email_input')?.addEventListener('input', validateSaveGate);
+  document.getElementById('save_password_input')?.addEventListener('input', validateSaveGate);
+  document.getElementById('save_create_btn')?.addEventListener('click', () => goTo('learning_home'));
+
+  document.getElementById('login_email_input')?.addEventListener('input', validateLoginModal);
+  document.getElementById('login_password_input')?.addEventListener('input', validateLoginModal);
+  document.getElementById('login_submit_btn')?.addEventListener('click', () => { goTo('learning_home'); closeModal('sign_in_modal'); });
+
+  function validateSaveGate() {
+    const email = document.getElementById('save_email_input')?.value || '';
+    const pwd = document.getElementById('save_password_input')?.value || '';
+    const btn = document.getElementById('save_create_btn');
+    if (!btn) return;
+    
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isValidPwd = pwd.length >= 6;
+    
+    btn.disabled = !(isValidEmail && isValidPwd);
+  }
+
+  function validateLoginModal() {
+    const email = document.getElementById('login_email_input')?.value || '';
+    const pwd = document.getElementById('login_password_input')?.value || '';
+    const btn = document.getElementById('login_submit_btn');
+    if (!btn) return;
+    
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isValidPwd = pwd.length >= 6;
+    
+    btn.disabled = !(isValidEmail && isValidPwd);
+  }
+
+
+
   // Code input UX auto-advance
   const inputs = document.querySelectorAll('.code-digit');
   const joinBtn = document.getElementById('join_btn');
@@ -106,14 +140,17 @@ const progressMap = {
 
     function updateHeaders(screenId) {
       if (screenId === 'learning_home') {
+        document.body.classList.remove('is-onboarding');
         document.getElementById('global-header').style.display = 'none';
         document.getElementById('onboarding-header').style.display = 'none';
         document.getElementById('onboarding-footer').style.display = 'none';
       } else if (screenId === 'landing' || screenId === 'sign_in') {
+        document.body.classList.remove('is-onboarding');
         document.getElementById('global-header').style.display = 'flex';
         document.getElementById('onboarding-header').style.display = 'none';
         document.getElementById('onboarding-footer').style.display = 'none';
       } else {
+        document.body.classList.add('is-onboarding');
         document.getElementById('global-header').style.display = 'none';
         document.getElementById('onboarding-header').style.display = 'flex';
         let prog = progressMap[screenId] || 0;
@@ -135,6 +172,7 @@ const progressMap = {
         
         if (['name_gate', 'country_gate', 'age_gate', 'goal_intake', 'assigned_content'].includes(screenId)) {
           footer.style.display = 'flex';
+          document.body.classList.add('has-footer');
           if (screenId === 'name_gate') {
             btn.disabled = !appState.isNameValid;
             btn.innerText = 'Continue';
@@ -153,6 +191,7 @@ const progressMap = {
           }
         } else {
           footer.style.display = 'none';
+          document.body.classList.remove('has-footer');
         }
       }
     }
@@ -170,7 +209,7 @@ const progressMap = {
       } else if (activeCard === 'goal_intake') {
         continueFromGoal();
       } else if (activeCard === 'assigned_content') {
-        document.getElementById('name_gate_title').innerHTML = '<span style="font-size: 1rem; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Welcome to <span style="color: var(--purple); font-weight: 700;">Youth Job Readiness 2026</span>!</span>What is your name?';
+        document.getElementById('name_gate_title').innerHTML = '<span style="font-size: 16px; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Welcome to <span style="color: var(--purple); font-weight: 700;">Digital Heroes</span>!</span>What is your name?';
         goTo('name_gate');
       }
     }
@@ -212,7 +251,7 @@ const progressMap = {
 
     function startOrganic() {
       appState.entryPath = 'organic';
-      document.getElementById('name_gate_title').innerHTML = '<span style="font-size: 1rem; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Welcome!</span>What is your name?';
+      document.getElementById('name_gate_title').innerHTML = '<span style="font-size: 16px; font-weight: 500; color: var(--sub); display: block; margin-bottom: 8px;">Welcome to <strong style="color: var(--purple);">Solve Education!</strong></span>What is your name?';
       goTo('name_gate');
     }
 
@@ -239,8 +278,18 @@ const progressMap = {
         document.getElementById('code_error').style.display = 'none';
         closeModal('code_entry_modal');
         goTo('assigned_content');
+      } else if (code === '111111') {
+        const errorEl = document.getElementById('code_error');
+        errorEl.innerHTML = '<span class="material-symbols-rounded" style="vertical-align: middle; font-size: 18px;">error</span> This program code has expired.';
+        errorEl.style.display = 'block';
+        const group = document.getElementById('code-group');
+        group.style.animation = 'none';
+        void group.offsetWidth; // trigger reflow
+        group.style.animation = 'obShake 0.4s';
       } else {
-        document.getElementById('code_error').style.display = 'block';
+        const errorEl = document.getElementById('code_error');
+        errorEl.innerHTML = '<span class="material-symbols-rounded" style="vertical-align: middle; font-size: 18px;">error</span> Invalid code entered. Please try again.';
+        errorEl.style.display = 'block';
         const group = document.getElementById('code-group');
         group.style.animation = 'none';
         void group.offsetWidth; // trigger reflow
@@ -422,6 +471,12 @@ const progressMap = {
 
     let activeCountryIndex = -1;
     let filteredCountries = [];
+    allCountries.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Optional callback for external usage
+    window.onCountrySelect = window.onCountrySelect || function(country) {
+      console.log('Selected country:', country.name, country.code.toUpperCase(), country.dialCode || '');
+    };
 
     function handleCountryInput() {
       const input = document.getElementById('country_search');
@@ -450,8 +505,10 @@ const progressMap = {
       const list = document.getElementById('country_list');
       const status = document.getElementById('country_status');
       const query = filterText.toLowerCase();
+      
+      // Filter by name or ISO code
       filteredCountries = allCountries.filter(country =>
-        country.name.toLowerCase().includes(query)
+        country.name.toLowerCase().includes(query) || country.code.toLowerCase().includes(query)
       );
       list.innerHTML = '';
       status.textContent = '';
@@ -463,13 +520,29 @@ const progressMap = {
         return;
       }
 
+      // Helper to highlight matching text
+      const highlight = (text, q) => {
+        if (!q) return text;
+        const regex = new RegExp(`(${q})`, 'gi');
+        return text.replace(regex, '<strong>$1</strong>');
+      };
+
       filteredCountries.forEach((country, index) => {
         const option = document.createElement('div');
         option.className = 'country-option';
         option.id = `country-option-${index}`;
         option.setAttribute('role', 'option');
         option.setAttribute('aria-selected', (index === activeCountryIndex).toString());
-        option.innerHTML = `<img class="flag-icon" src="https://flagcdn.com/w20/${country.code}.png" alt=""><span>${country.name}</span>`;
+        
+        const highlightedName = highlight(country.name, query);
+        const isoCode = country.code.toUpperCase();
+        
+        option.innerHTML = `
+          <img class="flag-icon" src="https://flagcdn.com/w20/${country.code}.png" alt="" style="flex-shrink: 0;">
+          <span style="flex-grow: 1;">${highlightedName}</span>
+          <span style="color: var(--sub); font-size: 14px; font-weight: bold; flex-shrink: 0;">${isoCode}</span>
+        `;
+        
         option.addEventListener('mousedown', event => {
           event.preventDefault();
           selectCountry(country);
@@ -488,6 +561,15 @@ const progressMap = {
       flag.style.display = 'block';
       document.getElementById('global-continue-btn').disabled = false;
       closeCountryDropdown();
+      
+      // Trigger external callback
+      if (typeof window.onCountrySelect === 'function') {
+        window.onCountrySelect({
+          name: country.name,
+          isoCode: country.code.toUpperCase(),
+          dialCode: country.dialCode || null
+        });
+      }
     }
 
     function closeCountryDropdown() {
@@ -545,79 +627,36 @@ const progressMap = {
         // Program tasks conditional logic
         if (typeof appState.entryPath !== 'undefined' && appState.entryPath === 'program') {
             document.getElementById('home_program_tasks').style.display = 'block';
-            document.getElementById('home_program_name').innerText = 'Youth Job Readiness 2026';
+            document.getElementById('home_program_name').innerText = 'Digital Heroes';
         } else {
             document.getElementById('home_program_tasks').style.display = 'none';
         }
     }
 
     function populateProfileSummary() {
-      const summary = document.getElementById('profile_summary');
-      if (summary) {
-        summary.style.display = 'block';
-        
-        const nameInput = document.getElementById('name_input');
-        const userName = nameInput ? nameInput.value.trim() : '';
-        document.getElementById('summary_name').innerText = userName || 'Learner';
-        
-        if (typeof appState.selectedCountry !== 'undefined' && appState.selectedCountry) {
-          document.getElementById('summary_country').innerText = appState.selectedCountry.name;
-        }
-        
-        const ageLabels = {
-          'teen': 'Teen (13-17)',
-          'young_adult': 'Young Adult (18-24)',
-          'adult_25_34': 'Adult (25-34)',
-          'adult_35_44': 'Adult (35-44)',
-          'adult_45_54': 'Adult (45-54)',
-          'adult_55_plus': 'Adult (55+)'
-        };
-        if (typeof appState.selectedAgeCategory !== 'undefined' && appState.selectedAgeCategory) {
-          document.getElementById('summary_age').innerText = ageLabels[appState.selectedAgeCategory] || 'Not specified';
-        }
-
-        if (typeof appState.selectedGoal !== 'undefined' && appState.selectedGoal && typeof goalOptions !== 'undefined') {
-          const goalObj = goalOptions.find(g => g.id === appState.selectedGoal);
-          if (goalObj) {
-            document.getElementById('summary_goal').innerText = goalObj.title;
-          } else {
-            document.getElementById('summary_goal').innerText = 'Not specified';
+      // Handle program flow specific copy and UI
+      if (typeof appState.entryPath !== 'undefined' && appState.entryPath === 'program') {
+          const uName = escapeHTML(document.getElementById('name_input').value.trim() || 'Learner');
+          document.getElementById('save_wall_title').innerHTML = `One more step, <span style="color: var(--purple); font-weight: 700;">${uName}</span>!`;
+          document.getElementById('save_wall_subtitle').innerHTML = 'Create an account to finalize your registration for <span style="color: var(--purple); font-weight: 700;">Digital Heroes</span>.';
+          
+          const divider = document.getElementById('save_wall_divider');
+          if (divider) divider.style.display = 'none';
+          
+      } else {
+          const uName = escapeHTML(document.getElementById('name_input').value.trim() || 'Learner');
+          document.getElementById('save_wall_title').innerHTML = `One more step, <span style="color: var(--purple); font-weight: 700;">${uName}</span>!`;
+          document.getElementById('save_wall_subtitle').innerHTML = 'Create your account to save your personalized profile and start learning.';
+          
+          const divider = document.getElementById('save_wall_divider');
+          if (divider) divider.style.display = 'none';
+          
+          // Increase image size
+          const saveImg = document.querySelector('#save_wall img');
+          if (saveImg) {
+            saveImg.style.transform = 'scale(1.25)';
+            saveImg.style.transformOrigin = 'center';
           }
-        }
-        
-        // Handle program flow specific copy and UI
-        if (typeof appState.entryPath !== 'undefined' && appState.entryPath === 'program') {
-            const uName = escapeHTML(document.getElementById('name_input').value.trim() || 'Learner');
-            document.getElementById('save_wall_title').innerHTML = `One more step, <span style="color: var(--purple); font-weight: 700;">${uName}</span>!`;
-            document.getElementById('save_wall_subtitle').innerHTML = 'Connect an account to finalize your registration for <span style="color: var(--purple); font-weight: 700;">Youth Job Readiness 2026</span>.';
-            
-            // SSO buttons
-            document.getElementById('sso_google_text').innerText = 'Connect with Google';
-            document.getElementById('sso_apple_text').innerText = 'Connect with Apple';
-            document.getElementById('sso_facebook_text').innerText = 'Connect with Facebook';
-            document.getElementById('sso_telegram_text').innerText = 'Connect with Telegram';
-            
-            // Hide the entire profile summary and divider
-            document.getElementById('profile_summary').style.display = 'none';
-            const divider = document.getElementById('save_wall_divider');
-            if (divider) divider.style.display = 'none';
-            
-        } else {
-            const uName = escapeHTML(document.getElementById('name_input').value.trim() || 'Learner');
-            document.getElementById('save_wall_title').innerHTML = `Almost there, <span style="color: var(--purple); font-weight: 700;">${uName}</span>!`;
-            document.getElementById('save_wall_subtitle').innerText = 'Join to save your personalized profile and start learning.';
-            
-            // SSO buttons
-            document.getElementById('sso_google_text').innerText = 'Continue with Google';
-            document.getElementById('sso_apple_text').innerText = 'Continue with Apple';
-            document.getElementById('sso_facebook_text').innerText = 'Continue with Facebook';
-            document.getElementById('sso_telegram_text').innerText = 'Continue with Telegram';
-            
-            // Ensure profile summary and divider are visible in organic flow
-            document.getElementById('profile_summary').style.display = 'block';
-            const divider = document.getElementById('save_wall_divider');
-            if (divider) divider.style.display = 'block';
-        }
       }
     }
     
