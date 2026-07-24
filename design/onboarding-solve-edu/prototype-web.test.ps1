@@ -122,3 +122,13 @@ Assert-Matches "getElementById\('gender-btn-prefer'\)\?\.addEventListener\('clic
 Assert-Matches "selectGender\(this,\s*'prefer_not_to_say'\)" 'Opt-out must record prefer_not_to_say.'
 
 Write-Output 'PASS: gender selection state and behavior'
+
+Assert-Matches "function\s+continueFromAge\s*\(\)\s*\{\s*if\s*\(!appState\.selectedAgeCategory\)\s*return;\s*goTo\('gender_gate'\);\s*\}" 'Age gate must route only to the gender gate.'
+Assert-Matches 'function\s+continueFromGender\s*\(\)' 'Gender continue handler is required.'
+Assert-Matches "function\s+continueFromGender[\s\S]*?entryPath\s*===\s*'organic'[\s\S]*?goTo\('goal_intake'\)" 'Organic path must continue from gender to goals.'
+Assert-Matches "function\s+continueFromGender[\s\S]*?goTo\('save_wall'\)[\s\S]*?populateProfileSummary\(\)" 'Program path must continue from gender to the save wall.'
+Assert-Matches "activeCard\s*===\s*'gender_gate'[\s\S]*?continueFromGender\(\)" 'Continue must dispatch to the gender handler.'
+Assert-Matches "'age_gate',\s*'gender_gate'" 'Gender gate must show the onboarding footer.'
+Assert-Matches "screenId\s*===\s*'gender_gate'[\s\S]*?disabled\s*=\s*!appState\.selectedGender" 'Continue must stay disabled until a gender is chosen.'
+
+Write-Output 'PASS: gender gate routing'

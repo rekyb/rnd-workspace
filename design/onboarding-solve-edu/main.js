@@ -174,7 +174,7 @@ const progressMap = {
         const footer = document.getElementById('onboarding-footer');
         const btn = document.getElementById('global-continue-btn');
         
-        if (['name_gate', 'country_gate', 'age_gate', 'goal_intake', 'assigned_content'].includes(screenId)) {
+        if (['name_gate', 'country_gate', 'age_gate', 'gender_gate', 'goal_intake', 'assigned_content'].includes(screenId)) {
           footer.style.display = 'flex';
           document.body.classList.add('has-footer');
           if (screenId === 'name_gate') {
@@ -185,6 +185,9 @@ const progressMap = {
             btn.innerText = 'Continue';
           } else if (screenId === 'age_gate') {
             btn.disabled = !appState.selectedAgeCategory;
+            btn.innerText = 'Continue';
+          } else if (screenId === 'gender_gate') {
+            btn.disabled = !appState.selectedGender;
             btn.innerText = 'Continue';
           } else if (screenId === 'goal_intake') {
             btn.disabled = !appState.selectedGoal;
@@ -210,6 +213,8 @@ const progressMap = {
         goTo('age_gate');
       } else if (activeCard === 'age_gate') {
         continueFromAge();
+      } else if (activeCard === 'gender_gate') {
+        continueFromGender();
       } else if (activeCard === 'goal_intake') {
         continueFromGoal();
       } else if (activeCard === 'assigned_content') {
@@ -340,6 +345,11 @@ const progressMap = {
 
     function continueFromAge() {
       if (!appState.selectedAgeCategory) return;
+      goTo('gender_gate');
+    }
+
+    function continueFromGender() {
+      if (!appState.selectedGender) return;
       if (appState.entryPath === 'organic') {
         goTo('goal_intake');
       } else {
