@@ -19,3 +19,9 @@ Thumbs.db
 
 # Local isolated implementation worktrees
 .worktrees/
+
+# Generated single-file prototype build (~12 MB, rebuild with build-standalone.ps1)
+design/onboarding-solve-edu/standalone.html
+
+# Subagent-driven-development scratch (review packages, task briefs/reports)
+.superpowers/
