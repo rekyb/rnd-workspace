@@ -109,3 +109,16 @@ Assert-Matches '\.gender-card\s*\{[^}]*background:\s*var\(--surf\)' 'Gender butt
 Assert-Matches '\.gender-card:focus-visible\s*\{[^}]*outline:' 'Gender buttons must show a visible focus ring.'
 
 Write-Output 'PASS: gender gate structure and styling'
+
+Assert-Matches 'selectedGender:\s*null' 'Gender selection state must be initialised.'
+Assert-Matches 'function\s+selectGender\s*\(element,\s*gender\)' 'Gender selection handler is required.'
+Assert-Matches "function\s+selectGender[\s\S]*?setAttribute\('aria-pressed',\s*'false'\)" 'Selecting a gender must clear the previous selection.'
+Assert-Matches "function\s+selectGender[\s\S]*?classList\.remove\('selected'\)" 'Selecting a gender must clear the previous selected style.'
+Assert-Matches "function\s+selectGender[\s\S]*?setAttribute\('aria-pressed',\s*'true'\)" 'Selecting a gender must expose the pressed state.'
+Assert-Matches "function\s+selectGender[\s\S]*?global-continue-btn'\)\.disabled\s*=\s*false" 'Selecting a gender must enable Continue.'
+Assert-Matches "getElementById\('gender-btn-female'\)\?\.addEventListener\('click'" 'Female option must be wired.'
+Assert-Matches "getElementById\('gender-btn-male'\)\?\.addEventListener\('click'" 'Male option must be wired.'
+Assert-Matches "getElementById\('gender-btn-prefer'\)\?\.addEventListener\('click'" 'Opt-out option must be wired.'
+Assert-Matches "selectGender\(this,\s*'prefer_not_to_say'\)" 'Opt-out must record prefer_not_to_say.'
+
+Write-Output 'PASS: gender selection state and behavior'

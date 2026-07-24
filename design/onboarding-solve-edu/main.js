@@ -2,6 +2,7 @@ const appState = {
   entryPath: 'organic',
   selectedGoal: null,
   selectedAgeCategory: null,
+  selectedGender: null,
   selectedCountry: null,
   historyStack: [],
   isNameValid: false
@@ -42,6 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('sso-btn-google')?.addEventListener('click', () => goTo('learning_home'));
   document.getElementById('sso-btn-facebook')?.addEventListener('click', () => goTo('learning_home'));
   document.getElementById('age-btn-teen')?.addEventListener('click', function() { selectAgeOption(this, 'teen'); });
+  document.getElementById('gender-btn-female')?.addEventListener('click', function() { selectGender(this, 'female'); });
+  document.getElementById('gender-btn-male')?.addEventListener('click', function() { selectGender(this, 'male'); });
+  document.getElementById('gender-btn-prefer')?.addEventListener('click', function() { selectGender(this, 'prefer_not_to_say'); });
   document.getElementById('header-signin-btn')?.addEventListener('click', openSignInModal);
   document.getElementById('sso-btn-apple')?.addEventListener('click', () => goTo('learning_home'));
   document.getElementById('logo-link')?.addEventListener('click', (e) => { e.preventDefault(); goTo('landing'); });
@@ -344,7 +348,19 @@ const progressMap = {
       }
     }
 
-    
+    function selectGender(element, gender) {
+      const peers = document.getElementById('gender_options').querySelectorAll('.gender-card');
+      peers.forEach(p => {
+        p.classList.remove('selected');
+        p.setAttribute('aria-pressed', 'false');
+      });
+      appState.selectedGender = gender;
+      element.classList.add('selected');
+      element.setAttribute('aria-pressed', 'true');
+      document.getElementById('global-continue-btn').disabled = false;
+    }
+
+
 
     function renderGoalCards() {
       const grid = document.getElementById('goal_grid');
