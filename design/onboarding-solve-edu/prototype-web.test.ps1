@@ -16,6 +16,31 @@ function Assert-NotMatches([string]$Pattern, [string]$Message) {
   if ($html -match $Pattern) { throw $Message }
 }
 
+$standalonePath = Join-Path $PSScriptRoot 'standalone.html'
+$standalone = Get-Content -LiteralPath $standalonePath -Raw -Encoding UTF8
+$styles = Get-Content -LiteralPath $stylesPath -Raw -Encoding UTF8
+$data = Get-Content -LiteralPath $dataPath -Raw -Encoding UTF8
+$main = Get-Content -LiteralPath $mainPath -Raw -Encoding UTF8
+
+function Assert-Standalone([bool]$Condition, [string]$Message) {
+  if (-not $Condition) { throw $Message }
+}
+
+Assert-Standalone ($standalone -notmatch 'href=["'']styles\.css["'']') 'Standalone must inline styles.css'
+Assert-Standalone ($standalone -notmatch 'src=["''](?:data|main)\.js["'']') 'Standalone must inline local JavaScript'
+Assert-Standalone ($standalone -notmatch '(?:src=["'']|url\(["'']?)(?!data:|https?:|#)[^"'')]+(?:\.png|\.jpe?g|\.gif|\.webp|\.svg)') 'Standalone must embed local images'
+Assert-Standalone ($standalone.Contains($styles.Trim())) 'Standalone must contain the current stylesheet'
+Assert-Standalone ($standalone.Contains($data.Trim())) 'Standalone must contain the current data script'
+Assert-Standalone ($standalone.Contains($main.Trim())) 'Standalone must contain the current main script'
+
+Write-Output 'PASS: standalone snapshot matches modular sources'
+
+Assert-Matches 'background:\s*rgba\(35,\s*151,\s*203,\s*0\.12\);\s*border:\s*1px solid rgba\(35,\s*151,\s*203,\s*0\.28\)' 'Gamification card must use a full blue tint.'
+Assert-Matches 'background:\s*rgba\(236,\s*26,\s*100,\s*0\.10\);\s*border:\s*1px solid rgba\(236,\s*26,\s*100,\s*0\.25\)' 'AI Coach card must use a full magenta tint.'
+Assert-Matches 'background:\s*rgba\(142,\s*39,\s*155,\s*0\.10\);\s*border:\s*1px solid rgba\(142,\s*39,\s*155,\s*0\.25\)' 'Incentives card must use a full purple tint.'
+Assert-Matches 'background:\s*rgba\(234,\s*65,\s*52,\s*0\.10\);\s*border:\s*1px solid rgba\(234,\s*65,\s*52,\s*0\.25\)' 'Network card must use a full red tint.'
+Assert-Matches 'font-size:\s*15px;\s*color:\s*var\(--ink2\)' 'GAIN card body copy must use dark text.'
+
 Assert-Matches 'id="goal_grid"[^>]*role="group"' 'Goal grid must expose a labelled choice group.'
 Assert-Matches '\.goal-grid\s*\{[^}]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)' 'Desktop goal grid must use three columns.'
 Assert-Matches '@media\s*\(max-width:\s*768px\)[\s\S]*?\.goal-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)' 'Tablet/mobile goal grid must use two columns.'
@@ -64,3 +89,23 @@ Assert-Matches '#country_dropdown\s*>\s*\.country-empty-state:hover\s*\{[^}]*bac
 Assert-Matches 'status\.textContent\s*=\s*''No countries found''[\s\S]*?status\.style\.display\s*=\s*''block''' 'No-match rendering must populate and reveal the external live status.'
 
 Write-Output 'PASS: searchable country combobox structure and behavior'
+
+Assert-Matches 'id="impact_video"' 'Impact video container must be addressable for protocol-aware rendering.'
+Assert-Matches 'window\.location\.protocol\s*===\s*''file:''' 'Local-file viewing must be detected to avoid YouTube error 153.'
+Assert-Matches 'https://www\.youtube\.com/watch\?v=vEgSkcthYMQ' 'Local-file fallback must link to the video on YouTube.'
+Assert-Matches 'https://www\.youtube\.com/embed/vEgSkcthYMQ' 'HTTP viewing must retain the embedded YouTube player.'
+Assert-Matches 'id="impact_video"[^>]*>\s*</div>' 'The video container must start empty so a file URL does not eagerly load YouTube.'
+
+Write-Output 'PASS: YouTube embed handles local-file referrer restrictions'
+
+Assert-Matches 'id="gender_gate"[^>]*class="card' 'Gender gate must exist as a card screen.'
+Assert-Matches 'id="gender_options"[^>]*role="group"[^>]*aria-labelledby="gender_gate_title"' 'Gender options must expose a labelled choice group.'
+Assert-Matches 'id="gender-btn-female"[^>]*aria-pressed="false"[^>]*>Female</button>' 'Female must be a text-only pressable button.'
+Assert-Matches 'id="gender-btn-male"[^>]*aria-pressed="false"[^>]*>Male</button>' 'Male must be a text-only pressable button.'
+Assert-Matches 'id="gender-btn-prefer"[^>]*aria-pressed="false"[^>]*>Prefer not to say</button>' 'Opt-out must be a text-only pressable button.'
+Assert-Matches '\.gender-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)' 'Gender row one must use two columns.'
+Assert-Matches '@media\s*\(max-width:\s*420px\)\s*\{[^{}]*\.gender-grid\s*\{[^}]*grid-template-columns:\s*1fr' 'Narrow gender grid must collapse to one column.'
+Assert-Matches '\.gender-card\s*\{[^}]*background:\s*var\(--surf\)' 'Gender buttons must reset the native button background.'
+Assert-Matches '\.gender-card:focus-visible\s*\{[^}]*outline:' 'Gender buttons must show a visible focus ring.'
+
+Write-Output 'PASS: gender gate structure and styling'
