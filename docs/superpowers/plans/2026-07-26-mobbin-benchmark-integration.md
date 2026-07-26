@@ -1106,13 +1106,28 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 - Consumes: `.claude/references/mobbin-sourcing.md` (Task 3)
 - Produces: the provenance label that keeps "grounded in captured evidence" meaningful
 
-> **Pre-existing drift, do not "fix" silently.** `.claude/personas/principal-designer.md`
-> documents only two Kind values (`benchmark-observed | usability-finding`), but
-> `research/PATTERNS.md` already uses a third in practice —
-> `literature-grounded design principle (litreview; no live UI observed)`. The persona spec
-> is behind the library. This task adds the Mobbin value **and** brings the litreview value
-> into the spec, so the enumeration finally matches reality. Do not delete either existing
-> value.
+> **CORRECTED 2026-07-26 — the original note here was factually wrong.** It claimed
+> `research/PATTERNS.md` already used a Kind value of
+> `literature-grounded design principle (litreview; no live UI observed)`. **It does not, and
+> never did.** That string was invented while drafting the spec and propagated here; a grep of
+> the library returns zero matches. An implementer following the original note added a
+> top-level Kind the library has never used.
+>
+> **What the library actually does**, across all 44 `**Kind:**` lines: a **base kind plus an
+> optional free-text parenthetical qualifier**. 30× plain `benchmark-observed`, plus 14
+> qualified variants — `benchmark-observed (literature-grounded)` (the litreview form),
+> `benchmark-observed (first-hand anti-pattern)`, `benchmark-observed — **second-hand**
+> (login-gated; …)`, `benchmark-motivated; **untested design hypothesis** (…)`, and so on.
+>
+> So this task must: add `reference-library observed (Mobbin; not first-party captured)` as a
+> genuinely new **base** kind (Mobbin content is not observed by us at all), document the
+> qualifier convention with `benchmark-observed (literature-grounded)` as the worked example,
+> and **not** invent a standalone litreview Kind. Never delete `benchmark-observed` or
+> `usability-finding`.
+>
+> **Lesson for any future task in this plan:** verify a claim about existing file content
+> against the file before acting on it. This one survived spec-writing, plan-writing, and a
+> task brief unchallenged.
 
 - [ ] **Step 1: Update the entry-writing instruction (line 39-40)**
 
@@ -1127,8 +1142,9 @@ Replace the parenthetical so all four values are listed:
 
 ```markdown
 2. **Write each as an entry**: **Name** · **Kind** (benchmark-observed /
-   usability-finding / literature-grounded design principle /
-   reference-library observed) · **Where seen** (study folder + evidence links) · **When it
+   usability-finding / reference-library observed; any base kind may carry a
+   free-text qualifier, e.g. benchmark-observed (literature-grounded)) ·
+   **Where seen** (study folder + evidence links) · **When it
 ```
 
 - [ ] **Step 2: Update the entry template (line 62) and add the Mobbin rule**
@@ -1142,7 +1158,13 @@ Line 62 currently reads:
 Replace with:
 
 ```markdown
-- **Kind:** benchmark-observed | usability-finding | literature-grounded design principle (litreview; no live UI observed) | reference-library observed (Mobbin; not first-party captured)
+- **Kind:** benchmark-observed | usability-finding | reference-library observed (Mobbin; not first-party captured)
+
+A base kind may carry a free-text parenthetical qualifier narrowing provenance — the
+library already uses this heavily. Litreview-sourced patterns take the form
+`benchmark-observed (literature-grounded)`; other in-use examples include
+`benchmark-observed (first-hand anti-pattern)` and
+`benchmark-observed — **second-hand** (login-gated; …)`.
 ```
 
 Then, immediately after the template block ending at line 66 (`- **Evidence:** …`), add:

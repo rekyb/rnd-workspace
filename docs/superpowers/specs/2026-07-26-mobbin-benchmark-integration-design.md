@@ -198,9 +198,20 @@ and are deliberately left alone rather than churning history.
 when staged files include anything under `reference/`, any `*.visual.md`, or any `.docx`
 outside the ignored folder. Fail loudly with the offending paths listed.
 
-**Gate 4 — provenance label.** `research/PATTERNS.md` already distinguishes
-`benchmark-observed` from `literature-grounded design principle (litreview; no live UI
-observed)`. Add a third:
+**Gate 4 — provenance label.** `research/PATTERNS.md` labels each entry with a **Kind**.
+
+> **Correction (verified 2026-07-26 against the actual file).** An earlier draft of this spec
+> asserted the library already distinguished `benchmark-observed` from a standalone
+> `literature-grounded design principle (litreview; no live UI observed)` Kind. **That value
+> does not exist and never did** — it was a paraphrase invented while drafting this spec, and
+> it propagated into the plan and a task brief before review caught it. What the library
+> actually uses across its 44 entries is a **base kind plus an optional free-text parenthetical
+> qualifier**: 30× plain `benchmark-observed`, and 14 qualified variants such as
+> `benchmark-observed (literature-grounded)`, `benchmark-observed (first-hand anti-pattern)`,
+> and `benchmark-motivated; **untested design hypothesis** (…)`. Litreview-sourced patterns are
+> therefore `benchmark-observed (literature-grounded)` — a qualifier, not a separate Kind.
+
+Add a genuinely new **base** kind, since Mobbin content is not observed by this workspace at all:
 
 > **Kind:** `reference-library observed (Mobbin; not first-party captured)`
 
