@@ -131,27 +131,42 @@ $idSel = New-Prototype -Name 'idsel.html' -ExtraCss '#a1b2c3 { color: var(--ink)
 $r = Invoke-Check -Path $idSel
 Assert-Equal '0' ([string]$r.Code) 'a hex-shaped CSS id selector is not flagged as a raw hex value'
 
-# --- Test 13: a URL fragment that is itself hex-shaped is not mistaken for a
-# raw hex value, for the same reason as Test 12 - "#a1b2c3" here is plain HTML
-# attribute text, not a CSS declaration value.
-$frag = New-Prototype -Name 'frag.html' -Body '<a class="btn" href="/docs.html#a1b2c3">Go</a>'
+# --- Test 13: a bare in-page anchor whose fragment is itself hex-shaped is not
+# mistaken for a raw hex value. This must be the BARE-ANCHOR form -
+# href="#a1b2c3", where a quote (not a word character) immediately precedes
+# the '#' - not href="/docs.html#a1b2c3". In the "/docs.html#..." form the
+# character right before '#' is 'l' (from ".html"), so the pre-existing
+# (?<![&\w]) lookbehind excludes that match before Test-InDeclarationValue is
+# ever reached; that fixture passes identically against the pre-fix script
+# (verified) and so does not actually exercise the fix. The bare-anchor form
+# below reaches Test-InDeclarationValue (no colon precedes it back to the
+# nearest boundary) and is confirmed to discriminate: it exits 1 against the
+# pre-fix script and 0 against the current one (verified against a
+# reconstructed pre-fix check-prototype.ps1).
+$frag = New-Prototype -Name 'frag.html' -Body '<a class="btn" href="#a1b2c3">Go</a>'
 $r = Invoke-Check -Path $frag
-Assert-Equal '0' ([string]$r.Code) 'a hex-shaped URL fragment is not flagged as a raw hex value'
+Assert-Equal '0' ([string]$r.Code) 'a hex-shaped bare in-page anchor is not flagged as a raw hex value'
 
 # --- Test 13b: a raw hex WITHOUT a space after the colon still fails. This is
-# the case rule 2 must keep catching - it is the mirror image of Tests 12/13,
-# proving the declaration-value check is not simply "always pass" or anchored
-# so tightly it stops catching real violations.
+# a forward-looking correctness guard for Test-InDeclarationValue, not a
+# regression test for the hex-position fix itself - it passes identically
+# against the pre-fix script too (verified), because the pre-fix rule had
+# false positives (Tests 12/13's shapes) but no false negatives. It is still
+# worth keeping: it proves the declaration-value check does not overcorrect
+# into "anchored so tightly it stops catching real violations."
 $hexNoSpace = New-Prototype -Name 'hexnospace.html' -ExtraCss '.custom { background:#abc; }' -Body '<button class="btn">Go</button>'
 $r = Invoke-Check -Path $hexNoSpace
 Assert-Equal 'True' ([string]($r.Code -ne 0))         'a raw hex immediately after a colon (no space) still fails'
 Assert-Equal 'True' ([string]($r.Out -match '#abc'))  'the offending no-space hex value is named'
 
 # --- Test 13c: a raw hex separated from its property's colon by other value
-# tokens (a length and a keyword) still fails. This is the exact shape the
-# real ui-library/components.css uses for borders ("border: 1px solid ...")
-# and is the case an over-eager "must immediately follow a colon" anchor
-# would miss.
+# tokens (a length and a keyword) still fails. Like 13b, this is a
+# forward-looking correctness guard, not a regression test for this fix - it
+# also passes identically against the pre-fix script (verified). What it
+# guards against is a DIFFERENT, hypothetical fix: a naive "hex must
+# immediately follow a colon" anchor, which would break on this exact shape.
+# It is the exact pattern the real ui-library/components.css uses for borders
+# ("border: 1px solid ...").
 $hexMultiValue = New-Prototype -Name 'hexmultivalue.html' -ExtraCss '.custom { border: 1px solid #abcdef; }' -Body '<button class="btn">Go</button>'
 $r = Invoke-Check -Path $hexMultiValue
 Assert-Equal 'True' ([string]($r.Code -ne 0))            'a raw hex several value-tokens after the colon still fails'

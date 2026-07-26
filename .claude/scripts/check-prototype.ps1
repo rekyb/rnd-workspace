@@ -100,6 +100,15 @@ function Get-NormalizedText {
 # value tokens (a length, a keyword) between the colon and the hex, so an
 # immediate-colon anchor would miss it as a genuine violation. Verified
 # against the real ui-library/components.css multi-value declarations.
+#
+# Known limitation (not a regression - the pre-fix rule shared it too, since
+# it never looked backward at all): the scan has no idea whether the ':' it
+# finds is CSS or just prose. Markup like "<p>Open: 9:00am</p> See #a1b2c3"
+# has no {/}/; between the "9:00am" colon and the hex-shaped fragment that
+# follows, so this reports a false positive there. Deliberately not narrowed
+# further - a tighter heuristic risks the opposite failure, missing a genuine
+# raw-style violation in real CSS (see the multi-value case above). If this
+# ever needs tightening, treat it as a design decision, not a quick patch.
 function Test-InDeclarationValue {
     param([string]$Text, [int]$Pos)
     $boundary = -1
