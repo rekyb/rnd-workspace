@@ -79,6 +79,22 @@ $src6 = Join-Path $root 'E.md'
 $out6 = Get-Content (Join-Path $root 'E.visual.md') -Raw
 Assert-Equal 'True' ([string]($out6 -match '!\[already\]\(platforms/headspace/reference/01-paywall\.png\)')) 'pre-existing image embed is preserved'
 
+# --- Test 7: BOM-less UTF-8 source survives the round trip (regression)
+# PS 5.1's Get-Content (no -Encoding) falls back to the system ANSI codepage for a
+# BOM-less file, mangling non-ASCII characters like em-dashes. Real markdown in this
+# repo is routinely written as UTF-8 *without* a BOM, so this must be covered
+# separately from the other fixtures, which are all written via
+# Set-Content -Encoding utf8 (which emits a BOM in PS 5.1) and would never exercise
+# this path.
+$src7 = Join-Path $root 'F.md'
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[IO.File]::WriteAllText($src7, 'Evidence: [Headspace — paywall](https://mobbin.com/screens/abc123)', $utf8NoBom)
+$src7Bytes = [IO.File]::ReadAllBytes($src7)
+Assert-Equal 'False' ([string]($src7Bytes.Count -ge 3 -and $src7Bytes[0] -eq 0xEF -and $src7Bytes[1] -eq 0xBB -and $src7Bytes[2] -eq 0xBF)) 'fixture for Test 7 is confirmed BOM-less'
+& powershell -NoProfile -File $ScriptUnderTest -Source $src7 | Out-Null
+$out7 = Get-Content (Join-Path $root 'F.visual.md') -Raw
+Assert-Equal 'True' ([string]($out7 -match '!\[Headspace — paywall\]\(platforms/headspace/reference/01-paywall\.png\)')) 'BOM-less UTF-8 source: em-dash survives and link is swapped'
+
 Remove-Item -Recurse -Force $root
 if ($script:Failures -gt 0) { Write-Host "`n$($script:Failures) failure(s)" -ForegroundColor Red; exit 1 }
 Write-Host "`nAll tests passed" -ForegroundColor Green

@@ -24,6 +24,21 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# --- Read a text file as UTF-8, correctly handling both BOM'd and BOM-less files.
+# PS 5.1's Get-Content (no -Encoding) falls back to the system ANSI codepage for
+# BOM-less files, which mangles any non-ASCII character (em-dashes, etc). This repo's
+# markdown is routinely written as UTF-8 without a BOM, so that fallback is wrong here.
+# [IO.File]::ReadAllText/ReadAllLines auto-detect a BOM if present (UTF-8/16/32) and
+# otherwise decode as UTF-8 -- exactly the behavior we want for both cases.
+function Read-Utf8Text {
+    param([string]$Path)
+    return [IO.File]::ReadAllText($Path)
+}
+function Read-Utf8Lines {
+    param([string]$Path)
+    return [IO.File]::ReadAllLines($Path)
+}
+
 if (-not (Test-Path -LiteralPath $Source)) {
     Write-Error "Source not found: $Source"
     exit 1
@@ -45,7 +60,7 @@ if (Test-Path -LiteralPath $platformsDir) {
 }
 
 foreach ($rf in $refFiles) {
-    foreach ($line in (Get-Content -LiteralPath $rf.FullName)) {
+    foreach ($line in (Read-Utf8Lines -Path $rf.FullName)) {
         if ($line -notmatch '^\s*\|') { continue }
         $cells = $line.Split('|') | ForEach-Object { $_.Trim() }
         # Split on '|' yields empty leading/trailing entries for a well-formed row
@@ -70,7 +85,7 @@ function Get-RelativePath {
 }
 
 # --- Transform. (?<!!) ensures an existing image embed is never re-matched.
-$text = Get-Content -LiteralPath $Source -Raw
+$text = Read-Utf8Text -Path $srcItem.FullName
 $candidates = 0
 $swapped    = 0
 
