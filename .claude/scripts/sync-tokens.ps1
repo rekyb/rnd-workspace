@@ -22,6 +22,8 @@
 #>
 [CmdletBinding()]
 param(
+    [string]$RepoUrl = 'https://gitlab.solveeducation.org/solveearn/solveeducation.git',
+    [string]$Ref = 'main',
     [string]$SourcePath,
     [string]$UiRoot,
     [string]$SourceSha = '(local)',
@@ -29,6 +31,11 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+
+$script:TempClone = $null
+
+# Default -UiRoot to <repo-root>/ui so the command works with no arguments.
+if (-not $UiRoot) { $UiRoot = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'ui' }
 
 $StartPrefix = '/* TOKENS:START'
 $EndPrefix   = '/* TOKENS:END'
@@ -44,6 +51,32 @@ function Write-Utf8NoBom {
     [IO.File]::WriteAllText($Path, $Text, $enc)
 }
 
+function Remove-TempClone {
+    if ($script:TempClone -and (Test-Path -LiteralPath $script:TempClone)) {
+        Remove-Item -Recurse -Force $script:TempClone -ErrorAction SilentlyContinue
+    }
+}
+
+# Run a native git command whose stderr we merge for logging. Under
+# $ErrorActionPreference = 'Stop' (set for this whole script), a native command's
+# stderr line reaching the pipeline via 2>&1 is promoted to a terminating error the
+# instant it is produced - even though it is only being piped to Out-Null - so the
+# script would abort on git's very first progress line ("Cloning into ...") instead
+# of running to completion and letting us branch on $LASTEXITCODE. Flip the
+# preference to Continue only around the native call, then restore it, so 2>&1 can
+# be drained quietly and $LASTEXITCODE can be inspected normally afterward.
+function Invoke-GitQuiet {
+    param([string[]]$GitArgs)
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        & git @GitArgs 2>&1 | Out-Null
+    } finally {
+        $ErrorActionPreference = $prevEap
+    }
+    return $LASTEXITCODE
+}
+
 # Parse "--name: value;" declarations into an ordered map for diff reporting.
 function Get-TokenMap {
     param([string]$Css)
@@ -54,6 +87,87 @@ function Get-TokenMap {
         if (-not $map.Contains($name)) { $map[$name] = $val }
     }
     return $map
+}
+
+# Strip every /* ... */ CSS comment from components.css. Verified against the
+# current source that no content: string embeds a comment-like sequence (the
+# count of literal /* tokens equals the count of */ tokens, and none appear
+# inside a quoted string), so a single non-greedy, dot-matches-newline pass is
+# safe. If that invariant ever breaks upstream, this needs string-aware parsing.
+function Remove-CssComments {
+    param([string]$Css)
+    return [regex]::Replace($Css, '(?s)/\*.*?\*/', '')
+}
+
+# Removes @import statements whose target is an external (http/https) host -
+# those fetch from a remote origin, which breaks the CSP / self-contained
+# requirement every claude.ai Artifact consumer of this library depends on. A
+# root-relative local path such as url("/brand/logo-icon.svg") is left alone;
+# it is not a remote fetch, just a link that renders as a missing image until
+# the asset is vendored in - a known, accepted limitation, not a CSP problem.
+function Remove-ExternalCssImports {
+    param([string]$Css)
+    $rx = New-Object System.Text.RegularExpressions.Regex('@import[^;]*;', 'Singleline')
+    return $rx.Replace($Css, {
+        param($m)
+        if ($m.Value -match 'https?://') { '' } else { $m.Value }
+    })
+}
+
+# Single scrub entry point for components.css, used identically by the write
+# path and the -Check path so a difference in scrubbing can never show up as
+# phantom drift.
+function ConvertTo-ScrubbedComponents {
+    param([string]$Css)
+    $noComments = Remove-CssComments -Css $Css
+    return Remove-ExternalCssImports -Css $noComments
+}
+
+# Recursively removes every "$description" property from a parsed JSON object
+# graph (PSCustomObject nodes and array nodes), mutating in place. Values,
+# nested objects, and arrays of objects are all walked.
+function Remove-JsonDescriptions {
+    param($Node)
+    if ($Node -is [System.Management.Automation.PSCustomObject]) {
+        if ($Node.PSObject.Properties.Name -contains '$description') {
+            $Node.PSObject.Properties.Remove('$description')
+        }
+        foreach ($p in @($Node.PSObject.Properties)) {
+            Remove-JsonDescriptions -Node $p.Value | Out-Null
+        }
+    } elseif ($Node -is [System.Array]) {
+        foreach ($item in $Node) { Remove-JsonDescriptions -Node $item | Out-Null }
+    }
+    return $Node
+}
+
+# Single scrub entry point for tokens.json: parse (never regex a JSON file),
+# strip every $description, and re-emit. Reformatting is fine - tokens.json
+# exists only for drift checking, not to be hand-read. Asserts the two
+# invariants that matter: the result still parses as JSON, and the number of
+# $value leaves is unchanged (a corrupt scrub would silently drop tokens,
+# which is worse than a loud failure). Used identically by the write path and
+# the -Check path.
+function ConvertTo-ScrubbedTokensJson {
+    param([string]$Json)
+    $beforeCount = ([regex]::Matches($Json, '"\$value"')).Count
+    $obj = $Json | ConvertFrom-Json
+    Remove-JsonDescriptions -Node $obj | Out-Null
+    $scrubbed = $obj | ConvertTo-Json -Depth 100
+
+    $reparsed = $null
+    try { $reparsed = $scrubbed | ConvertFrom-Json } catch { $reparsed = $null }
+    if ($null -eq $reparsed) {
+        throw "tokens.json scrub failed: the scrubbed output does not parse as JSON."
+    }
+    if (([regex]::Matches($scrubbed, '\$description')).Count -ne 0) {
+        throw ("tokens.json scrub failed: " + '$description' + " survived the scrub.")
+    }
+    $afterCount = ([regex]::Matches($scrubbed, '"\$value"')).Count
+    if ($afterCount -ne $beforeCount) {
+        throw ("tokens.json scrub failed: " + '$value' + " leaf count changed from $beforeCount to $afterCount.")
+    }
+    return $scrubbed
 }
 
 function Compare-TokenMaps {
@@ -154,7 +268,40 @@ function Split-TokenBlock {
 # on stdout with an explicit exit code keeps the error message inspectable by
 # callers in that situation, while still failing loudly (non-zero exit).
 try {
-    if (-not $SourcePath) { throw "-SourcePath is required." }
+try {
+    if (-not $SourcePath) {
+        $base = $env:TEMP
+        if (-not $base) { $base = [System.IO.Path]::GetTempPath() }
+        $script:TempClone = Join-Path $base ("setokens_" + [guid]::NewGuid().ToString('N'))
+        Write-Host "cloning $RepoUrl ($Ref) - about 29 MB, this takes a minute..."
+        $env:GIT_TERMINAL_PROMPT = '0'
+
+        # git clone --branch accepts branch/tag names only - it rejects a commit SHA.
+        # A 40-char hex Ref is treated as a SHA: clone the default branch shallowly,
+        # then try to fetch that exact object. Many servers refuse to serve an
+        # arbitrary SHA that isn't a branch/tag tip; if so, fail loudly rather than
+        # silently syncing the default branch while reporting success.
+        $isSha = $Ref -match '^[0-9a-fA-F]{40}$'
+
+        if ($isSha) {
+            if ((Invoke-GitQuiet @('clone', '--depth', '1', $RepoUrl, $script:TempClone)) -ne 0) {
+                throw "git clone failed for $RepoUrl. Anonymous read access may have been revoked. The committed ui/ files are unaffected; only refresh is blocked."
+            }
+            if ((Invoke-GitQuiet @('-C', $script:TempClone, 'fetch', '--depth', '1', 'origin', $Ref)) -ne 0) {
+                throw "git fetch failed for commit $Ref against $RepoUrl. The server does not appear to permit fetching an arbitrary SHA directly. Refusing to fall back to the default branch, since syncing the wrong ref while reporting success is the worst possible outcome."
+            }
+            if ((Invoke-GitQuiet @('-C', $script:TempClone, 'checkout', '--detach', 'FETCH_HEAD')) -ne 0) {
+                throw "git checkout failed for commit $Ref after the fetch against $RepoUrl succeeded."
+            }
+        } else {
+            if ((Invoke-GitQuiet @('clone', '--depth', '1', '--branch', $Ref, $RepoUrl, $script:TempClone)) -ne 0) {
+                throw "git clone failed for $RepoUrl ($Ref). Anonymous read access may have been revoked. The committed ui/ files are unaffected; only refresh is blocked."
+            }
+        }
+
+        $SourcePath = $script:TempClone
+        $SourceSha  = (& git -C $script:TempClone rev-parse HEAD).Trim()
+    }
     if (-not $UiRoot)     { throw "-UiRoot is required." }
 
     $globals = Join-Path $SourcePath 'apps\web\app\(frontend)\globals.css'
@@ -168,7 +315,14 @@ try {
     $tokensJson = Read-Utf8Text -Path $tokensJsonSrc
 
     $propCount  = [regex]::Matches($split.Tokens, '(?m)^\s*--[A-Za-z0-9-]+\s*:').Count
-    $classCount = ([regex]::Matches($split.Components, '(?m)^\.[A-Za-z][A-Za-z0-9_-]*') | ForEach-Object { $_.Value } | Sort-Object -Unique).Count
+
+    # tokens.css is never scrubbed (values only, already 0 comments, stays byte-
+    # identical). components.css and tokens.json ARE scrubbed - computed once here
+    # so the write path and the -Check comparison path can never scrub differently
+    # and report permanent phantom drift.
+    $scrubbedComponents = ConvertTo-ScrubbedComponents -Css $split.Components
+    $scrubbedTokensJson = ConvertTo-ScrubbedTokensJson -Json $tokensJson
+    $classCount = ([regex]::Matches($scrubbedComponents, '(?m)^\.[A-Za-z][A-Za-z0-9_-]*') | ForEach-Object { $_.Value } | Sort-Object -Unique).Count
 
     $tokensPath = Join-Path $UiRoot 'tokens.css'
     $compPath   = Join-Path $UiRoot 'components.css'
@@ -187,21 +341,23 @@ try {
         }
         if (-not (Test-Path -LiteralPath $compPath)) {
             $drift += "components.css is missing from $UiRoot"
-        } elseif ((Read-Utf8Text -Path $compPath) -ne $split.Components) {
-            $drift += "components.css differs from the source"
+        } elseif ((Read-Utf8Text -Path $compPath) -ne $scrubbedComponents) {
+            $drift += "components.css differs from the scrubbed source"
         }
         if (-not (Test-Path -LiteralPath $jsonPath)) {
             $drift += "tokens.json is missing from $UiRoot"
-        } elseif ((Read-Utf8Text -Path $jsonPath) -ne $tokensJson) {
-            $drift += "tokens.json differs from the source"
+        } elseif ((Read-Utf8Text -Path $jsonPath) -ne $scrubbedTokensJson) {
+            $drift += "tokens.json differs from the scrubbed source"
         }
 
         if ($drift.Count -gt 0) {
             Write-Host "DRIFT detected against $SourceSha" -ForegroundColor Red
             $drift | ForEach-Object { Write-Host $_ }
+            Remove-TempClone
             exit 1
         }
         Write-Host "in sync with $SourceSha ($propCount custom properties, $classCount class selectors)" -ForegroundColor Green
+        Remove-TempClone
         exit 0
     }
 
@@ -211,8 +367,8 @@ try {
     if (Test-Path -LiteralPath $tokensPath) { $previous = Get-TokenMap (Read-Utf8Text -Path $tokensPath) }
 
     Write-Utf8NoBom -Path $tokensPath -Text $split.Tokens
-    Write-Utf8NoBom -Path $compPath   -Text $split.Components
-    Write-Utf8NoBom -Path $jsonPath   -Text $tokensJson
+    Write-Utf8NoBom -Path $compPath   -Text $scrubbedComponents
+    Write-Utf8NoBom -Path $jsonPath   -Text $scrubbedTokensJson
 
     $stamp = (Get-Date).ToString('yyyy-MM-dd')
     $block = @"
@@ -231,7 +387,11 @@ try {
         if ($changes.Count -gt 0) { Write-Host "token changes:"; $changes | ForEach-Object { Write-Host $_ } }
         else { Write-Host "token changes: none" }
     }
+    Remove-TempClone
     exit 0
+} finally {
+    Remove-TempClone
+}
 } catch {
     Write-Host $_.Exception.Message
     exit 1

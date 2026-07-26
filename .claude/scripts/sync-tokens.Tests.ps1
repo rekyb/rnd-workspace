@@ -38,7 +38,7 @@ function New-UiRoot {
 }
 
 $GOOD = @"
-/* header comment */
+.marker-slot[data-note="REPLACE_MARKER"] { color: teal; }
 .pre { color: red; }
 /* TOKENS:START (generated from packages/tokens/tokens.json by build.mjs — do not edit by hand) */
 :root {
@@ -75,7 +75,7 @@ Assert-Equal ($expectedTokens + "`n") $tokensOut 'tokens.css is the lines strict
 # --- Test 2: components.css is the file minus that block minus both marker lines
 $compOut = [IO.File]::ReadAllText((Join-Path $ui 'components.css'), [System.Text.Encoding]::UTF8)
 $expectedComp = @"
-/* header comment */
+.marker-slot[data-note="REPLACE_MARKER"] { color: teal; }
 .pre { color: red; }
 .post { color: blue; }
 "@
@@ -102,10 +102,14 @@ Assert-Equal 'False' ([string]$hasBom) 'tokens.css is written without a BOM'
 # assertion doesn't depend on how PowerShell decoded sync-tokens.Tests.ps1 itself --
 # a script that is fully 7-bit ASCII has no such decoding decision to get wrong, so
 # neither side of this comparison can be mangled identically by that same mistake.
+# The marker is placed in a plain declaration value (REPLACE_MARKER), not inside a
+# comment - components.css now strips every comment, so a marker planted inside one
+# would prove the wrong thing (that comment-scrubbing works, not that a non-comment
+# byte sequence round-trips untouched).
 $emDash = [char]0x2014
 $eAcute = [char]0x00E9
 $marker = "caf$eAcute $emDash em-dash"
-$srcNonAscii = $GOOD.Replace('/* header comment */', "/* $marker */")
+$srcNonAscii = $GOOD.Replace('REPLACE_MARKER', $marker)
 $src5 = New-SourceFixture -Globals $srcNonAscii
 $ui5  = New-UiRoot
 & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src5 -UiRoot $ui5 | Out-Null
@@ -183,7 +187,49 @@ $srcBytes = [IO.File]::ReadAllBytes($ScriptUnderTest)
 $nonAscii = @($srcBytes | Where-Object { $_ -gt 127 })
 Assert-Equal '0' ([string]$nonAscii.Count) 'sync-tokens.ps1 source contains no non-ASCII bytes'
 
-foreach ($d in @($src,$ui,$src5,$ui5,$src6,$ui6,$src7,$ui7,$src8,$ui8,$src9,$ui9)) { Remove-Item -Recurse -Force $d -ErrorAction SilentlyContinue }
+# --- Test 17: components.css scrub - CSS comments and external @import are removed,
+# a root-relative local url() is kept, and an ordinary class selector survives
+$secretMarker = 'SECRET-DO-NOT-COPY-9f8e-projectId'
+$scrubGlobals = @"
+/* internal note: $secretMarker - DesignSync rebrand notes, see PRD wiki/prd/x */
+@import url("https://fonts.googleapis.com/css2?family=Test");
+.keep-me { background: url("/brand/logo-icon.svg") center / contain no-repeat; }
+/* TOKENS:START (generated from packages/tokens/tokens.json by build.mjs — do not edit by hand) */
+:root {
+  --pri: #ffcb1d;
+}
+/* TOKENS:END */
+.post-keep { color: blue; }
+"@
+$src17 = New-SourceFixture -Globals $scrubGlobals
+$ui17  = New-UiRoot
+& powershell -NoProfile -File $ScriptUnderTest -SourcePath $src17 -UiRoot $ui17 | Out-Null
+$comp17 = [IO.File]::ReadAllText((Join-Path $ui17 'components.css'), [System.Text.Encoding]::UTF8)
+Assert-Equal 'False' ([string]($comp17 -match [regex]::Escape($secretMarker)))        'components.css scrub removes a secret carried in a comment'
+Assert-Equal 'False' ([string]($comp17 -match 'DesignSync'))                          'components.css scrub removes the DesignSync comment text'
+Assert-Equal 'False' ([string]($comp17 -match '/\*'))                                 'components.css scrub leaves no comment-open token at all'
+Assert-Equal 'False' ([string]($comp17 -match 'https?://'))                           'components.css scrub removes the external @import (no http(s):// survives)'
+Assert-Equal 'True'  ([string]($comp17 -match [regex]::Escape('url("/brand/logo-icon.svg")'))) 'components.css scrub keeps the root-relative local url()'
+Assert-Equal 'True'  ([string]($comp17 -match [regex]::Escape('.keep-me')))            'components.css scrub keeps a known class selector before the token block'
+Assert-Equal 'True'  ([string]($comp17 -match [regex]::Escape('.post-keep')))          'components.css scrub keeps a known class selector after the token block'
+
+# --- Test 18: tokens.json scrub - every $description is dropped, every $value survives
+$jsonWithDesc = '{"$description":"top-level secret PRD note","color":{"$type":"color","pri":{"$value":"#ffcb1d","$description":"secret design note"},"sec":{"$value":"#112233"}}}'
+$src18 = New-SourceFixture -Globals $GOOD
+[IO.File]::WriteAllText((Join-Path $src18 'packages\tokens\tokens.json'), $jsonWithDesc, $Utf8NoBom)
+$ui18  = New-UiRoot
+& powershell -NoProfile -File $ScriptUnderTest -SourcePath $src18 -UiRoot $ui18 | Out-Null
+$json18 = [IO.File]::ReadAllText((Join-Path $ui18 'tokens.json'), [System.Text.Encoding]::UTF8)
+Assert-Equal 'False' ([string]($json18 -match [regex]::Escape('$description'))) 'tokens.json scrub removes every $description'
+Assert-Equal 'False' ([string]($json18 -match 'secret'))                       'tokens.json scrub removes the description text itself'
+Assert-Equal 'True'  ([string]($json18 -match [regex]::Escape('$value')))      'tokens.json scrub keeps $value leaves'
+Assert-Equal 'True'  ([string]($json18 -match 'ffcb1d'))                       'tokens.json scrub keeps the pri value data'
+Assert-Equal 'True'  ([string]($json18 -match '112233'))                       'tokens.json scrub keeps the sec value data'
+$reparsed18 = $null
+try { $reparsed18 = $json18 | ConvertFrom-Json } catch { $reparsed18 = $null }
+Assert-Equal 'True' ([string]($null -ne $reparsed18)) 'tokens.json scrub output still parses as JSON'
+
+foreach ($d in @($src,$ui,$src5,$ui5,$src6,$ui6,$src7,$ui7,$src8,$ui8,$src9,$ui9,$src17,$ui17,$src18,$ui18)) { Remove-Item -Recurse -Force $d -ErrorAction SilentlyContinue }
 if ($script:Failures -gt 0) { Write-Host "`n$($script:Failures) failure(s)" -ForegroundColor Red; exit 1 }
 Write-Host "`nAll tests passed" -ForegroundColor Green
 exit 0
