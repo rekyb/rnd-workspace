@@ -50,6 +50,20 @@ Judge it on:
    enough that you could later tell whether it was met?
 5. **Risks** — paywalls, login/PII exposure, platforms that may block capture,
    thin-evidence areas. Are they anticipated?
+6. **Source justification (benchmark only).** Every platform in `## Per-platform capture plan`
+   must declare a **Source**. Mobbin is the default and needs no justification. Any platform
+   sourced from **Chrome must name a C1–C5 trigger**
+   (`.claude/references/mobbin-sourcing.md`): C1 our own product · C2 no Mobbin coverage,
+   verified by search · C3 live behaviour needed · C4 currency is the question · C5
+   Android-specific. Flag as a **must-fix**:
+   - a Chrome platform with no trigger, or a trigger that does not fit the stated research
+     question;
+   - a **C2 claim with no evidence the search was actually run** — "Mobbin probably doesn't
+     have it" is not a trigger;
+   - a Mobbin-sourced platform whose research questions require live system behaviour, which
+     is C3 and needs Chrome instead.
+   Do **not** flag Chrome use that is properly justified — the goal is deliberate sourcing,
+   not minimal Chrome use.
 
 Output: a short, specific critique — what is strong, what must change, what is
 missing — ending with a one-line verdict: **Plan is sound / Plan needs revision
