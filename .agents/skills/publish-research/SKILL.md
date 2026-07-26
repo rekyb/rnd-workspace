@@ -17,6 +17,14 @@ Steps:
    - If the remote repo is **public** (`gh repo view --json visibility`), and any capture or session note may contain PII, STOP and flag it to the user before pushing.
    - Confirm no paid-feature transaction happened.
    - **Litreview corpus guard:** if the study is `Type: litreview`, confirm `corpus/` is not staged (it must stay gitignored via `research/*/corpus/`). If any `research/*/corpus/*` file is tracked or staged, STOP and tell the user — supplied source documents (copyright/PII) must never be pushed. Only `sources.md` records what was used.
+   - **Mobbin redistribution guard (required).** Run:
+
+     ```bash
+     git diff --cached --name-only | grep -E '(/reference/|\.visual\.md$)' && echo LEAK || echo "clean — no reference/ or .visual.md staged"
+     git diff --cached --name-only | grep -E '\.docx$' | grep -v '/docx/' && echo DOCX_LEAK || echo "clean — no stray .docx staged"
+     ```
+
+     Both lines always print something and exit 0. If a line prints `LEAK` or `DOCX_LEAK` (with the offending path above it), **STOP** and tell the user exactly which files are staged and why they cannot be pushed: `reference/` holds licensed Mobbin library images, `*.visual.md` embeds them, and a `.docx` outside the gitignored `docx/` folder may embed them invisibly. This repo is public. Unstage them and re-run the gate — do not use `git add -f` to override. If a line instead prints its `clean — …` message, that half of the gate passed.
    Only continue once this is clean.
 
 4. **Stage & commit.** Stage the active research folder (and any workspace docs you changed this session — `README.md`, `CLAUDE.md`, `.claude/`, `.agents/`). Show `git status --short` first. Commit with a clear, conventional message summarizing what was captured/synthesized (or use the user's custom message if provided). End the commit body with the standard `Co-Authored-By` trailer.
