@@ -3,7 +3,7 @@
 - **Source study:** 2026-07-20-unified-onboarding-synthesis-and-patterns (Type: litreview)
 - **Derived from:** SYNTHESIS.md (reviewed 2026-07-20)
 - **Audience:** design (Figma pickup) + engineering (scoping)
-- **Status:** Approved
+- **Status:** Superseded 2026-07-21 by `SPEC-2.md`; current spec is `SPEC-5.md`. Retained for decision provenance — do not build from this file.
 
 ## Overview
 This spec defines the unified onboarding architecture for solve.education, balancing low initial friction with strict job-readiness credentialing requirements. The flow is built on a "Try-first" model that defers registration, uses code-first routing for program cohorts, and mandates constructive baseline assessments.
