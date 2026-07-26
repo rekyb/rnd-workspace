@@ -275,17 +275,21 @@ the `CLAUDE.md` / `GEMINI.md` / `README.md` rewrites.
 grafted with the four sections only the screen-by-screen variant carries:
 
 ```
- 1  TL;DR                          10  Users & Roles              (grafted)
- 2  Problem & Evidence  → cites     11  Screens, IA & Empty States (grafted)
- 3  Primary JTBD           SYNTHESIS 12  Modal Reference            (grafted)
- 4  Related Jobs                    13  Data Model                 (grafted)
- 5  Success Metrics                 14  Non-Goals
- 6  Appetite                        15  Rabbit Holes & Open Questions
- 7  Solution Shape  → Mermaid flow  16  Technical Constraints
- 8  Vertical Slices                 17  Dependencies
- 9  Acceptance Criteria per Slice   App Prototype Element Dictionary → ui/COMPONENTS.md
-                                        Stakeholder Review
+ 1  TL;DR                            10  Users & Roles               (grafted)
+ 2  Problem & Evidence               11  Screens, IA & Empty States  (grafted)
+ 3  Primary JTBD                     12  Modal Reference             (grafted)
+ 4  Related Jobs                     13  Data Model                  (grafted)
+ 5  Success Metrics                  14  Non-Goals
+ 6  Appetite                         15  Rabbit Holes & Open Questions
+ 7  Solution Shape                   16  Technical Constraints
+ 8  Vertical Slices                  17  Dependencies
+ 9  Acceptance Criteria per Slice    App Prototype Element Dictionary
+                                         Stakeholder Review
 ```
+
+Three sections carry a binding to something outside the PRD: §2 **Problem & Evidence**
+cites the study's `SYNTHESIS.md`, §7 **Solution Shape** carries a Mermaid flowchart, and
+the **Prototype Element Dictionary** appendix points at `ui/COMPONENTS.md`.
 
 `/draft-spec` is **renamed** to `/draft-prd`; the FR/MoSCoW format is retired, since §9
 Acceptance Criteria per Slice already carries that content. The command inherits the
