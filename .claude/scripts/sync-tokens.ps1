@@ -10,6 +10,13 @@
   of the source text — nothing is regenerated, so upstream generator changes never need
   tracking here.
 
+.NOTES
+  Failures are reported on stdout (via Write-Host), not stderr, and signaled only by a
+  non-zero exit code. This is deliberate: PS 5.1 aborts a caller that merges a child's
+  stderr with 2>&1 under $ErrorActionPreference = 'Stop', before that caller ever gets
+  to inspect $LASTEXITCODE or the message. Routing errors to stdout keeps both readable
+  to callers in that situation. Branch on $LASTEXITCODE, not on stderr content.
+
 .EXAMPLE
   powershell -File sync-tokens.ps1 -SourcePath C:\tmp\checkout -UiRoot C:\repo\ui
 #>
