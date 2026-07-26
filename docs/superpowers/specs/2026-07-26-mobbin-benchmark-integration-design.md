@@ -14,9 +14,12 @@ The workspace benchmarks products by driving Claude-in-Chrome against them and c
 the captures (`platforms/<platform>/screenshots/*.png`, `flow.gif`). That model has four
 standing limits:
 
-1. **Web-only.** Chrome captures web surfaces. Every `research/PATTERNS.md` entry carries a
-   *"desktop-web capture"* caveat, while the active design work (`design/ai-literacy-app`)
-   is explicitly mobile-first and Android-first.
+1. **Web-only.** Chrome captures web surfaces. 3 of the 44 `research/PATTERNS.md` entries
+   carry an explicit *"desktop-web capture"* caveat (verified 2026-07-26:
+   `grep -c "desktop-web" research/PATTERNS.md` → 3, against 44 `###` entries), and the
+   limit applies to the whole library whether or not each entry spells it out — while the
+   active design work (`design/ai-literacy-app`) is explicitly mobile-first and
+   Android-first.
 
    **Correction (verified 2026-07-26 against the live tool schemas):** Mobbin's `platform`
    parameter accepts **`ios` and `web` only — there is no Android**. So Mobbin adds native
