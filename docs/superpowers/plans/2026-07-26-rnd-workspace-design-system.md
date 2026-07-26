@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Bring the production design tokens and component CSS into this repo as a shared `ui/` library, synced by a drift-checkable command, with a local gate that enforces ADR-0003 on any prototype built against it.
+**Goal:** Bring the production design tokens and component CSS into this repo as a shared `ui-library/` library, synced by a drift-checkable command, with a local gate that enforces ADR-0003 on any prototype built against it.
 
-**Architecture:** `globals.css` from the production repo carries a `TOKENS:START`/`TOKENS:END` marker pair. `sync-tokens.ps1` shallow-clones the source, slices the raw text at those markers, and writes the two halves to `ui/tokens.css` (the 166 custom properties) and `ui/components.css` (the 239 class selectors) byte-exactly. Nothing is regenerated or reinterpreted, so upstream generator changes never need tracking here. `check-prototype.ps1` then validates any built prototype against those two files.
+**Architecture:** `globals.css` from the production repo carries a `TOKENS:START`/`TOKENS:END` marker pair. `sync-tokens.ps1` shallow-clones the source, slices the raw text at those markers, and writes the two halves to `ui-library/tokens.css` (the 166 custom properties) and `ui-library/components.css` (the 239 class selectors) byte-exactly. Nothing is regenerated or reinterpreted, so upstream generator changes never need tracking here. `check-prototype.ps1` then validates any built prototype against those two files.
 
 **Tech Stack:** Windows PowerShell 5.1 (no PowerShell 7 features), git CLI, dependency-free `*.Tests.ps1` harnesses matching `.claude/scripts/md_visualize.Tests.ps1`.
 
@@ -13,10 +13,10 @@
 - Source repo: `https://gitlab.solveeducation.org/solveearn/solveeducation.git`, default ref `main`.
 - Source file: `apps/web/app/(frontend)/globals.css`. **The path contains parentheses** — always use `Join-Path` and `-LiteralPath`, never `-Path` with wildcard expansion.
 - Marker detection is by **prefix**, not full string: a line whose trimmed start is `/* TOKENS:START` and a line whose trimmed start is `/* TOKENS:END`. The full START marker text mentions `build.mjs` and contains an em-dash; matching it verbatim would be brittle.
-- `ui/tokens.css` must be **byte-identical** to the source lines lying strictly between the two marker lines. Preserve the source's existing line endings — do not normalize.
+- `ui-library/tokens.css` must be **byte-identical** to the source lines lying strictly between the two marker lines. Preserve the source's existing line endings — do not normalize.
 - All files are written as **UTF-8 without BOM** via `[IO.File]::WriteAllText($path, $text, (New-Object System.Text.UTF8Encoding($false)))`. PS 5.1's `Set-Content -Encoding utf8` emits a BOM and must not be used for these outputs.
 - All reads use `[IO.File]::ReadAllText($path, [System.Text.Encoding]::UTF8)`. PS 5.1's `Get-Content` without `-Encoding` falls back to the system ANSI codepage on BOM-less files and mangles non-ASCII.
-- **Disclosure boundary (hard):** the sync may write only inside `ui/`. It must never copy `packages/tokens/manifest.json`, anything from the source repo's `.claude/`, or anything under `apps/` other than the two slices of `globals.css`.
+- **Disclosure boundary (hard):** the sync may write only inside `ui-library/`. It must never copy `packages/tokens/manifest.json`, anything from the source repo's `.claude/`, or anything under `apps/` other than the two slices of `globals.css`.
 - The clone goes to the session scratchpad, never inside the workspace, and is deleted afterwards.
 - No PowerShell chain operators (`&&`, `||`), no ternary, no `??` — PS 5.1 does not have them. Use `;` and `if`.
 - Commits use `-c user.email=rekybongso@gmail.com -c user.name="Claude Code"` and end with the standard `Co-Authored-By` trailer.
@@ -189,13 +189,13 @@ Create `.claude/scripts/sync-tokens.ps1`:
 ```powershell
 <#
 .SYNOPSIS
-  Sync the production design tokens and component CSS into this repo's ui/ folder.
+  Sync the production design tokens and component CSS into this repo's ui-library/ folder.
 
 .DESCRIPTION
   Slices apps/web/app/(frontend)/globals.css from the Solve Education production repo
   at its TOKENS:START / TOKENS:END markers. The lines strictly between the markers
-  become ui/tokens.css (the design tokens); the rest of the file, minus both marker
-  lines, becomes ui/components.css (the component classes). Both are byte-exact copies
+  become ui-library/tokens.css (the design tokens); the rest of the file, minus both marker
+  lines, becomes ui-library/components.css (the component classes). Both are byte-exact copies
   of the source text — nothing is regenerated, so upstream generator changes never need
   tracking here.
 
@@ -304,7 +304,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 
 **Interfaces:**
 - Consumes: `Split-TokenBlock`, `Read-Utf8Text`, `Write-Utf8NoBom` from Task 1.
-- Produces: `-Check` switch; `ui/tokens.json`; `ui/TOKENS.md` carrying a generated block between `<!-- PROVENANCE:START -->` and `<!-- PROVENANCE:END -->`. Task 3 supplies the real commit SHA via `-SourceSha`.
+- Produces: `-Check` switch; `ui-library/tokens.json`; `ui-library/TOKENS.md` carrying a generated block between `<!-- PROVENANCE:START -->` and `<!-- PROVENANCE:END -->`. Task 3 supplies the real commit SHA via `-SourceSha`.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -333,10 +333,10 @@ Assert-Equal 'True'  ([string]($prov2 -match 'Keep me\.'))  'hand-written prose 
 Assert-Equal 'True'  ([string]($prov2 -match ('b' * 40)))   'provenance block is refreshed with the new SHA'
 Assert-Equal 'False' ([string]($prov2 -match ('a' * 40)))   'the previous SHA is replaced, not appended'
 
-# --- Test 12: --check exits 0 and writes nothing when ui/ matches the source
+# --- Test 12: --check exits 0 and writes nothing when ui-library/ matches the source
 $before = (Get-ChildItem -LiteralPath $ui9 -File | ForEach-Object { "$($_.Name):$($_.Length)" }) -join '|'
 & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src9 -UiRoot $ui9 -SourceSha ('b' * 40) -Check | Out-Null
-Assert-Equal '0' ([string]$LASTEXITCODE) '--check exits 0 when ui/ is in sync'
+Assert-Equal '0' ([string]$LASTEXITCODE) '--check exits 0 when ui-library/ is in sync'
 $after = (Get-ChildItem -LiteralPath $ui9 -File | ForEach-Object { "$($_.Name):$($_.Length)" }) -join '|'
 Assert-Equal $before $after '--check writes nothing when in sync'
 
@@ -414,7 +414,7 @@ function Update-ProvenanceBlock {
         return $new + "`n`n" + $existing
     }
     return @"
-# ui/tokens.css — provenance
+# ui-library/tokens.css — provenance
 
 $new
 
@@ -516,7 +516,7 @@ Expected: PASS — all assertions green, exit 0.
 git add .claude/scripts/sync-tokens.ps1 .claude/scripts/sync-tokens.Tests.ps1
 git -c user.email=rekybongso@gmail.com -c user.name="Claude Code" commit -m "feat: add tokens.json copy, provenance block, and --check drift guard
 
---check compares ui/ against the source, reports per-token differences,
+--check compares ui-library/ against the source, reports per-token differences,
 and writes nothing. Hand-written prose in TOKENS.md survives re-syncs.
 
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
@@ -528,7 +528,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 
 **Files:**
 - Modify: `.claude/scripts/sync-tokens.ps1`
-- Create: `ui/tokens.css`, `ui/components.css`, `ui/tokens.json`, `ui/TOKENS.md` (all produced by running the script)
+- Create: `ui-library/tokens.css`, `ui-library/components.css`, `ui-library/tokens.json`, `ui-library/TOKENS.md` (all produced by running the script)
 
 **Interfaces:**
 - Consumes: everything from Tasks 1 and 2.
@@ -555,7 +555,7 @@ Immediately after the `$ErrorActionPreference = 'Stop'` line, add:
 $script:TempClone = $null
 
 # Default -UiRoot to <repo-root>/ui so the command works with no arguments.
-if (-not $UiRoot) { $UiRoot = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'ui' }
+if (-not $UiRoot) { $UiRoot = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'ui-library' }
 ```
 
 Replace the `if (-not $SourcePath) { throw "-SourcePath is required." }` line with:
@@ -569,7 +569,7 @@ if (-not $SourcePath) {
     $env:GIT_TERMINAL_PROMPT = '0'
     & git clone --depth 1 --branch $Ref $RepoUrl $script:TempClone 2>&1 | Out-Null
     if ($LASTEXITCODE -ne 0) {
-        throw "git clone failed for $RepoUrl ($Ref). Anonymous read access may have been revoked. The committed ui/ files are unaffected; only refresh is blocked."
+        throw "git clone failed for $RepoUrl ($Ref). Anonymous read access may have been revoked. The committed ui-library/ files are unaffected; only refresh is blocked."
     }
     $SourcePath = $script:TempClone
     $SourceSha  = (& git -C $script:TempClone rev-parse HEAD).Trim()
@@ -605,13 +605,13 @@ Expected: clone progress, then `tokens.css: 166 custom properties` and `componen
 Run each and confirm the stated value:
 
 ```bash
-grep -cE '^\s*--[A-Za-z0-9-]+\s*:' ui/tokens.css                          # expect 166
-grep -oE '^\.[A-Za-z][A-Za-z0-9_-]*' ui/components.css | sort -u | wc -l   # expect 239
-wc -l < ui/components.css                                                  # expect 2515
-grep -cE '^\s*--[A-Za-z0-9-]+\s*:' ui/components.css                       # expect 0
-grep -oE '\b[0-9a-f]{40}\b' ui/TOKENS.md                                   # expect a 40-char SHA
+grep -cE '^\s*--[A-Za-z0-9-]+\s*:' ui-library/tokens.css                          # expect 166
+grep -oE '^\.[A-Za-z][A-Za-z0-9_-]*' ui-library/components.css | sort -u | wc -l   # expect 239
+wc -l < ui-library/components.css                                                  # expect 2515
+grep -cE '^\s*--[A-Za-z0-9-]+\s*:' ui-library/components.css                       # expect 0
+grep -oE '\b[0-9a-f]{40}\b' ui-library/TOKENS.md                                   # expect a 40-char SHA
 ls ui/manifest.json 2>/dev/null || echo "manifest.json correctly absent"
-grep -c 'data-theme="dark"' ui/tokens.css                                  # expect 1
+grep -c 'data-theme="dark"' ui-library/tokens.css                                  # expect 1
 ```
 
 If any value differs, stop and report — do not adjust the expected numbers to match the output.
@@ -624,7 +624,7 @@ Expected: `no clone left behind`.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add .claude/scripts/sync-tokens.ps1 ui/tokens.css ui/components.css ui/tokens.json ui/TOKENS.md
+git add .claude/scripts/sync-tokens.ps1 ui-library/tokens.css ui-library/components.css ui-library/tokens.json ui-library/TOKENS.md
 git -c user.email=rekybongso@gmail.com -c user.name="Claude Code" commit -m "feat: sync production design tokens and component CSS into ui/
 
 166 custom properties and 239 class selectors extracted verbatim from the
@@ -643,7 +643,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 - Test: `.claude/scripts/check-prototype.Tests.ps1`
 
 **Interfaces:**
-- Consumes: `ui/tokens.css` and `ui/components.css` from Task 3.
+- Consumes: `ui-library/tokens.css` and `ui-library/components.css` from Task 3.
 - Produces: `check-prototype.ps1 -Path <html> [-UiRoot <dir>] [-OverlayPath <css>]`, exit 0 when every rule passes and exit 1 listing each violation.
 
 - [ ] **Step 1: Write the failing tests**
@@ -775,7 +775,7 @@ Create `.claude/scripts/check-prototype.ps1`:
 ```powershell
 <#
 .SYNOPSIS
-  Validate a built single-file prototype against the shared ui/ design system.
+  Validate a built single-file prototype against the shared ui-library/ design system.
 
 .DESCRIPTION
   Enforces ADR-0003 locally, mirroring the production repo's gate:no-raw-style and
@@ -800,13 +800,13 @@ function Read-Utf8Text {
     return [IO.File]::ReadAllText($P, [System.Text.Encoding]::UTF8)
 }
 
-if (-not $UiRoot) { $UiRoot = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'ui' }
+if (-not $UiRoot) { $UiRoot = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'ui-library' }
 if (-not (Test-Path -LiteralPath $Path))   { throw "prototype not found: $Path" }
 
 $tokensPath = Join-Path $UiRoot 'tokens.css'
 $compPath   = Join-Path $UiRoot 'components.css'
-if (-not (Test-Path -LiteralPath $tokensPath)) { throw "ui/tokens.css not found at $tokensPath — run /sync-tokens first." }
-if (-not (Test-Path -LiteralPath $compPath))   { throw "ui/components.css not found at $compPath — run /sync-tokens first." }
+if (-not (Test-Path -LiteralPath $tokensPath)) { throw "ui-library/tokens.css not found at $tokensPath — run /sync-tokens first." }
+if (-not (Test-Path -LiteralPath $compPath))   { throw "ui-library/components.css not found at $compPath — run /sync-tokens first." }
 
 $html   = Read-Utf8Text -P $Path
 $tokens = Read-Utf8Text -P $tokensPath
@@ -830,7 +830,7 @@ foreach ($m in [regex]::Matches($html, '(?i)@import\s+(?:url\()?["'']?(https?://
 # --- Locate the inlined token block so rules 2 and 3 can exclude it.
 $tokenSpanStart = $html.IndexOf($tokens.Trim())
 if ($tokenSpanStart -lt 0) {
-    $violations += "ui/tokens.css was not inlined verbatim into this build — cannot evaluate the raw-style rule. Rebuild with the standard inliner."
+    $violations += "ui-library/tokens.css was not inlined verbatim into this build — cannot evaluate the raw-style rule. Rebuild with the standard inliner."
     $outside = ''
 } else {
     $outside = $html.Remove($tokenSpanStart, $tokens.Trim().Length)
@@ -917,19 +917,19 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ### Task 5: Component catalogue and seed behaviors
 
 **Files:**
-- Create: `ui/COMPONENTS.md`
-- Create: `ui/behaviors.js`
+- Create: `ui-library/COMPONENTS.md`
+- Create: `ui-library/behaviors.js`
 
 **Interfaces:**
-- Consumes: `ui/components.css` from Task 3 (the class contract).
-- Produces: `ui/behaviors.js` exposing a single global `RndUI.init(root)` that wires every ported behavior inside `root` (defaults to `document`). Phase 3's `/design-prototype` calls it once on `DOMContentLoaded`.
+- Consumes: `ui-library/components.css` from Task 3 (the class contract).
+- Produces: `ui-library/behaviors.js` exposing a single global `RndUI.init(root)` that wires every ported behavior inside `root` (defaults to `document`). Phase 3's `/design-prototype` calls it once on `DOMContentLoaded`.
 
 - [ ] **Step 1: Write the catalogue**
 
-Create `ui/COMPONENTS.md`. It must list **all 42** upstream components with an explicit status. Derive the class contract for each from `ui/components.css`. Use exactly this table shape, and mark the 19 no-JS components as `CSS-only` and the 4 seeded in Step 2 as `ported`; every other stateful component is `not yet ported`.
+Create `ui-library/COMPONENTS.md`. It must list **all 42** upstream components with an explicit status. Derive the class contract for each from `ui-library/components.css`. Use exactly this table shape, and mark the 19 no-JS components as `CSS-only` and the 4 seeded in Step 2 as `ported`; every other stateful component is `not yet ported`.
 
 ```markdown
-# ui/ component catalogue
+# ui-library/ component catalogue
 
 Class contracts mirrored from the production repo's `apps/web/components/ui/`. Prototype
 markup uses the same classes the React components emit, so
@@ -952,7 +952,7 @@ divergence this library exists to end.
 
 The example above shows 6 of the 42 rows. Add the remaining 36, one row each, filling
 the **Class contract** column by grepping the component's classes out of
-`ui/components.css` — for example `grep -oE '^\.badge[A-Za-z0-9_-]*' ui/components.css | sort -u`
+`ui-library/components.css` — for example `grep -oE '^\.badge[A-Za-z0-9_-]*' ui-library/components.css | sort -u`
 yields Badge's contract (`.badge` plus the `badge-danger` / `badge-info` /
 `badge-neutral` / `badge-purple` / `badge-success` / `badge-warning` / `badge-dot`
 modifiers). Every row's contract must come from that file, never from memory.
@@ -973,10 +973,10 @@ not components and get no row.
 
 - [ ] **Step 2: Write the seed behaviors**
 
-Create `ui/behaviors.js`:
+Create `ui-library/behaviors.js`:
 
 ```javascript
-/* Vanilla behavior for the ported ui/ components. The class and data-state contract
+/* Vanilla behavior for the ported ui-library/ components. The class and data-state contract
    mirrors the production React components, so markup written against components.css
    behaves the same here. Components absent from this file are listed as
    "not yet ported" in COMPONENTS.md — do not improvise a replacement. */
@@ -1092,23 +1092,23 @@ Create `ui/behaviors.js`:
 
 Run:
 ```bash
-grep -c '^| ' ui/COMPONENTS.md          # expect 43 (42 component rows + the header row;
+grep -c '^| ' ui-library/COMPONENTS.md          # expect 43 (42 component rows + the header row;
                                         # the |---|---| separator starts "|-", not "| ")
-grep -c 'not yet ported' ui/COMPONENTS.md  # expect 19
-grep -c 'CSS-only' ui/COMPONENTS.md        # expect 19
-grep -c '| ported |' ui/COMPONENTS.md      # expect 4
+grep -c 'not yet ported' ui-library/COMPONENTS.md  # expect 19
+grep -c 'CSS-only' ui-library/COMPONENTS.md        # expect 19
+grep -c '| ported |' ui-library/COMPONENTS.md      # expect 4
 ```
 Expected: exactly those counts. If any differs, a component is missing or double-counted — fix the table, not the expectation.
 
 - [ ] **Step 4: Verify behaviors.js parses**
 
-Run: `node --check ui/behaviors.js`
+Run: `node --check ui-library/behaviors.js`
 Expected: no output, exit 0.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add ui/COMPONENTS.md ui/behaviors.js
+git add ui-library/COMPONENTS.md ui-library/behaviors.js
 git -c user.email=rekybongso@gmail.com -c user.name="Claude Code" commit -m "feat: add component catalogue and seed behaviors
 
 All 42 upstream components catalogued with explicit port status. Tabs,
@@ -1139,7 +1139,7 @@ Create `.claude/references/design-system.md` with exactly these seven `##` secti
 
 1. `## Upstream source and the marker contract` — the repo URL, the `globals.css` path (noting the parentheses), the two marker prefixes, and the rule that `tokens.css` is byte-identical to the lines strictly between them. Source: spec §3.1.
 2. `## Access constraints` — reproduce the four-row table (clone / raw URL / `git archive` / partial clone) verbatim from spec §3.2, including the note that only `--depth 1` works.
-3. `## The ui/ layout` — the seven-file table from spec §3.3, marking which files are generated and which are hand-written.
+3. `## The ui-library/ layout` — the seven-file table from spec §3.3, marking which files are generated and which are hand-written.
 4. `## The overlay rule` — an overlay may redefine an existing token name, never introduce one; source spec §3.4.
 5. `## Disclosure boundary` — the committed / never-committed lists from spec §3.6, naming `manifest.json` and the source repo's `.claude/` explicitly.
 6. `## check-prototype rules` — the five numbered rules from spec §3.7, plus the caveat that the PII rule catches email addresses only and human review is still required.
@@ -1159,7 +1159,7 @@ description: Sync the production design tokens and component CSS into ui/, or ch
 argument-hint: [--check] [--ref <branch|sha>]
 ---
 
-Sync `ui/` from the Solve Education production repo. Read
+Sync `ui-library/` from the Solve Education production repo. Read
 `.claude/references/design-system.md` first — it carries the marker contract, the
 disclosure boundary, and the overlay rule.
 
@@ -1175,10 +1175,10 @@ disclosure boundary, and the overlay rule.
 
 3. **Report.** Show the token diff the script prints (added / removed / changed). On a
    `--check` failure, show the drift and stop — do not sync as a "fix" unless the user
-   asks, because a sync overwrites local `ui/` edits.
+   asks, because a sync overwrites local `ui-library/` edits.
 
 4. **Never** commit `manifest.json` or anything from the source repo's `.claude/`. The
-   script already refuses to write them; if you see either under `ui/`, stop and report a
+   script already refuses to write them; if you see either under `ui-library/`, stop and report a
    disclosure-boundary breach.
 
 The clone is about 29 MB and goes to the system temp folder, never into the workspace.
@@ -1247,7 +1247,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
   count differs, upstream changed — report it rather than editing the expectation.
 - **The tests must never hit the network.** Every test passes `-SourcePath`, which skips
   the clone branch entirely. If you find yourself adding a test that clones, stop.
-- **Rule 2 of `check-prototype` depends on the build inlining `ui/tokens.css` verbatim.**
+- **Rule 2 of `check-prototype` depends on the build inlining `ui-library/tokens.css` verbatim.**
   That is deliberate: it makes a build that stops inlining fail loudly rather than
   silently skipping the raw-style check. Task 4's Test 9 covers exactly this.
 - `check-prototype`'s PII rule catches email addresses only. It is a lint, not a

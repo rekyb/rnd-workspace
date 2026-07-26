@@ -34,15 +34,15 @@ Act as a **Senior UI/UX Designer** running the research. That means:
 
 These are non-negotiable. They override any convenience or research goal.
 
-- **`ui/` synced artifacts are read-only except via `/sync-tokens`.** `ui/tokens.css`,
-  `ui/components.css`, `ui/tokens.json`, and the `<!-- PROVENANCE:START/END -->` block of
-  `ui/TOKENS.md` are **generated** from the production repo. Never hand-edit them, never
+- **`ui-library/` synced artifacts are read-only except via `/sync-tokens`.** `ui-library/tokens.css`,
+  `ui-library/components.css`, `ui-library/tokens.json`, and the `<!-- PROVENANCE:START/END -->` block of
+  `ui-library/TOKENS.md` are **generated** from the production repo. Never hand-edit them, never
   commit a change to them, and never push one, unless that change came from a
   `/sync-tokens` run against the upstream source. If a prototype needs a different value,
   the answer is a per-project `design/<project>/tokens.overlay.css`, which may redefine an
   existing token name but never introduce a new one — never an edit to the synced file.
   Verify with `/sync-tokens --check`: it exits non-zero on any divergence from source, so
-  a hand-edit shows up as drift. The hand-written files in `ui/` (`COMPONENTS.md`,
+  a hand-edit shows up as drift. The hand-written files in `ui-library/` (`COMPONENTS.md`,
   `behaviors.js`, and `TOKENS.md` prose outside the provenance markers) are authored
   normally and are not covered by this rule.
 

@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-  Sync the production design tokens and component CSS into this repo's ui/ folder.
+  Sync the production design tokens and component CSS into this repo's ui-library/ folder.
 
 .DESCRIPTION
   Slices apps/web/app/(frontend)/globals.css from the Solve Education production repo
   at its TOKENS:START / TOKENS:END markers. The lines strictly between the markers
-  become ui/tokens.css (the design tokens); the rest of the file, minus both marker
-  lines, becomes ui/components.css (the component classes). Both are byte-exact copies
+  become ui-library/tokens.css (the design tokens); the rest of the file, minus both marker
+  lines, becomes ui-library/components.css (the component classes). Both are byte-exact copies
   of the source text - nothing is regenerated, so upstream generator changes never need
   tracking here.
 
@@ -35,7 +35,7 @@ $ErrorActionPreference = 'Stop'
 $script:TempClone = $null
 
 # Default -UiRoot to <repo-root>/ui so the command works with no arguments.
-if (-not $UiRoot) { $UiRoot = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'ui' }
+if (-not $UiRoot) { $UiRoot = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'ui-library' }
 
 $StartPrefix = '/* TOKENS:START'
 $EndPrefix   = '/* TOKENS:END'
@@ -198,7 +198,7 @@ function Update-ProvenanceBlock {
         return $new + "`n`n" + $existing
     }
     return @"
-# ui/tokens.css - provenance
+# ui-library/tokens.css - provenance
 
 $new
 
@@ -285,7 +285,7 @@ try {
 
         if ($isSha) {
             if ((Invoke-GitQuiet @('clone', '--depth', '1', $RepoUrl, $script:TempClone)) -ne 0) {
-                throw "git clone failed for $RepoUrl. Anonymous read access may have been revoked. The committed ui/ files are unaffected; only refresh is blocked."
+                throw "git clone failed for $RepoUrl. Anonymous read access may have been revoked. The committed ui-library/ files are unaffected; only refresh is blocked."
             }
             if ((Invoke-GitQuiet @('-C', $script:TempClone, 'fetch', '--depth', '1', 'origin', $Ref)) -ne 0) {
                 throw "git fetch failed for commit $Ref against $RepoUrl. The server does not appear to permit fetching an arbitrary SHA directly. Refusing to fall back to the default branch, since syncing the wrong ref while reporting success is the worst possible outcome."
@@ -295,7 +295,7 @@ try {
             }
         } else {
             if ((Invoke-GitQuiet @('clone', '--depth', '1', '--branch', $Ref, $RepoUrl, $script:TempClone)) -ne 0) {
-                throw "git clone failed for $RepoUrl ($Ref). Anonymous read access may have been revoked. The committed ui/ files are unaffected; only refresh is blocked."
+                throw "git clone failed for $RepoUrl ($Ref). Anonymous read access may have been revoked. The committed ui-library/ files are unaffected; only refresh is blocked."
             }
         }
 

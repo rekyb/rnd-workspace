@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Validate a built single-file prototype against the shared ui/ design system.
+  Validate a built single-file prototype against the shared ui-library/ design system.
 
 .DESCRIPTION
   Enforces ADR-0003 locally, mirroring the production repo's gate:no-raw-style and
@@ -10,11 +10,11 @@
     1. No external hosts - every src/href/@import target must be local. This is
        both an Artifact CSP requirement and the self-contained-file requirement.
     2. No raw style values (hex colors, px lengths) outside the verbatim
-       ui/tokens.css and ui/components.css blocks. A prototype must reference a
+       ui-library/tokens.css and ui-library/components.css blocks. A prototype must reference a
        token or a component class, never hand-roll a color or a spacing value.
     3. Every var(--x) reference resolves to a custom property defined in
-       ui/tokens.css or (if given) -OverlayPath.
-    4. Every class used in the markup exists in ui/components.css.
+       ui-library/tokens.css or (if given) -OverlayPath.
+    4. Every class used in the markup exists in ui-library/components.css.
     5. No email addresses in the markup - a PII lint, not a guarantee; human
        review of a prototype before it is shared is still required.
 
@@ -23,7 +23,7 @@
 
 .PARAMETER Path
   The built prototype HTML file to check (a single self-contained file with
-  ui/tokens.css and ui/components.css inlined into a <style> block).
+  ui-library/tokens.css and ui-library/components.css inlined into a <style> block).
 
 .PARAMETER UiRoot
   Directory containing tokens.css and components.css. Defaults to <repo-root>/ui,
@@ -42,7 +42,7 @@
   caller ever gets to inspect $LASTEXITCODE or the message. Routing errors to
   stdout keeps both readable to callers in that situation. Callers must branch on
   $LASTEXITCODE, not on stderr content. Every code path below - a bad argument, a
-  missing ui/ file, or a rule violation - ends in Write-Host + exit, never a bare
+  missing ui-library/ file, or a rule violation - ends in Write-Host + exit, never a bare
   throw escaping the script; the outer try/catch is a last-resort net for any
   exception this script did not anticipate, converted the same way.
 
@@ -63,7 +63,7 @@ function Read-Utf8Text {
     return [IO.File]::ReadAllText($P, [System.Text.Encoding]::UTF8)
 }
 
-# Reads a UTF-8 file and normalizes CRLF to LF. The prototype HTML and the ui/
+# Reads a UTF-8 file and normalizes CRLF to LF. The prototype HTML and the ui-library/
 # files it embeds can come from different tools or checkouts with different
 # line-ending conventions (a Windows checkout of tokens.css vs. a build tool
 # that normalizes to LF when it inlines things). Rule 2's whole mechanism is a
@@ -80,13 +80,13 @@ function Get-NormalizedText {
 }
 
 try {
-    if (-not $UiRoot) { $UiRoot = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'ui' }
+    if (-not $UiRoot) { $UiRoot = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'ui-library' }
     if (-not (Test-Path -LiteralPath $Path)) { throw "prototype not found: $Path" }
 
     $tokensPath = Join-Path $UiRoot 'tokens.css'
     $compPath   = Join-Path $UiRoot 'components.css'
-    if (-not (Test-Path -LiteralPath $tokensPath)) { throw "ui/tokens.css not found at $tokensPath - run /sync-tokens first." }
-    if (-not (Test-Path -LiteralPath $compPath))   { throw "ui/components.css not found at $compPath - run /sync-tokens first." }
+    if (-not (Test-Path -LiteralPath $tokensPath)) { throw "ui-library/tokens.css not found at $tokensPath - run /sync-tokens first." }
+    if (-not (Test-Path -LiteralPath $compPath))   { throw "ui-library/components.css not found at $compPath - run /sync-tokens first." }
 
     $html   = Get-NormalizedText -P $Path
     $tokens = Get-NormalizedText -P $tokensPath
@@ -111,7 +111,7 @@ try {
     # rule 2 can exclude both from the raw-style scan. Both files are the
     # trusted, synced design-system source; only prototype-authored CSS should
     # ever be flagged for a hand-rolled hex color or px length. The real
-    # ui/components.css legitimately contains hundreds of raw px values in its
+    # ui-library/components.css legitimately contains hundreds of raw px values in its
     # own selectors (e.g. "border: 1px solid ..."), so excluding only the
     # tokens.css block would flag the entire shared component library on every
     # real build - components.css must be excluded too, not just tokens.css.
@@ -122,7 +122,7 @@ try {
 
     $tokenSpanStart = $outside.IndexOf($tokensTrim)
     if ($tokenSpanStart -lt 0) {
-        $violations += "ui/tokens.css was not inlined verbatim into this build - cannot evaluate the raw-style rule. Rebuild with the standard inliner."
+        $violations += "ui-library/tokens.css was not inlined verbatim into this build - cannot evaluate the raw-style rule. Rebuild with the standard inliner."
         $canScanRule2 = $false
     } else {
         $outside = $outside.Remove($tokenSpanStart, $tokensTrim.Length)
@@ -131,7 +131,7 @@ try {
     if ($canScanRule2) {
         $compSpanStart = $outside.IndexOf($compTrim)
         if ($compSpanStart -lt 0) {
-            $violations += "ui/components.css was not inlined verbatim into this build - cannot evaluate the raw-style rule. Rebuild with the standard inliner."
+            $violations += "ui-library/components.css was not inlined verbatim into this build - cannot evaluate the raw-style rule. Rebuild with the standard inliner."
             $canScanRule2 = $false
         } else {
             $outside = $outside.Remove($compSpanStart, $compTrim.Length)
@@ -175,7 +175,7 @@ try {
     # toast) sets these at runtime via an inline style attribute on the DOM
     # node (e.g. --radix-accordion-content-height for a collapse animation),
     # never via a CSS declaration, so they can never appear in tokens.css. Real
-    # examples verified against the current ui/components.css:
+    # examples verified against the current ui-library/components.css:
     # --radix-select-trigger-width, --radix-toast-swipe-move-x,
     # --radix-accordion-content-height.
     foreach ($m in [regex]::Matches($html, 'var\(\s*(--[A-Za-z0-9-]+)')) {

@@ -162,10 +162,10 @@ Assert-Equal 'True'  ([string]($prov2 -match 'Keep me\.'))  'hand-written prose 
 Assert-Equal 'True'  ([string]($prov2 -match ('b' * 40)))   'provenance block is refreshed with the new SHA'
 Assert-Equal 'False' ([string]($prov2 -match ('a' * 40)))   'the previous SHA is replaced, not appended'
 
-# --- Test 12: --check exits 0 and writes nothing when ui/ matches the source
+# --- Test 12: --check exits 0 and writes nothing when ui-library/ matches the source
 $before = (Get-ChildItem -LiteralPath $ui9 -File | ForEach-Object { "$($_.Name):$($_.Length)" }) -join '|'
 & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src9 -UiRoot $ui9 -SourceSha ('b' * 40) -Check | Out-Null
-Assert-Equal '0' ([string]$LASTEXITCODE) '--check exits 0 when ui/ is in sync'
+Assert-Equal '0' ([string]$LASTEXITCODE) '--check exits 0 when ui-library/ is in sync'
 $after = (Get-ChildItem -LiteralPath $ui9 -File | ForEach-Object { "$($_.Name):$($_.Length)" }) -join '|'
 Assert-Equal $before $after '--check writes nothing when in sync'
 

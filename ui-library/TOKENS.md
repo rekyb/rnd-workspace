@@ -1,4 +1,4 @@
-# ui/tokens.css - provenance
+# ui-library/tokens.css - provenance
 
 <!-- PROVENANCE:START -->
 - **Source repo:** https://gitlab.solveeducation.org/solveearn/solveeducation.git

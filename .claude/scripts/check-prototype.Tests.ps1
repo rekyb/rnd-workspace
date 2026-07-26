@@ -106,7 +106,7 @@ Assert-Equal 'True' ([string]([string]$badOut -match '--brand-new')) 'the newly 
 
 # --- Test 11: components.css itself legitimately contains raw hex/px values (it is
 # a shared design-system file, same trust level as tokens.css) - a verbatim-inlined
-# build must not be flagged for them. The real ui/components.css has ~360 raw px
+# build must not be flagged for them. The real ui-library/components.css has ~360 raw px
 # occurrences in its own selectors (borders, paddings, etc.), so excluding only the
 # tokens.css span from the rule-2 scan would fail every real build.
 $ui2 = Join-Path $root 'ui2'
