@@ -47,7 +47,7 @@ chase when building or auditing a prototype.
 | Card | `.card` | none | CSS-only |
 | Checkbox | `.checkbox-field` > `.checkbox-root[data-state]`, `.checkbox-indicator`, `.checkbox-label` | — | not yet ported |
 | Chip | `.chip` + `.y` \| `.g` \| `.n` \| `.p` \| `.b` | none | CSS-only |
-| Command | `.command` > `.command-input-row`, `.command-input-icon`, `.command-input`, `.command-list`, `.command-item[-active\|-disabled]`, `.command-item-group`, `.command-item-label`, `.command-empty` | — | not yet ported |
+| Command | `.command` > `.command-input-row`, `.command-input-icon`, `.command-input`, `.command-list`, `.command-item` + `command-item-active` \| `command-item-disabled`, `.command-item-group`, `.command-item-label`, `.command-empty` | — | not yet ported |
 | Dialog | `.dialog-overlay`, `.dialog-panel`, `.dialog-x` | `RndUI.initDialog` | ported |
 | DobPicker | `.input` (no dedicated classes; composed from three date `.input` fields) | — | not yet ported |
 | Drawer | `.drawer-overlay`, `.drawer-panel` + `drawer-left` \| `drawer-right` \| `drawer-bottom` + `.drawer-head`, `.drawer-title`, `.drawer-desc`, `.drawer-body` | — | not yet ported |

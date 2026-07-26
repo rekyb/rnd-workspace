@@ -75,6 +75,12 @@
         if (!overlay) { return; }
         overlay.__lastFocus = btn;
         overlay.hidden = false;
+        // components.css has no [data-state] rule for .dialog-overlay - visibility is
+        // driven by the `hidden` property above, not this attribute. It is still set
+        // (here and on close, above) because production's Radix-based Dialog sets
+        // data-state on the real component too; mirroring that contract keeps
+        // prototype markup faithful to what the React component emits even though
+        // this stylesheet happens not to style it. Do not remove it as dead code.
         overlay.setAttribute('data-state', 'open');
         var panel = overlay.querySelector('.dialog-panel');
         var items = panel ? focusables(panel) : [];
@@ -84,10 +90,47 @@
   }
 
   function initToast(root) {
+    // components.css animates the close via .toast-root[data-state="closed"]
+    // (animation: toast-out ...) and the open via [data-state="open"]
+    // (animation: toast-in ...) - see components.css ~L1668-1682. Removing the
+    // node synchronously on click would skip that authored exit animation
+    // entirely, so the close path below sets data-state="closed" and waits for
+    // the animation to finish (via `animationend`) before detaching the node,
+    // with a timeout fallback for prefers-reduced-motion or a browser that
+    // never fires the event.
+    var EXIT_FALLBACK_MS = 300; // > --t-fast (0.12s) with margin
+
+    function detach(toast) {
+      if (toast && toast.parentNode) { toast.parentNode.removeChild(toast); }
+    }
+
+    function closeToast(toast) {
+      var done = false;
+      function finish() {
+        if (done) { return; }
+        done = true;
+        toast.removeEventListener('animationend', onAnimEnd);
+        clearTimeout(fallback);
+        detach(toast);
+      }
+      function onAnimEnd(e) {
+        if (e.target === toast) { finish(); }
+      }
+      toast.addEventListener('animationend', onAnimEnd);
+      var fallback = setTimeout(finish, EXIT_FALLBACK_MS);
+      toast.setAttribute('data-state', 'closed');
+    }
+
+    all(root, '.toast-root').forEach(function (toast) {
+      // Give the entrance animation a state to animate from for toasts already
+      // present at init time (e.g. server-rendered / statically authored markup).
+      if (!toast.getAttribute('data-state')) { toast.setAttribute('data-state', 'open'); }
+    });
+
     all(root, '.toast-close').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var toast = btn.closest('.toast-root');
-        if (toast && toast.parentNode) { toast.parentNode.removeChild(toast); }
+        if (toast) { closeToast(toast); }
       });
     });
   }
