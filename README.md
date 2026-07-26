@@ -1,4 +1,4 @@
-# Research Workspace
+# R&D Workspace (`rnd-workspace`)
 
 > A UX-research workspace with a **type-aware research spine**: desk research /
 > benchmarking of existing products, and primary-research design & synthesis
@@ -56,8 +56,8 @@ full wording):
 Clone the repository:
 
 ```bash
-git clone https://github.com/rekyb/research-workspace.git
-cd research-workspace
+git clone https://github.com/rekyb/rnd-workspace.git
+cd rnd-workspace
 ```
 
 This is a research/automation workspace rather than a buildable app — there is no
@@ -72,7 +72,7 @@ produces its artifacts:
 | **Python 3** | Runs the helper scripts below. | Standard CPython 3. |
 | ├─ **python-docx** | Markdown → `.docx` export via `.claude/scripts/md_to_docx.py` (used by `/synth-findings --docx`). | `pip install python-docx`. **`pandoc` is *not* used.** |
 | └─ **Pillow (PIL)** | Extracting PNG stills from recorded flow GIFs into `screenshots/`. | `pip install Pillow`. |
-| **git** + **GitHub CLI (`gh`)** | Version control and pushing evidence to the remote. | Auth handled by `gh auth login`; the remote is `research-workspace`. |
+| **git** + **GitHub CLI (`gh`)** | Version control and pushing evidence to the remote. | Auth handled by `gh auth login`; the remote is `rnd-workspace`. |
 
 > Nothing here transacts or installs system packages on its own. Evidence capture
 > uses a logged-in browser session you control; personal data is redacted before
@@ -83,7 +83,7 @@ produces its artifacts:
 Each research topic lives in its own dated folder under `research/`:
 
 ```
-research-workspace/
+rnd-workspace/
 ├── README.md                       # this file
 ├── CLAUDE.md                       # authoritative project brief & working rules
 ├── GEMINI.md                       # Antigravity/Gemini entry point (mirrors CLAUDE.md)
