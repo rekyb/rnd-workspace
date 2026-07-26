@@ -180,11 +180,15 @@ Backed by `.claude/scripts/sync-tokens.ps1`.
    lines into `ui/tokens.css` (the markers themselves are not copied); write
    `globals.css` with those same lines **and** both marker lines removed into
    `ui/components.css`; copy `packages/tokens/tokens.json` to `ui/tokens.json`.
-   Together the two outputs reconstitute the source file exactly, minus the markers.
-3. Write provenance into `ui/TOKENS.md`: source repo URL, **resolved commit SHA**, sync
+
+3. **Scrub the two non-token outputs** (added 2026-07-26 — see §3.6.1). Strip every
+   CSS comment from `components.css`, remove any `@import` of an external host, and
+   drop every `$description` field from `tokens.json`. `tokens.css` is **not**
+   scrubbed: it is values-only, carries no comments, and stays byte-identical.
+4. Write provenance into `ui/TOKENS.md`: source repo URL, **resolved commit SHA**, sync
    date, token count, class count.
-4. Delete the clone.
-5. Report the diff: tokens added, removed, and changed since the previous sync.
+5. Delete the clone.
+6. Report the diff: tokens added, removed, and changed since the previous sync.
 
 `--check` performs steps 1–2 into a temporary location, compares against the committed
 `ui/` files, prints any drift, exits non-zero on drift, and **writes nothing**. This
@@ -214,6 +218,36 @@ date only — no internal prose.
 
 `sync-tokens.ps1` must not write any file outside `ui/`, and must not copy
 `manifest.json` even into the scratchpad output.
+
+#### 3.6.1 Path exclusion is not sufficient — scrub content too
+
+Excluding `manifest.json` by path does **not** keep its contents out. The first real
+sync (2026-07-26) proved this: the same internal project UUID, an unannounced rebrand,
+an internal PRD name, an internal wiki path, and pre-decisional "RATIFY before locking"
+language all reached the public repo through **comments inside the two permitted
+files** — a door the path exclusion does not cover.
+
+The sync therefore scrubs, deterministically, on every run:
+
+| Output | Scrub | Rationale |
+|---|---|---|
+| `tokens.css` | none | Values only; 0 comments. Stays byte-identical. |
+| `components.css` | strip all CSS comments; remove any external-host `@import` | Comments carry the leak and affect no rendering |
+| `tokens.json` | drop every `$description` field | 118 of them; the top-level one carries the internal prose |
+
+Because the scrub is deterministic and recomputed from source on both sides, `--check`
+still detects real drift.
+
+**Removing the external `@import` is not optional** — it is also a correctness fix.
+Production's `globals.css` imports four Google-hosted font families, which violates the
+Artifact CSP and the self-contained requirement every prototype depends on. Consequence
+to state honestly: `--font-display`, `--font-body`, `--font-mono`, and `--font-khmer`
+still *name* those families, so prototypes render with system fallbacks unless the fonts
+are embedded. Typography fidelity is therefore approximate, and `COMPONENTS.md` must say so.
+
+Known, accepted: `components.css` also references `url("/brand/logo-icon.svg")`, a
+root-relative path that will not resolve inside a prototype. It is a local path, not an
+external host, so it is not a CSP violation - it simply renders as a missing image.
 
 ### 3.7 `.claude/scripts/check-prototype.ps1`
 
@@ -251,9 +285,13 @@ rules, and the port-on-demand policy.
 - `ui/tokens.css` contains exactly 166 custom properties across `:root` and
   `:root[data-theme="dark"]`, byte-identical to the source lines lying strictly between
   the two markers.
-- `ui/components.css` equals the source `globals.css` with the marker block and both
-  markers removed: 2515 lines, 239 unique class selectors, and zero custom-property
-  definitions (every `--x:` declaration lives in `tokens.css`).
+- `ui/components.css` equals the source `globals.css` with the marker block, both
+  markers, every CSS comment, and any external-host `@import` removed. It retains 239
+  unique class selectors and zero custom-property definitions (every `--x:` declaration
+  lives in `tokens.css`). Line count is no longer 2515 once comments are stripped; the
+  load-bearing invariant is the **239 selectors**, not the line count.
+- `ui/components.css` contains no `http://` or `https://`, and `ui/tokens.json` contains
+  no `$description` key.
 - `ui/TOKENS.md` records a resolved 40-character commit SHA.
 - `ui/manifest.json` does not exist; no file from the source repo's `.claude/` exists
   anywhere under `ui/`.
