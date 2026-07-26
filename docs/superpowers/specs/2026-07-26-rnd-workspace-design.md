@@ -97,7 +97,7 @@ The block between them contains **both** a `:root { … }` rule and a
 `:root[data-theme="dark"] { … }` rule — **166 CSS custom properties total**. One
 extraction yields light and dark together.
 
-Outside that block, the same file defines **250 plain CSS classes** (`.btn`, `.card`,
+Outside that block, the same file defines **239 unique CSS class selectors** (`.btn`, `.card`,
 `.badge-success`, `.accordion-trigger`, `.authshell`, …). The file is 2688 lines / 64 KB.
 
 **ADR-0003** (`docs/adr/0003-design-tokens-as-ssot.md`, Accepted 2026-07-05) states the
@@ -143,7 +143,7 @@ need tracking here.
 introduced." So production `<Button variant="pri" block>` and prototype
 `<button class="btn pri block">` render the same pixels from the same CSS.
 
-**Only behavior is hand-written.** Of the 44 components in
+**Only behavior is hand-written.** Of the 42 components in
 `apps/web/components/ui/`, **19 are pure class wrappers with no state** (Alert, Badge,
 Breadcrumb, Button, Card, Chip, EmptyState, ErrorState, Field, Hero, List,
 LoadingState, Row, Sidebar, Spinner, Stat, StrengthMeter, Text, Textarea) and need no
@@ -252,7 +252,8 @@ rules, and the port-on-demand policy.
   `:root[data-theme="dark"]`, byte-identical to the source lines lying strictly between
   the two markers.
 - `ui/components.css` equals the source `globals.css` with the marker block and both
-  markers removed, and contains 250 class selectors.
+  markers removed: 2515 lines, 239 unique class selectors, and zero custom-property
+  definitions (every `--x:` declaration lives in `tokens.css`).
 - `ui/TOKENS.md` records a resolved 40-character commit SHA.
 - `ui/manifest.json` does not exist; no file from the source repo's `.claude/` exists
   anywhere under `ui/`.
@@ -262,7 +263,7 @@ rules, and the port-on-demand policy.
 - `check-prototype.ps1` fails a fixture containing an external `@import`, a fixture with
   a raw hex outside the token files, a fixture using an undefined `var(--x)`, and a
   fixture using a class absent from `components.css`; and passes a clean fixture.
-- `ui/COMPONENTS.md` lists all 44 upstream components with an explicit ported status,
+- `ui/COMPONENTS.md` lists all 42 upstream components with an explicit ported status,
   and the 19 no-JS components are marked as requiring no behavior.
 
 ## 4. Phase 2 — PRD lifecycle (scoped)
