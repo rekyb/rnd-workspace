@@ -1092,7 +1092,8 @@ Create `ui/behaviors.js`:
 
 Run:
 ```bash
-grep -c '^| ' ui/COMPONENTS.md          # expect 44 (42 components + header + separator)
+grep -c '^| ' ui/COMPONENTS.md          # expect 43 (42 component rows + the header row;
+                                        # the |---|---| separator starts "|-", not "| ")
 grep -c 'not yet ported' ui/COMPONENTS.md  # expect 19
 grep -c 'CSS-only' ui/COMPONENTS.md        # expect 19
 grep -c '| ported |' ui/COMPONENTS.md      # expect 4
