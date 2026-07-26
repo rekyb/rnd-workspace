@@ -1,0 +1,16 @@
+flowchart TD
+  Entry[Entry surface]
+  Entry --> Code[Code entry dialog]
+  Entry --> SignIn[Sign-in dialog]
+  Code --> Program[Assigned program preview]
+  Entry --> Age[Age eligibility]
+  Program --> Age
+  Age --> Name[Name]
+  Name --> Country[Country]
+  Country --> Goal[Learning goal]
+  Country --> Baseline[Baseline assessment]
+  Goal --> Baseline
+  Baseline --> Wall[Save-profile account wall]
+  Wall --> SignIn
+  Wall --> Handoff[Product handoff boundary]
+  SignIn --> Handoff

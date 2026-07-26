@@ -138,20 +138,42 @@ flowchart TD
 
 ## Badge Rules
 
+> **Role of badges (resolved 2026-07-17, per `research/2026-07-17-certificate-vs-badge-gamification`).**
+> Badges are **in-loop engagement recognition, not the terminal reward.** The research found
+> that for Indonesian teachers a *credential* carries the extrinsic pull, while badges reliably
+> drive activity but are fragile as a completion driver and weak as a competency claim. So
+> badges keep teachers moving between sessions; the *reason to finish* is the portfolio-worthy
+> readiness completion (see **Terminal readiness & PD-credit direction** below), not a badge.
+
 Badges should:
 
-- mark completion and competence;
-- be visible in `Belajar` as milestones;
-- be stored in `Profil`;
-- use plain competence language;
-- avoid certification or PD-hour claims.
+- mark participation and progress inside the learning loop;
+- be visible in `Belajar` as milestones and stored in `Profil`;
+- use plain, honest competence language;
+- avoid any certification, PD-hour, or PKB claim.
 
 Badges should not:
 
-- imply official recognition;
+- imply official recognition or an external credential;
+- be the terminal reward or the main reason to complete the course;
 - be framed as a reward for speed;
-- replace actual feedback;
-- become the main reason to complete the course.
+- replace actual feedback.
+
+### Terminal readiness & PD-credit direction (v1 scope)
+
+The final readiness check produces a **portfolio-worthy completion**, framed around real
+professional progress — not a self-issued certificate.
+
+- **v1 does not build or claim official PD-credit.** A real "feed PD credit" integration needs
+  a government tie-in (Rumah Pendidikan / Kemendikbud) outside our control; claiming credit we
+  cannot deliver breaks trust worse than badge-only. The no-self-issued-certificate guardrail
+  holds for v1.
+- **Design it PD-credit-*ready*.** Structure the readiness completion so that *if/when* an
+  official PPG / PKB integration lands, it slots in without a redesign — the same "generation-
+  ready but prompt-only functional" discipline the IA uses.
+- **Confidence:** this direction rests on solid mechanism evidence, but its local transfer to
+  Indonesian teachers is an open hypothesis (2 directly-Indonesian anchors). Treat as a
+  validated direction to test, not settled fact.
 
 ## Feedback Model
 

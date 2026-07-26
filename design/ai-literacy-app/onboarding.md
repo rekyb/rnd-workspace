@@ -26,16 +26,35 @@ The decisions below are set by research already in this workspace, not by prefer
   - Digital self-efficacy is real but **age-linked** — onboarding cannot assume uniform
     confidence; scaffold older / rural teachers explicitly.
 - `design/ai-literacy-app/validation-model.md`
-  - **No certificate / PD-hour language.** Badges are competence markers only. The
-    account hook is framed around saving progress + a competence badge, never a credential.
+  - **No self-issued certificate in v1.** The app never mints or claims an official
+    credential (certification / PD-hours / PKB). Badges are in-loop engagement recognition,
+    not the terminal reward. The account hook is framed around protecting real professional
+    progress, not "saving a badge."
 
-> **Deferred decision — certificate vs. badge framing at the account moment.** The
-> onboarding-literature study found credential recognition (e-sertifikat / Jam Pelatihan)
-> is a strong registration driver for Indonesian teachers, but the product guardrail
-> (`validation-model.md`) forbids certificate claims. This conflict is **deferred pending a
-> dedicated research pass**. Interim default: **badge-only framing** (so the flow stays
-> buildable and guardrail-safe). Do not treat this as final — revisit once the research
-> resolves whether badge-only framing converts as well as certificate framing.
+> **Resolved decision — certificate vs. badge framing at the account moment**
+> *(resolved 2026-07-17 by `research/2026-07-17-certificate-vs-badge-gamification`).*
+>
+> The dedicated research pass is closed, and it reframes the question from either/or to
+> **role assignment**:
+> - A **certificate carries the extrinsic, credential-signalling pull** that Indonesian
+>   teacher culture rewards — but its real value comes only when it **feeds a real external
+>   credential** (the teacher's PKB / PPG *Sertifikat Pendidik* portfolio, which ties to the
+>   professional allowance and civil-service progression). The product can **feed** that
+>   portfolio; it must **not issue** a national credential itself.
+> - **Badges are demoted to in-loop engagement recognition**, never the terminal reward.
+>
+> **v1 position (buildable, guardrail-safe):** do **not** build or claim official PD-credit
+> in v1 — a real "feed PD credit" integration needs a government tie-in (Rumah Pendidikan /
+> Kemendikbud) we don't control, and claiming credit we can't deliver breaks trust worse than
+> badge-only. Instead: (a) keep the guardrail — no self-issued certificate or official-credit
+> language; (b) frame the account hook around **protecting real professional progress**
+> (a portfolio-worthy readiness completion), not "save your badge"; (c) design the terminal
+> readiness moment to be **PD-credit-ready** so a future official integration slots in without
+> a redesign — mirroring how the IA is "generation-ready but prompt-only functional."
+>
+> **Confidence:** the role-assignment logic rests on 4 solid mechanism sources, but its
+> **local transfer to Indonesian teachers is an open hypothesis** (only 2 directly-Indonesian
+> anchors). Treat this as a validated direction to test, not a settled fact.
 
 ---
 
@@ -192,7 +211,9 @@ flowchart TD
 - Don't make the teacher hunt for the next step — they arrive with one primed.
 - Don't gate first value behind an account or a tutorial.
 - Keep the safety rule instructional, never punitive or legalistic.
-- No certificate / credential language — competence-badge framing only.
+- No self-issued certificate or official-credit (certification / PD-hour / PKB) language in
+  v1. Frame the account hook around protecting real professional progress; badges are in-loop
+  recognition, not the terminal reward. (See the resolved certificate-vs-badge decision above.)
 - Assume mixed confidence and low bandwidth by default; never assume a fast phone or a
   confident user.
 

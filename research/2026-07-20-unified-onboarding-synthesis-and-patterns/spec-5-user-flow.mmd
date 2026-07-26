@@ -1,0 +1,24 @@
+flowchart TD
+  A[Entry surface] -->|Get started| AG[Age eligibility]
+  A -->|Program code| C[Code dialog]
+  A -->|Sign in| SI[Sign-in dialog]
+  C -->|Invalid / network error| C
+  C -->|Close| A
+  C -->|Valid| P[Assigned program preview]
+  P --> AG
+  AG -->|13-17| AX[Resolve narrower eligibility band]
+  AX -->|13-14| X[Blocked with explanation and exit]
+  AX -->|15-17| N[Name]
+  AG -->|18+| N
+  N --> CO[Country]
+  CO --> D{Entry path}
+  D -->|Organic| G[Learning goal]
+  D -->|Program| B[Baseline assessment]
+  G --> B
+  B -->|Load/save error| B
+  B -->|Complete| W[Save-profile account wall]
+  W -->|Authentication fails/cancels| W
+  W -->|Existing account| SI
+  SI -->|Fails/cancels| SI
+  W -->|Success| H[Product handoff]
+  SI -->|Success| H

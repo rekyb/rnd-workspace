@@ -8,6 +8,8 @@ The product direction is grounded in:
 
 - `research/2026-07-14-ai-literacy-upskilling-indonesian-teachers`
 - `research/2026-07-13-onboarding-activation-education-apps`
+- `research/2026-07-16-indonesian-teacher-onboarding-literature`
+- `research/2026-07-17-certificate-vs-badge-gamification` (resolves the cert-vs-badge decision)
 
 ## Product Thesis
 
@@ -31,7 +33,10 @@ Top-level tabs:
 
 There is no separate `Beranda` tab. `Belajar` is the default home after onboarding.
 
-Badges are merged into `Profil`, not a standalone tab. There is no formal certificate in v1.
+Badges are merged into `Profil`, not a standalone tab. Badges are in-loop engagement
+recognition, not the terminal reward. v1 issues **no self-certificate** and makes no official
+PD-credit claim, but the terminal readiness completion is designed **PD-credit-ready** — see
+the resolved certificate-vs-badge decision in `onboarding.md` and `validation-model.md`.
 
 ```mermaid
 flowchart LR
@@ -60,3 +65,18 @@ flowchart LR
 - `validation-model.md` defines module validation tools and badge logic.
 - `onboarding.md` details the onboarding boundary flow (IA, journey, and the deferred
   account moment), grounded in the Indonesian-teacher onboarding and audience research.
+- `DESIGN.md` is the component & pattern layer — primitives, domain patterns, and a
+  surface map of every IA screen. Built on top of the design foundations, and it
+  **supersedes** their stale `Sertifikat + Jam PKB` credential framing.
+- `tokens.css` is the canonical token source (light + dark). The only place token
+  *values* live; `DESIGN.md` references token names only. Inlined into prototypes at
+  build time, never linked.
+
+### Design layers
+
+| Layer | Lives in | Owns |
+|---|---|---|
+| Atoms | `research/2026-07-14-…/DESIGN-FOUNDATIONS.md` | colour, type, spacing, shape, motion, iconography, language system, a11y |
+| Values | `tokens.css` | the hexes and sizes themselves |
+| Components | `DESIGN.md` | anatomy, states, rules, surface map |
+| Screens | prototype / `SPEC.md` | composition |
