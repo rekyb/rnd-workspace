@@ -28,9 +28,22 @@ specific one (or runs `focus-research`):
 - Report the terminal's new focus and list the other active studies.
 
 ### 2. Capturing Evidence (`benchmark` Studies)
-- **Browser Control:** Use your available browser/web tools to navigate and interact with benchmarked platforms.
-- **Redaction is CRITICAL (Hard Rule):** Before saving any visual evidence, you MUST inject CSS or manipulate the DOM to blur personal data (avatars, names, emails) to comply with the workspace's zero-PII policy. 
-- Save screenshots as numbered PNGs in `platforms/<platform>/screenshots/`.
+- **Mobbin is the default source.** Use the Mobbin MCP tools (`search_screens`,
+  `search_flows`, `search_sections`) to find the screens and flows the study needs. Platform
+  is `ios` or `web` — **Mobbin has no Android coverage.**
+- **Browser capture is the exception**, used only for a C1–C5 trigger recorded in `PLAN.md`:
+  C1 our own product · C2 no Mobbin coverage · C3 the question needs live behaviour · C4
+  currency is the question · C5 the question is Android-specific.
+- **Mobbin-sourced:** download screens to `platforms/<platform>/reference/` (**gitignored**)
+  and log each in a committed `references.md` table (screen, Mobbin URL, screen ID, local
+  file, accessed). Write `flow.md` marking system-response claims as *inferred from screen
+  sequence*. There is no `flow.gif`. **Never commit a Mobbin image** — this repo is public
+  and the library is licensed.
+- **Chrome-sourced:** **Redaction is CRITICAL (Hard Rule)** — before saving any visual
+  evidence you MUST inject CSS or manipulate the DOM to blur personal data (avatars, names,
+  emails) to comply with the workspace's zero-PII policy. Save screenshots as numbered PNGs
+  in `platforms/<platform>/screenshots/`, plus `flow.gif`.
+- Full standard: `.claude/references/mobbin-sourcing.md`.
 
 ### 2b. Gathering Evidence (`litreview` Studies) (`gather-evidence`)
 When the active study is `Type: litreview` and the user asks to gather evidence (or
