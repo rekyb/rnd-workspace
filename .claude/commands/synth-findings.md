@@ -108,8 +108,14 @@ Steps:
 
 5. **Optional docx.** If `$ARGUMENTS` contains `--docx`, create the study's gitignored
    `docx/` folder if it doesn't exist, then run:
-   `python3 .claude/scripts/md_to_docx.py "<research-folder>/SYNTHESIS.md" "<research-folder>/docx/SYNTHESIS.docx"`
-   and confirm the `.docx` path to the user.
+
+   ```
+   powershell -NoProfile -File .claude/scripts/md_to_docx.ps1 -Source "<research-folder>/SYNTHESIS.md" -Out "<research-folder>/docx/SYNTHESIS.docx"
+   ```
+
+   and confirm the `.docx` path to the user. `-Out` is **mandatory** — always write into
+   the gitignored `docx/` folder, never the study root, because an export can embed
+   `reference/` images into a binary no markdown check can inspect.
 
 6. **If `--visual` was passed**, generate the reading copy:
 
