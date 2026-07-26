@@ -129,7 +129,46 @@ $ui8  = New-UiRoot
 & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src8 -UiRoot $ui8 2>&1 | Out-Null
 Assert-Equal 'True' ([string]($LASTEXITCODE -ne 0)) 'missing START marker exits non-zero'
 
-foreach ($d in @($src,$ui,$src5,$ui5,$src6,$ui6,$src7,$ui7,$src8,$ui8)) { Remove-Item -Recurse -Force $d -ErrorAction SilentlyContinue }
+# --- Test 9: tokens.json is copied, manifest.json is NEVER copied
+$src9 = New-SourceFixture -Globals $GOOD
+$ui9  = New-UiRoot
+& powershell -NoProfile -File $ScriptUnderTest -SourcePath $src9 -UiRoot $ui9 -SourceSha ('a' * 40) | Out-Null
+Assert-Equal 'True'  ([string](Test-Path -LiteralPath (Join-Path $ui9 'tokens.json')))   'tokens.json is copied into ui/'
+Assert-Equal 'False' ([string](Test-Path -LiteralPath (Join-Path $ui9 'manifest.json'))) 'manifest.json is NEVER copied into ui/'
+
+# --- Test 10: provenance block records the SHA between its markers
+$prov = [IO.File]::ReadAllText((Join-Path $ui9 'TOKENS.md'), [System.Text.Encoding]::UTF8)
+Assert-Equal 'True' ([string]($prov -match '<!-- PROVENANCE:START -->')) 'TOKENS.md has a PROVENANCE:START marker'
+Assert-Equal 'True' ([string]($prov -match ('a' * 40)))                  'TOKENS.md records the resolved commit SHA'
+Assert-Equal 'True' ([string]($prov -match '166|\d+ custom properties')) 'TOKENS.md records a token count'
+
+# --- Test 11: hand-written prose outside the provenance markers survives a re-sync
+$withProse = $prov + "`n## My hand-written notes`nKeep me.`n"
+[IO.File]::WriteAllText((Join-Path $ui9 'TOKENS.md'), $withProse, $Utf8NoBom)
+& powershell -NoProfile -File $ScriptUnderTest -SourcePath $src9 -UiRoot $ui9 -SourceSha ('b' * 40) | Out-Null
+$prov2 = [IO.File]::ReadAllText((Join-Path $ui9 'TOKENS.md'), [System.Text.Encoding]::UTF8)
+Assert-Equal 'True'  ([string]($prov2 -match 'Keep me\.'))  'hand-written prose survives a re-sync'
+Assert-Equal 'True'  ([string]($prov2 -match ('b' * 40)))   'provenance block is refreshed with the new SHA'
+Assert-Equal 'False' ([string]($prov2 -match ('a' * 40)))   'the previous SHA is replaced, not appended'
+
+# --- Test 12: --check exits 0 and writes nothing when ui/ matches the source
+$before = (Get-ChildItem -LiteralPath $ui9 -File | ForEach-Object { "$($_.Name):$($_.Length)" }) -join '|'
+& powershell -NoProfile -File $ScriptUnderTest -SourcePath $src9 -UiRoot $ui9 -SourceSha ('b' * 40) -Check | Out-Null
+Assert-Equal '0' ([string]$LASTEXITCODE) '--check exits 0 when ui/ is in sync'
+$after = (Get-ChildItem -LiteralPath $ui9 -File | ForEach-Object { "$($_.Name):$($_.Length)" }) -join '|'
+Assert-Equal $before $after '--check writes nothing when in sync'
+
+# --- Test 13: --check exits non-zero and reports drift when tokens.css differs
+[IO.File]::WriteAllText((Join-Path $ui9 'tokens.css'), ":root {`n  --pri: #000000;`n}`n", $Utf8NoBom)
+$drift = & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src9 -UiRoot $ui9 -SourceSha ('b' * 40) -Check 2>&1
+Assert-Equal 'True' ([string]($LASTEXITCODE -ne 0))          '--check exits non-zero on drift'
+Assert-Equal 'True' ([string]([string]$drift -match 'pri'))  '--check names the drifted token'
+
+# --- Test 14: --check writes nothing even when it detects drift
+$stillDrifted = [IO.File]::ReadAllText((Join-Path $ui9 'tokens.css'), [System.Text.Encoding]::UTF8)
+Assert-Equal 'True' ([string]($stillDrifted -match '#000000')) '--check leaves the drifted file untouched'
+
+foreach ($d in @($src,$ui,$src5,$ui5,$src6,$ui6,$src7,$ui7,$src8,$ui8,$src9,$ui9)) { Remove-Item -Recurse -Force $d -ErrorAction SilentlyContinue }
 if ($script:Failures -gt 0) { Write-Host "`n$($script:Failures) failure(s)" -ForegroundColor Red; exit 1 }
 Write-Host "`nAll tests passed" -ForegroundColor Green
 exit 0
