@@ -10,6 +10,18 @@ raw-data/
 # Litreview user-supplied source documents (copyright/size/PII — never committed)
 research/*/corpus/
 
+# Mobbin reference images (licensed third-party library content — never committed)
+research/*/platforms/*/reference/
+
+# Generated visual reading copies (contain embedded reference images)
+*.visual.md
+
+# Word exports (may embed reference images; regenerate with md_to_docx.ps1)
+research/*/docx/
+
+# Subagent-driven-development scratch (ledger, briefs, reports, review packages)
+.superpowers/
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db
