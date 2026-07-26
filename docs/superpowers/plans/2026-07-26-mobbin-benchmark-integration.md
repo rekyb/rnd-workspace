@@ -56,7 +56,11 @@ Tasks 4–11 each modify one instruction file and are independently reviewable. 
 
 - [ ] **Step 1: Write the failing test**
 
-Create `scratch/gitignore-check.sh` (a throwaway verification, not committed):
+Create the check in the **session scratchpad**, never inside the repo (`CLAUDE.md`: temporary
+files go to the scratchpad, never into the project). Use the scratchpad path given in your
+dispatch; referred to below as `$SCRATCH`.
+
+Create `$SCRATCH/gitignore-check.sh`:
 
 ```bash
 #!/usr/bin/env bash
@@ -79,8 +83,11 @@ exit $fail
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `bash scratch/gitignore-check.sh`
+Run: `bash "$SCRATCH/gitignore-check.sh"`
 Expected: FAIL — all three print `NOT IGNORED`, exit code 1.
+
+Also confirm `.superpowers/` is currently NOT ignored on this branch:
+`git check-ignore -q .superpowers/x && echo IGNORED || echo "NOT IGNORED"` → `NOT IGNORED`.
 
 - [ ] **Step 3: Add the ignore patterns**
 
@@ -95,11 +102,18 @@ research/*/platforms/*/reference/
 
 # Word exports (may embed reference images; regenerate with md_to_docx.ps1)
 research/*/docx/
+
+# Subagent-driven-development scratch (ledger, briefs, reports, review packages)
+.superpowers/
 ```
+
+> **Why `.superpowers/` is here:** this branch is cut from `main`, whose `.gitignore`
+> lacks it (the entry exists only on `feat/gender-gate`). Without it, the SDD ledger and
+> review packages are committable and will pollute `git status` for every later task.
 
 - [ ] **Step 4: Run it to verify it passes**
 
-Run: `bash scratch/gitignore-check.sh`
+Run: `bash "$SCRATCH/gitignore-check.sh"`
 Expected: PASS — all three print `IGNORED`, exit code 0.
 
 - [ ] **Step 5: Verify already-tracked docx are unaffected**
@@ -110,7 +124,6 @@ Expected: `8` — `.gitignore` does not untrack existing files, and those 8 pred
 - [ ] **Step 6: Clean up and commit**
 
 ```bash
-rm -f scratch/gitignore-check.sh
 git add .gitignore
 git commit -m "chore: gitignore Mobbin reference images, visual copies, and docx exports
 
@@ -659,6 +672,13 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: `.claude/references/mobbin-sourcing.md` (Task 3)
 - Produces: the public-facing description of the workflow
+
+> **Line numbers drift.** This is the only task that edits five sections of one file, and
+> every edit shifts the line numbers of the sections below it. The line references above are
+> from the pre-edit file. **Anchor each edit on its section heading and surrounding text, not
+> on a line number** — or apply the edits bottom-up (Tooling notes → Capture standards →
+> Repository structure → Requirements & setup → Guardrails) so earlier edits never move
+> later targets.
 
 - [ ] **Step 1: Add the redistribution guardrail**
 
@@ -1311,7 +1331,10 @@ Expected: `8`.
 If steps 1–7 required changes:
 
 ```bash
-git add -A
+# Explicit paths only. NEVER `git add -A` on this branch: .superpowers/ is SDD
+# scratch and design/onboarding-solve-edu/standalone.html is a 12 MB generated
+# artifact, both untracked here.
+git add CLAUDE.md README.md GEMINI.md .gitignore .claude/
 git commit -m "fix: resolve cross-file drift in Mobbin sourcing docs
 
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
