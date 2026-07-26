@@ -17,7 +17,7 @@ function Assert-Equal {
 }
 
 $root = Join-Path ([System.IO.Path]::GetTempPath()) ("protochk_" + [guid]::NewGuid().ToString('N'))
-$ui   = Join-Path $root 'ui'
+$ui   = Join-Path $root 'ui-library'
 New-Item -ItemType Directory -Force -Path $ui | Out-Null
 
 $TOKENS = ":root {`n  --pri: #ffcb1d;`n  --ink: #1d1826;`n  --sp-md: 16px;`n}`n"
@@ -81,7 +81,7 @@ Assert-Equal 'True' ([string]($r.Code -ne 0))                            'unknow
 Assert-Equal 'True' ([string]($r.Out -match 'ghost-nonexistent'))        'the unported class is named'
 
 # --- Test 8: rule 5 - an email address in the markup
-$pii = New-Prototype -Name 'pii.html' -Body '<button class="btn">Go</button><p>contact rekybongso@gmail.com</p>'
+$pii = New-Prototype -Name 'pii.html' -Body '<button class="btn">Go</button><p>contact test@example.com</p>'
 $r = Invoke-Check -Path $pii
 Assert-Equal 'True' ([string]($r.Code -ne 0))         'an email address fails the PII rule'
 Assert-Equal 'True' ([string]($r.Out -match 'PII'))   'the PII rule is named in the output'
@@ -219,6 +219,55 @@ Assert-Equal '0' ([string]$r.Code) 'a --radix-* runtime custom property is not f
 $srcBytes = [IO.File]::ReadAllBytes($ScriptUnderTest)
 $nonAscii = @($srcBytes | Where-Object { $_ -gt 127 })
 Assert-Equal '0' ([string]$nonAscii.Count) 'check-prototype.ps1 source contains no non-ASCII bytes'
+
+# --- Test 18: rule 1 - an external host inside a CSS url(), not just src/href/@import.
+# `.hero { background: url("https://cdn.example.com/hero.jpg"); }` must fail even
+# though it is neither a src/href attribute nor an @import.
+$urlExt = New-Prototype -Name 'urlext.html' -ExtraCss '.hero { background: url("https://cdn.example.com/hero.jpg"); }' -Body '<button class="btn">Go</button>'
+$r = Invoke-Check -Path $urlExt
+Assert-Equal 'True' ([string]($r.Code -ne 0))                                   'an external host inside a CSS url() fails'
+Assert-Equal 'True' ([string]($r.Out -match 'external'))                       'the CSS url() external host is reported as an external-host violation'
+Assert-Equal 'True' ([string]($r.Out -match 'cdn\.example\.com'))              'the offending url() host is named'
+
+# --- Test 19: rule 1 - a protocol-relative external host inside a CSS url().
+# `url("//cdn.example.com/hero.jpg")` resolves against the page's own scheme at
+# render time and is just as much a CSP/self-contained violation as an explicit
+# https:// host, even though it names no scheme at all.
+$urlProtoRel = New-Prototype -Name 'urlprotorel.html' -ExtraCss '.hero { background: url(//cdn.example.com/hero.jpg); }' -Body '<button class="btn">Go</button>'
+$r = Invoke-Check -Path $urlProtoRel
+Assert-Equal 'True' ([string]($r.Code -ne 0))                      'a protocol-relative external host inside a CSS url() fails'
+Assert-Equal 'True' ([string]($r.Out -match 'cdn\.example\.com'))  'the offending protocol-relative url() host is named'
+
+# --- Test 20: rule 1 - a legitimate LOCAL root-relative url() (one leading slash,
+# not two) in the prototype's own CSS is not mistaken for an external host. This
+# is the same local-asset shape already used inside components.css
+# (url("/brand/logo-icon.svg")), but here it appears in the prototype's own
+# ExtraCss, outside the trusted token/component blocks, so it must still pass
+# rule 1 cleanly on its own merits.
+$urlLocal = New-Prototype -Name 'urllocal.html' -ExtraCss '.logo { background: url("/brand/logo-icon.svg"); }' -Body '<button class="btn">Go</button>'
+$r = Invoke-Check -Path $urlLocal
+Assert-Equal '0' ([string]$r.Code) 'a local root-relative url() in the prototype''s own CSS is not flagged as an external host'
+
+# --- Test 21: rule 2 - a negative px length. `margin: -8px;` and a negative
+# length inside a transform function must both fail; the pre-fix pattern
+# (?<![\w.-])\d+px\b never matched either, because the digit was always
+# preceded by the "-" its own lookbehind excluded.
+$negPx = New-Prototype -Name 'negpx.html' -ExtraCss '.custom { margin: -8px; transform: translateY(-2px); }' -Body '<button class="btn">Go</button>'
+$r = Invoke-Check -Path $negPx
+Assert-Equal 'True' ([string]($r.Code -ne 0))          'a negative px length fails'
+Assert-Equal 'True' ([string]($r.Out -match '-8px'))   'the offending negative px value is named'
+Assert-Equal 'True' ([string]($r.Out -match '-2px'))   'a negative px length inside a function call (translateY) is also named'
+
+# --- Test 22: rule 2 - a decimal px length. `border: 1.5px solid var(--ink);`
+# and a two-digit-fraction length must both fail; the pre-fix pattern never
+# matched either, because the digit after the decimal point was always
+# preceded by "." which its own lookbehind excluded, and the digit(s) before
+# the point were never immediately followed by "px".
+$decPx = New-Prototype -Name 'decpx.html' -ExtraCss '.custom { border: 1.5px solid var(--ink); padding: 10.5px; }' -Body '<button class="btn">Go</button>'
+$r = Invoke-Check -Path $decPx
+Assert-Equal 'True' ([string]($r.Code -ne 0))            'a decimal px length fails'
+Assert-Equal 'True' ([string]($r.Out -match '1\.5px'))   'the offending decimal px value is named'
+Assert-Equal 'True' ([string]($r.Out -match '10\.5px'))  'a two-digit-fraction decimal px value is also named'
 
 Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
 if ($script:Failures -gt 0) { Write-Host "`n$($script:Failures) failure(s)" -ForegroundColor Red; exit 1 }

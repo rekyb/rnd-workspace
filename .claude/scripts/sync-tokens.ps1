@@ -18,7 +18,7 @@
   to callers in that situation. Branch on $LASTEXITCODE, not on stderr content.
 
 .EXAMPLE
-  powershell -File sync-tokens.ps1 -SourcePath C:\tmp\checkout -UiRoot C:\repo\ui
+  powershell -File sync-tokens.ps1 -SourcePath C:\tmp\checkout -UiRoot C:\repo\ui-library
 #>
 [CmdletBinding()]
 param(
@@ -34,7 +34,7 @@ $ErrorActionPreference = 'Stop'
 
 $script:TempClone = $null
 
-# Default -UiRoot to <repo-root>/ui so the command works with no arguments.
+# Default -UiRoot to <repo-root>/ui-library so the command works with no arguments.
 if (-not $UiRoot) { $UiRoot = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'ui-library' }
 
 $StartPrefix = '/* TOKENS:START'
@@ -94,9 +94,68 @@ function Get-TokenMap {
 # count of literal /* tokens equals the count of */ tokens, and none appear
 # inside a quoted string), so a single non-greedy, dot-matches-newline pass is
 # safe. If that invariant ever breaks upstream, this needs string-aware parsing.
+#
+# That "verified once by a human" note used to be the only guard. It is not
+# self-enforcing: if upstream ever introduces a `content: "..."` string value
+# that embeds a stray /* or */, this same non-greedy pass can mis-pair - either
+# truncating a comment removal early (leaving comment fragments as literal
+# text) or, worse, treating an unmatched opener as the start of one giant
+# comment that swallows real rules up to the next unrelated */ elsewhere in
+# the file. See Assert-ComponentsScrubIntegrity below for the runtime check
+# that replaces the one-time human verification.
 function Remove-CssComments {
     param([string]$Css)
     return [regex]::Replace($Css, '(?s)/\*.*?\*/', '')
+}
+
+# Counts unique line-anchored class selectors the same way the write path
+# reports "$classCount unique class selectors" (?m)^\.[A-Za-z][A-Za-z0-9_-]*).
+# Used both before and after the scrub so a mis-paired comment removal that
+# swallows (or exposes) a class selector shows up as a count change.
+function Get-ClassSelectorCount {
+    param([string]$Css)
+    return ([regex]::Matches($Css, '(?m)^\.[A-Za-z][A-Za-z0-9_-]*') | ForEach-Object { $_.Value } | Sort-Object -Unique).Count
+}
+
+# Runtime replacement for the one-time human check described above Remove-CssComments.
+# A non-greedy /\*.*?\*/ pass has no notion of CSS syntax - it just pairs the
+# nearest /* with the nearest following */. A stray /* or */ embedded inside a
+# quoted string (e.g. a future `content: "/*";`) can make it mis-pair, either
+# leaving comment fragments as literal text or, in the worst case, swallowing
+# one or more real rules between an unmatched opener and some unrelated later
+# */. Two cheap, syntax-agnostic invariants catch that class of corruption
+# without needing a real CSS parser:
+#   1. the unique class-selector count must be unchanged by the scrub (a
+#      swallowed rule loses its selector; a truncated comment can expose a
+#      false one) - verified against the real upstream source, which scrubs
+#      3200+ selector occurrences down to 239 unique with no change from this
+#      check;
+#   2. braces must still balance after the scrub (a swallowed rule takes an
+#      unmatched brace with it).
+# Neither is a full parse, so a corruption that happens to preserve both the
+# selector count and the brace balance would still slip through - but either
+# invariant firing means the scrub did something a plain comment/import strip
+# should never do, and this is deliberately loud (throw) rather than a silent
+# gutted write.
+function Assert-ComponentsScrubIntegrity {
+    param([string]$Before, [string]$After)
+    $beforeClasses = Get-ClassSelectorCount -Css $Before
+    $afterClasses  = Get-ClassSelectorCount -Css $After
+    if ($afterClasses -ne $beforeClasses) {
+        throw ("components.css scrub failed: unique class-selector count changed from " +
+               "$beforeClasses to $afterClasses. The comment-stripping regex likely mis-paired " +
+               "on a /* or */ embedded inside a quoted string (e.g. a content: value) upstream; " +
+               "this needs string-aware parsing, not a quick patch. Refusing to write a possibly " +
+               "gutted components.css.")
+    }
+    $openCount  = ([regex]::Matches($After, '\{')).Count
+    $closeCount = ([regex]::Matches($After, '\}')).Count
+    if ($openCount -ne $closeCount) {
+        throw ("components.css scrub failed: braces are unbalanced after scrubbing " +
+               "($openCount '{' vs $closeCount '}'). The comment-stripping regex likely mis-paired " +
+               "on a /* or */ embedded inside a quoted string upstream; refusing to write a " +
+               "possibly gutted components.css.")
+    }
 }
 
 # Removes @import statements whose target is an external (http/https) host -
@@ -120,7 +179,9 @@ function Remove-ExternalCssImports {
 function ConvertTo-ScrubbedComponents {
     param([string]$Css)
     $noComments = Remove-CssComments -Css $Css
-    return Remove-ExternalCssImports -Css $noComments
+    $scrubbed = Remove-ExternalCssImports -Css $noComments
+    Assert-ComponentsScrubIntegrity -Before $Css -After $scrubbed
+    return $scrubbed
 }
 
 # Recursively removes every "$description" property from a parsed JSON object
@@ -148,12 +209,36 @@ function Remove-JsonDescriptions {
 # $value leaves is unchanged (a corrupt scrub would silently drop tokens,
 # which is worse than a loud failure). Used identically by the write path and
 # the -Check path.
+#
+# Line endings only, not indentation, are normalized before returning.
+# ConvertTo-Json -Depth 100 is PowerShell-implementation-defined: Windows
+# PowerShell 5.1 emits right-aligned indentation with CRLF; PowerShell 7 emits
+# two-space indentation with LF. Both call sites in this script (the write
+# path and the -Check path) always call this same function within a single
+# run, so the two can never disagree with each other in that run - but a file
+# committed by one PowerShell version and later -Check'd by the other (e.g.
+# this script committed under Windows PowerShell 5.1, then `pwsh -File
+# sync-tokens.ps1 -Check` run on macOS/Linux, the only option there) would
+# otherwise report the entire file as drift on line endings alone. Replacing
+# CRLF with LF here - and doing the same to the on-disk file before comparing,
+# see the -Check block below - neutralizes that one axis. The indentation
+# axis (two-space vs right-aligned) is NOT normalized: reproducing one
+# version's exact alignment from the other would mean hand-rolling a JSON
+# pretty-printer, which is disproportionate for a file that exists only for
+# drift-checking, not to be hand-read. A -Check run under a different
+# PowerShell version than the one that last wrote tokens.json can therefore
+# still report spurious drift from indentation alone; the -Check block below
+# reports a diff hint (index, lengths, both sides' surrounding text) precisely
+# so an operator hitting this can tell an indentation artifact from real
+# content drift, instead of seeing only "tokens.json differs from the
+# scrubbed source" with nothing to act on.
 function ConvertTo-ScrubbedTokensJson {
     param([string]$Json)
     $beforeCount = ([regex]::Matches($Json, '"\$value"')).Count
     $obj = $Json | ConvertFrom-Json
     Remove-JsonDescriptions -Node $obj | Out-Null
     $scrubbed = $obj | ConvertTo-Json -Depth 100
+    $scrubbed = $scrubbed.Replace("`r`n", "`n")
 
     $reparsed = $null
     try { $reparsed = $scrubbed | ConvertFrom-Json } catch { $reparsed = $null }
@@ -168,6 +253,25 @@ function ConvertTo-ScrubbedTokensJson {
         throw ("tokens.json scrub failed: " + '$value' + " leaf count changed from $beforeCount to $afterCount.")
     }
     return $scrubbed
+}
+
+# Reports where two texts first diverge, with enough surrounding context that
+# an operator can tell a formatting artifact (e.g. the PowerShell 5.1 vs 7
+# ConvertTo-Json indentation difference described above
+# ConvertTo-ScrubbedTokensJson) apart from a real content change, rather than
+# just being told the two strings are unequal.
+function Get-TextDiffHint {
+    param([string]$Old, [string]$New)
+    $minLen = [Math]::Min($Old.Length, $New.Length)
+    $i = 0
+    while ($i -lt $minLen -and $Old[$i] -eq $New[$i]) { $i++ }
+    $ctx = 20
+    $oldFrom = [Math]::Max(0, $i - $ctx)
+    $newFrom = [Math]::Max(0, $i - $ctx)
+    $oldSnippet = $Old.Substring($oldFrom, [Math]::Min($ctx * 2, $Old.Length - $oldFrom))
+    $newSnippet = $New.Substring($newFrom, [Math]::Min($ctx * 2, $New.Length - $newFrom))
+    return ("first difference at character $i (committed length $($Old.Length), freshly-scrubbed " +
+            "length $($New.Length)) - committed: ...$oldSnippet... vs freshly-scrubbed: ...$newSnippet...")
 }
 
 function Compare-TokenMaps {
@@ -346,8 +450,27 @@ try {
         }
         if (-not (Test-Path -LiteralPath $jsonPath)) {
             $drift += "tokens.json is missing from $UiRoot"
-        } elseif ((Read-Utf8Text -Path $jsonPath) -ne $scrubbedTokensJson) {
-            $drift += "tokens.json differs from the scrubbed source"
+        } else {
+            # Normalize CRLF -> LF on the on-disk side too before comparing:
+            # $scrubbedTokensJson is already LF-normalized (see
+            # ConvertTo-ScrubbedTokensJson), but the committed file may predate
+            # that normalization, or have been written by a PowerShell version
+            # whose ConvertTo-Json emits CRLF. Comparing both sides post-
+            # normalization means a pure line-ending difference is never
+            # reported as drift; only a genuine content (or indentation-style)
+            # difference reaches the comparison below.
+            $currentJson = (Read-Utf8Text -Path $jsonPath).Replace("`r`n", "`n")
+            if ($currentJson -ne $scrubbedTokensJson) {
+                $hint = Get-TextDiffHint -Old $currentJson -New $scrubbedTokensJson
+                $drift += ("tokens.json differs from the scrubbed source ($hint). Note: " +
+                           "ConvertTo-Json's indentation style (not just line endings) differs " +
+                           "between Windows PowerShell 5.1 and PowerShell 7, and this script does " +
+                           "not normalize indentation - so this may be a formatting artifact from " +
+                           "running -Check under a different PowerShell version than the one that " +
+                           "last wrote tokens.json, not real content drift. Compare the hint above " +
+                           "against the token/class counts reported elsewhere before treating this " +
+                           "as real drift.")
+            }
         }
 
         if ($drift.Count -gt 0) {

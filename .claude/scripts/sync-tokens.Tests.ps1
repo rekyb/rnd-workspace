@@ -67,7 +67,7 @@ $expectedTokens = @"
 }
 "@
 # A here-string's closing "@ does not contribute the final line's own trailing
-# newline, but a "line" includes its terminator — the last between-marker line
+# newline, but a "line" includes its terminator - the last between-marker line
 # ("}") is terminated the same as every other line above it, so the expected
 # value needs that terminator appended explicitly.
 Assert-Equal ($expectedTokens + "`n") $tokensOut 'tokens.css is the lines strictly between the markers'
@@ -144,8 +144,8 @@ Assert-Equal 'True' ([string]($LASTEXITCODE -ne 0)) 'missing START marker exits 
 $src9 = New-SourceFixture -Globals $GOOD
 $ui9  = New-UiRoot
 & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src9 -UiRoot $ui9 -SourceSha ('a' * 40) | Out-Null
-Assert-Equal 'True'  ([string](Test-Path -LiteralPath (Join-Path $ui9 'tokens.json')))   'tokens.json is copied into ui/'
-Assert-Equal 'False' ([string](Test-Path -LiteralPath (Join-Path $ui9 'manifest.json'))) 'manifest.json is NEVER copied into ui/'
+Assert-Equal 'True'  ([string](Test-Path -LiteralPath (Join-Path $ui9 'tokens.json')))   'tokens.json is copied into ui-library/'
+Assert-Equal 'False' ([string](Test-Path -LiteralPath (Join-Path $ui9 'manifest.json'))) 'manifest.json is NEVER copied into ui-library/'
 
 # --- Test 10: provenance block records the SHA between its markers
 $prov = [IO.File]::ReadAllText((Join-Path $ui9 'TOKENS.md'), [System.Text.Encoding]::UTF8)
@@ -194,7 +194,7 @@ $scrubGlobals = @"
 /* internal note: $secretMarker - DesignSync rebrand notes, see PRD wiki/prd/x */
 @import url("https://fonts.googleapis.com/css2?family=Test");
 .keep-me { background: url("/brand/logo-icon.svg") center / contain no-repeat; }
-/* TOKENS:START (generated from packages/tokens/tokens.json by build.mjs — do not edit by hand) */
+/* TOKENS:START (generated from packages/tokens/tokens.json by build.mjs -- do not edit by hand) */
 :root {
   --pri: #ffcb1d;
 }
@@ -229,7 +229,61 @@ $reparsed18 = $null
 try { $reparsed18 = $json18 | ConvertFrom-Json } catch { $reparsed18 = $null }
 Assert-Equal 'True' ([string]($null -ne $reparsed18)) 'tokens.json scrub output still parses as JSON'
 
-foreach ($d in @($src,$ui,$src5,$ui5,$src6,$ui6,$src7,$ui7,$src8,$ui8,$src9,$ui9,$src17,$ui17,$src18,$ui18)) { Remove-Item -Recurse -Force $d -ErrorAction SilentlyContinue }
+# --- Test 19: the components.css scrub asserts its own integrity and refuses to
+# write a possibly-gutted file. A non-greedy /\*.*?\*/ pass has no notion of CSS
+# syntax; it just pairs the nearest /* with the nearest following */. The form
+# named by review (a future `content: "*/";`) was checked by hand and, on its
+# own, only truncates a comment removal early - it leaves comment-fragment text
+# behind but was verified NOT to change the class-selector count or unbalance
+# braces, because a non-greedy match always stops at the NEAREST */ and can
+# never reach past real code to delete it. The genuinely destructive sibling -
+# an UNMATCHED comment OPENER embedded in a quoted string (`content: "/*";`) -
+# is what was confirmed (by hand, against a pre-fix build of this script) to
+# actually swallow a whole subsequent rule, including its closing brace, up to
+# the next unrelated `*/` in the file. This fixture reproduces that case: the
+# scrub must now fail loudly (non-zero exit, no components.css written)
+# instead of silently emitting a components.css missing `.victim` entirely.
+$gutGlobals = @"
+.rule1 { content: "/*"; color: red; }
+.victim { color: green; }
+/* comment B */
+/* TOKENS:START (generated from packages/tokens/tokens.json by build.mjs -- do not edit by hand) */
+:root {
+  --pri: #ffcb1d;
+}
+/* TOKENS:END */
+.post-keep { color: blue; }
+"@
+$src19 = New-SourceFixture -Globals $gutGlobals
+$ui19  = New-UiRoot
+$out19 = & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src19 -UiRoot $ui19 2>&1
+Assert-Equal 'True'  ([string]($LASTEXITCODE -ne 0))                                       'a mis-paired comment scrub that would gut a rule fails loudly instead of writing corrupted output'
+Assert-Equal 'False' ([string](Test-Path -LiteralPath (Join-Path $ui19 'components.css'))) 'a failed scrub writes no components.css'
+Assert-Equal 'True'  ([string]([string]$out19 -match 'scrub failed'))                      'the scrub failure explains itself'
+
+# --- Test 20: --check does not report drift when the only difference between the
+# committed tokens.json and the freshly-scrubbed source is CRLF vs LF line endings.
+# A tokens.json written by Windows PowerShell 5.1 (CRLF) and later -Check'd by
+# PowerShell 7 (LF), or vice versa, must not be reported as drift on line endings
+# alone - only a genuine content or indentation difference should surface.
+$src20 = New-SourceFixture -Globals $GOOD
+$ui20  = New-UiRoot
+& powershell -NoProfile -File $ScriptUnderTest -SourcePath $src20 -UiRoot $ui20 -SourceSha ('c' * 40) | Out-Null
+$json20 = [IO.File]::ReadAllText((Join-Path $ui20 'tokens.json'), [System.Text.Encoding]::UTF8)
+$json20Crlf = $json20.Replace("`n", "`r`n")
+[IO.File]::WriteAllText((Join-Path $ui20 'tokens.json'), $json20Crlf, $Utf8NoBom)
+$out20 = & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src20 -UiRoot $ui20 -SourceSha ('c' * 40) -Check 2>&1
+Assert-Equal '0' ([string]$LASTEXITCODE) '--check does not report drift when tokens.json differs from the fresh scrub only by CRLF vs LF line endings'
+
+# --- Test 21: when tokens.json genuinely differs, the drift message names WHERE
+# the two texts diverge (not just that they differ), so an operator has something
+# to act on instead of the bare "tokens.json differs from the scrubbed source".
+[IO.File]::WriteAllText((Join-Path $ui20 'tokens.json'), '{"totally":"different content that is definitely not the scrubbed tokens"}', $Utf8NoBom)
+$out21 = & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src20 -UiRoot $ui20 -SourceSha ('c' * 40) -Check 2>&1
+Assert-Equal 'True' ([string]($LASTEXITCODE -ne 0))                                    'a genuine tokens.json content difference still fails --check'
+Assert-Equal 'True' ([string]([string]$out21 -match 'first difference at character'))  'the tokens.json drift message names where the two texts diverge, not just that they differ'
+
+foreach ($d in @($src,$ui,$src5,$ui5,$src6,$ui6,$src7,$ui7,$src8,$ui8,$src9,$ui9,$src17,$ui17,$src18,$ui18,$src19,$ui19,$src20,$ui20)) { Remove-Item -Recurse -Force $d -ErrorAction SilentlyContinue }
 if ($script:Failures -gt 0) { Write-Host "`n$($script:Failures) failure(s)" -ForegroundColor Red; exit 1 }
 Write-Host "`nAll tests passed" -ForegroundColor Green
 exit 0

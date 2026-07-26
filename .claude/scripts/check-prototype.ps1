@@ -7,11 +7,18 @@
   gate:css-vars-defined CI gates. Five rules; every violation is collected and
   reported together, not just the first one found:
 
-    1. No external hosts - every src/href/@import target must be local. This is
-       both an Artifact CSP requirement and the self-contained-file requirement.
-    2. No raw style values (hex colors, px lengths) outside the verbatim
-       ui-library/tokens.css and ui-library/components.css blocks. A prototype must reference a
-       token or a component class, never hand-roll a color or a spacing value.
+    1. No external hosts - every src/href/@import target, and every CSS url()
+       target (including a scheme-less protocol-relative //host/... form), must
+       be local. This is both an Artifact CSP requirement and the self-contained-
+       file requirement.
+    2. No raw style values (hex colors, px lengths - integer, decimal, or
+       negative) outside the verbatim ui-library/tokens.css and
+       ui-library/components.css blocks. A prototype must reference a token or a
+       component class, never hand-roll a color or a spacing value. CAVEAT: this
+       rule cannot run at all if tokens.css or components.css was not found
+       inlined verbatim in the build - in that case it is skipped and a specific
+       violation names which file could not be located, rather than the rule
+       silently passing.
     3. Every var(--x) reference resolves to a custom property defined in
        ui-library/tokens.css or (if given) -OverlayPath.
     4. Every class used in the markup exists in ui-library/components.css.
@@ -19,7 +26,8 @@
        review of a prototype before it is shared is still required.
 
   Any violation across all five rules causes a non-zero exit; all violations are
-  listed, not just the first.
+  listed, not just the first. Rule 2 is the one exception to "all five rules
+  run" - see its CAVEAT above.
 
 .PARAMETER Path
   The built prototype HTML file to check (a single self-contained file with
@@ -147,6 +155,17 @@ try {
     foreach ($m in [regex]::Matches($html, '(?i)@import\s+(?:url\()?["'']?(https?://[^"''\s)]+)')) {
         $violations += "external host in @import: $($m.Groups[1].Value)"
     }
+    # A CSS url() can carry an external host anywhere a stylesheet allows one -
+    # not just inside @import - e.g. `.hero { background: url("https://cdn.example.com/hero.jpg"); }`.
+    # It can also omit the scheme entirely and still reach the network: a
+    # protocol-relative URL (`url("//cdn.example.com/hero.jpg")`) resolves against
+    # the page's own scheme at render time, so it is just as much a CSP/self-
+    # contained violation as an explicit https:// host. Match either shape, but
+    # require the two-slash form so a legitimate local root-relative path such as
+    # url("/brand/logo-icon.svg") - one leading slash, not two - never matches.
+    foreach ($m in [regex]::Matches($html, '(?i)url\(\s*["'']?((?:https?:)?//[^"''\)\s]+)')) {
+        $violations += "external host in url(): $($m.Groups[1].Value)"
+    }
 
     # --- Locate the inlined tokens.css AND components.css blocks verbatim, so
     # rule 2 can exclude both from the raw-style scan. Both files are the
@@ -188,7 +207,17 @@ try {
                 $violations += "raw hex outside the design-system files: $($m.Value)"
             }
         }
-        foreach ($m in [regex]::Matches($scan, '(?<![\w.-])\d+px\b')) {
+        # Catches a plain integer length (13px), a decimal length (1.5px, 10.5px),
+        # and a negative length (-2px, translateY(-2px)) as one raw-style
+        # violation each. The leading lookbehind still excludes a preceding word
+        # character, dot, or hyphen so a number embedded in a longer identifier
+        # (e.g. the "8" in a hypothetical class "text-8px-bold") is not split out
+        # mid-token; a genuine negative sign is instead captured by the optional
+        # `-?` inside the match itself, which only fires when nothing already
+        # excluded the position immediately before it (so "-2px" after a space,
+        # "(", or ":" matches, but the "-8" inside "text-8px" still does not,
+        # since the hyphen there is itself preceded by a word character).
+        foreach ($m in [regex]::Matches($scan, '(?<![\w.-])-?\d+(?:\.\d+)?px\b')) {
             $violations += "raw px outside the design-system files: $($m.Value)"
         }
     }
