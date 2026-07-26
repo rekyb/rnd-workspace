@@ -212,7 +212,7 @@ No finding may claim first-party observation of a Mobbin-sourced screen.
 |---|---|
 | `README.md` | **Requirements & setup** — add Mobbin MCP row, demote Chrome to fallback capture · **Repository structure** — tree gains `reference/`, `references.md`, `md_visualize.ps1`, `mobbin-sourcing.md`; show both platform shapes · **Capture standards** — rewrite Mobbin-first · **Guardrails** — add the redistribution boundary · **Tooling notes** — Mobbin entry; docx folder gitignored |
 | `GEMINI.md` | §2 *Capturing Evidence (benchmark Studies)* rewritten to match, so Antigravity operators do not get Chrome-first instructions |
-| `CLAUDE.md` | **Capture standards** rewritten Mobbin-first; **replace** the Mobbin subsection added 2026-07-26, which currently states Mobbin must never substitute for captured evidence — correct under the old model, wrong under this one |
+| `CLAUDE.md` | **Capture standards** rewritten Mobbin-first; **replace** the Mobbin subsection added 2026-07-26, which currently states Mobbin must never substitute for captured evidence — correct under the old model, wrong under this one. **Preserve** the connector-first / `.mcp.json`-fallback rule (§8.1) through the rewrite |
 | `.claude/commands/new-research.md` | Step 7 selects a source per platform; benchmark `PLAN.md` template gains a **Source** column and a Chrome-justification field |
 | `.claude/commands/synth-findings.md` | `--visual` flag invoking `md_visualize.ps1`; Mobbin citations as links |
 | `.claude/commands/publish-research.md` | Gate 3 |
@@ -222,6 +222,24 @@ No finding may claim first-party observation of a Mobbin-sourced screen.
 | `.claude/references/mobbin-sourcing.md` | **New** — the sourcing standard, mirroring *Litreview sourcing standards* in `CLAUDE.md` |
 | `.claude/scripts/md_visualize.ps1` | **New** — the link↔image transform |
 | `.gitignore` | Gate 1's three lines |
+
+### 8.1 Registration: connector-first, `.mcp.json` fallback
+
+Mobbin is registered as a **claude.ai connector** (one OAuth, inherited by Claude Code,
+Desktop, and Web), verified with `claude mcp list`.
+
+If the connector is unavailable — absent, failing its health check, or a headless/cron
+session where interactively-authenticated connectors do not load — the fallback is a
+project-scoped `.mcp.json` at the repo root pointing at the same URL, approved and
+authenticated locally.
+
+**The two must never run simultaneously.** Both registrations resolve to
+`https://api.mobbin.com/mcp`, so running both produces a duplicate server, a recurring
+approval prompt, and a second OAuth. `.mcp.json` is deleted once the connector works again
+and is deliberately **not committed**, keeping the fallback local and reversible.
+
+A newly added connector is invisible until Claude Code restarts — restart before concluding
+it is unavailable.
 
 ## 9. Risks and open questions
 
