@@ -258,11 +258,19 @@ export.
 1. **No external hosts** — no `http://` or `https://` in `src`, `href`, or `@import`.
    This is the Artifact CSP requirement, and it also catches the Google Fonts `@import`
    that `raw-data/edbot-v2-mvp/design-system/edbot/MASTER.md` carries.
-2. **No raw style values** — no hex literal and no `px` literal outside `ui-library/tokens.css`
-   and a project's `tokens.overlay.css`, for any property a token covers.
+2. **No raw style values** — no hex literal and no `px` literal outside `ui-library/tokens.css`,
+   `ui-library/components.css`, and a project's `tokens.overlay.css`, for any property a
+   token covers. `components.css` is excluded from the scan for the same reason
+   `tokens.css` is: it is the trusted, synced design-system source, and it legitimately
+   contains hundreds of raw `px`/hex values in its own selectors (e.g. `border: 1px solid
+   ...`) — excluding only `tokens.css` would flag the entire shared component library on
+   every real build.
 3. **Every custom property resolves** — every `var(--x)` used resolves to a definition
    in `tokens.css` or the project overlay; an overlay that defines a name absent from
-   `tokens.css` fails (the §3.4 rule).
+   `tokens.css` fails (the §3.4 rule). **Exempt:** any property under the `--radix-*`
+   prefix, since Radix UI (used by several `components.css` primitives — accordion,
+   select, toast) injects those at runtime via an inline style attribute, never via a CSS
+   declaration, so they could never be matched against a known list.
 4. **Every class resolves** — every class used in the markup exists in
    `components.css`. This makes "fail loudly on an unported component" real.
 5. **No PII** — the existing capture guardrail applied to prototype content.

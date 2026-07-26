@@ -39,8 +39,8 @@ Tested 2026-07-26, not assumed:
 | `git clone --filter=blob:none` | Clone succeeds; promisor blob fetch fails server-side |
 
 Only `--depth 1` works. `/sync-tokens` therefore shallow-clones to a temporary
-location (the session scratchpad, never the workspace), extracts, and discards the
-clone. 29 MB per run is acceptable for an occasional command.
+location (the system temp folder, `$env:TEMP`, never the workspace), extracts, and
+discards the clone. 29 MB per run is acceptable for an occasional command.
 
 ## The ui-library/ layout
 
@@ -61,7 +61,19 @@ generator changes never need tracking here.
 Before the scrub described in **Disclosure boundary** below, the source slice for
 `components.css` was **2515 lines**. Stripping CSS comments shortens that count, so
 line count is not a stable invariant across syncs — **239 unique class selectors**
-is the load-bearing number to check instead.
+is the load-bearing number to check instead, computed as:
+
+```powershell
+([regex]::Matches($css, '(?m)^\.[A-Za-z][A-Za-z0-9_-]*') | ForEach-Object { $_.Value } | Sort-Object -Unique).Count
+```
+
+That regex is deliberately **line-anchored** (`(?m)^\.`) — a naive `\.[A-Za-z][A-Za-z0-9_-]*`
+scan with no anchor also matches a class name wherever it appears in a compound
+selector (`.card .title`, `.btn:hover`) or inside a comment, and yields **260** against
+the current `components.css`, not 239. The anchored count is what `sync-tokens.ps1`
+itself reports as `classCount` and what `Assert-ComponentsScrubIntegrity` checks stays
+unchanged by the scrub (see **check-prototype rules** and the scrub-integrity note
+below).
 
 **The class contract is identical across React and vanilla.** Production
 `<Button variant="pri" block>` and a prototype's `<button class="btn pri block">`
@@ -143,17 +155,29 @@ violation.
 
 `.claude/scripts/check-prototype.ps1` enforces ADR-0003 locally, mirroring
 upstream's `gate:no-raw-style` and `gate:css-vars-defined` CI gates, against a built
-`standalone.html`. All five rules run and are reported together; any failure blocks
-export:
+`standalone.html`. All five rules run and are reported together, **except rule 2**,
+which is skipped (with an explicit violation naming the file) if `tokens.css` or
+`components.css` cannot be located verbatim inside the build — see rule 2 below.
+Any failure blocks export:
 
-1. **No external hosts** — no `http://` or `https://` in `src`, `href`, or
-   `@import`. The Artifact CSP requirement.
-2. **No raw style values** — no hex literal and no `px` literal outside
-   `ui-library/tokens.css` and `ui-library/components.css`, for any property a token
-   covers. Both files are excluded, not just `tokens.css`: `components.css`
-   legitimately contains 419 raw `px` values in its own selectors (e.g.
-   `border: 1px solid ...`), and excluding only `tokens.css` would flag the entire
-   shared component library on every real build.
+1. **No external hosts** — no `http://` or `https://` in `src`, `href`, `@import`,
+   or a CSS `url(...)` (including a protocol-relative `//host/...` form with no
+   scheme at all). The Artifact CSP requirement. A local root-relative path such as
+   `url("/brand/logo-icon.svg")` is not flagged — it has one leading slash, not two.
+2. **No raw style values** — no hex literal and no `px` literal (integer, decimal,
+   or negative — `13px`, `1.5px`, `-8px` all count) outside `ui-library/tokens.css`
+   and `ui-library/components.css`, for any property a token covers. Both files are
+   excluded, not just `tokens.css`: `components.css` legitimately contains **419**
+   raw `px` values in its own selectors (e.g. `border: 1px solid ...`), and excluding
+   only `tokens.css` would flag the entire shared component library on every real
+   build. That figure (`419`) is what the rule's own regex,
+   `(?<![\w.-])-?\d+(?:\.\d+)?px\b`, finds against the current `components.css` — it
+   equals the naive full count because covering decimal and negative lengths closed
+   the gap; an earlier version of the regex that did not handle negative/decimal
+   lengths found only 401. **This rule cannot run at all** if `tokens.css` or
+   `components.css` was not inlined into the build verbatim (byte-for-byte); in that
+   case the check reports a specific violation naming which file it could not find,
+   rather than silently skipping the rule.
 3. **Every custom property resolves** — every `var(--x)` used resolves to a
    definition in `tokens.css` or the project's `tokens.overlay.css`. **Exempt:**
    any property under the `--radix-*` prefix. Radix UI injects properties such as

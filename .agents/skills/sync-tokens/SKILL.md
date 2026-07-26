@@ -23,7 +23,11 @@ disclosure boundary, and the overlay rule.
 
 4. **Never** commit `manifest.json` or anything from the source repo's `.claude/`. The
    script already refuses to write them; if you see either under `ui-library/`, stop and report a
-   disclosure-boundary breach.
+   disclosure-boundary breach. Path exclusion alone is not enough — the first real sync
+   proved that internal notes can leak through comments inside the two permitted files,
+   so the script also scrubs `components.css` (strips every CSS comment and any
+   external-host `@import`) and `tokens.json` (drops every `$description`) on every run;
+   see **Disclosure boundary** in `design-system.md` for what that scrub does and why.
 
 The clone is about 29 MB and goes to the system temp folder, never into the workspace.
 It is deleted when the script exits.

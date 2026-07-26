@@ -1,5 +1,35 @@
 # rnd-workspace Design System Foundation (Phase 1) Implementation Plan
 
+> **SUPERSEDED — read before executing.** This plan records the *original* intent for
+> Phase 1. It was never amended after later work changed the shipped behavior — most of
+> all the disclosure-boundary content scrub (added after the first real sync leaked
+> internal prose through comments) and the `ui/` -> `ui-library/` rename. Executing this
+> plan task-by-task today, as literally written, will fail or mislead in at least these
+> ways:
+>
+> - **Task 1's extraction code** below calls the broken
+>   `[regex]::Match($Raw, $pattern, $startIndex)` overload. PowerShell resolves that
+>   3-argument static call to `(string, string, RegexOptions)`, not `(string, string,
+>   int)`, and throws trying to coerce the int start-index into a RegexOptions enum.
+>   The shipped `sync-tokens.ps1` instead builds an instance `Regex` object and calls
+>   `.Match(input, startat)` — see its `Split-TokenBlock` function.
+> - **Task 3's expected numbers** (`wc -l < ui-library/components.css  # expect 2515`)
+>   predate the content scrub added for the disclosure boundary: `components.css` now
+>   has all CSS comments and external-host `@import`s stripped, and its real current
+>   line count is **2449**, not 2515. Task 3's own instruction — "if any value differs,
+>   stop and report, do not adjust the expected numbers to match the output" — means
+>   executing it today fails immediately. Treat *this plan's* number as the one that
+>   is stale, not the shipped code; `.claude/references/design-system.md` is explicit
+>   that line count is not a stable invariant once comments are stripped.
+> - **Task 5's grep checks** (`expect 19` for both `not yet ported` and `CSS-only` in
+>   `COMPONENTS.md`) undercount, because both phrases also occur in that file's
+>   surrounding prose, not only its status table. The real counts are **21** and **20**.
+> - Every `ui/` path below is the pre-rename name; the folder shipped as `ui-library/`.
+>
+> This plan is kept as a historical record, not rewritten. For current behavior,
+> `.claude/references/design-system.md` and the code in `.claude/scripts/` are
+> authoritative; where they disagree with this plan, they win.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Bring the production design tokens and component CSS into this repo as a shared `ui-library/` library, synced by a drift-checkable command, with a local gate that enforces ADR-0003 on any prototype built against it.

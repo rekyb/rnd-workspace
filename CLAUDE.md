@@ -41,10 +41,14 @@ These are non-negotiable. They override any convenience or research goal.
   `/sync-tokens` run against the upstream source. If a prototype needs a different value,
   the answer is a per-project `design/<project>/tokens.overlay.css`, which may redefine an
   existing token name but never introduce a new one — never an edit to the synced file.
-  Verify with `/sync-tokens --check`: it exits non-zero on any divergence from source, so
-  a hand-edit shows up as drift. The hand-written files in `ui-library/` (`COMPONENTS.md`,
-  `behaviors.js`, and `TOKENS.md` prose outside the provenance markers) are authored
-  normally and are not covered by this rule.
+  Verify with `/sync-tokens --check`: it exits non-zero on any divergence from source for
+  the three generated files it actually compares (`tokens.css`, `components.css`,
+  `tokens.json`), so a hand-edit to any of those three shows up as drift. **`TOKENS.md`'s
+  provenance block is not machine-verified** — `--check` never reads or compares it, so a
+  hand-edit there (including a forged commit SHA) is never detected by this or any other
+  automated check; it is a hand-editing convention only. The hand-written files in
+  `ui-library/` (`COMPONENTS.md`, `behaviors.js`, and `TOKENS.md` prose outside the
+  provenance markers) are authored normally and are not covered by this rule.
 
 - **Never commit un-scrubbed synced content.** The upstream files carry comments holding
   internal identifiers (a project UUID, an unannounced rebrand, internal PRD and wiki
