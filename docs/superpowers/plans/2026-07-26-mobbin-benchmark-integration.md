@@ -1051,9 +1051,15 @@ Append to the step 3 bullet list, before "Only continue once this is clean":
    - **Mobbin redistribution guard (required).** Run:
 
      ```bash
-     git diff --cached --name-only | grep -E '(/reference/|\.visual\.md$)' && echo LEAK
-     git diff --cached --name-only | grep -E '\.docx$' | grep -v '/docx/' && echo DOCX_LEAK
+     git diff --cached --name-only | grep -E '(/reference/|\.visual\.md$)' && echo LEAK || echo "clean — no reference/ or .visual.md staged"
+     git diff --cached --name-only | grep -E '\.docx$' | grep -v '/docx/' && echo DOCX_LEAK || echo "clean — no stray .docx staged"
      ```
+
+     > **The `|| echo "clean …"` is load-bearing, not cosmetic.** Without it the all-clear
+     > state is silent stdout plus exit code 1 — indistinguishable from a broken command. An
+     > operator or automated wrapper can read "gate errored" as "inconclusive" and push
+     > anyway, which is an indirect fail-open of the exact boundary this gate enforces. Both
+     > outcomes must be explicit and exit 0 on success.
 
      If either prints a path, **STOP** and tell the user exactly which files are staged and
      why they cannot be pushed: `reference/` holds licensed Mobbin library images,
