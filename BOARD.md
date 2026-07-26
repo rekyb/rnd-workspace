@@ -7,16 +7,14 @@ close. The source of truth is each study's own `README.md` (`Type`, `Started`,
 `Closed`, `Status`) plus the active registry `.claude/.active-research` (one active
 study per line).
 
-_Last updated: 2026-07-21_
+_Last updated: 2026-07-24_
 
 ## Active
 
 The currently active studies (several may run in parallel — one line per study in
 `.claude/.active-research`; each terminal focuses on one via `/focus-research`).
 
-| Research | Type | Started | Status |
-|---|---|---|---|
-| [Onboarding Strategy & Patterns](research/2026-07-20-unified-onboarding-synthesis-and-patterns/) | litreview | 2026-07-20 | Active |
+_No active research. Start one with `/new-research <topic>`._
 
 ## Closed &amp; archived
 
@@ -24,6 +22,7 @@ Past studies, most recent first.
 
 | Research | Type | Started | Closed | Status |
 |---|---|---|---|---|
+| [Onboarding Strategy & Patterns](research/2026-07-20-unified-onboarding-synthesis-and-patterns/) | litreview | 2026-07-20 | 2026-07-24 | Closed |
 | [Meaningful Youth Onboarding & the Aha Moment (solve.education)](research/2026-07-17-youth-onboarding-aha-moment/) | benchmark | 2026-07-17 | 2026-07-18 | Closed |
 | [Certificate of Completion vs Badges as Gamification for Teacher EdTech (Indonesia)](research/2026-07-17-certificate-vs-badge-gamification/) | benchmark _(literature review + light platform benchmark)_ | 2026-07-17 | 2026-07-17 | Closed |
 | [AI-Literacy Upskilling for Indonesian Teachers](research/2026-07-14-ai-literacy-upskilling-indonesian-teachers/) | benchmark | 2026-07-14 | 2026-07-17 | Closed |

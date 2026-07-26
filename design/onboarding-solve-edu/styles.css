@@ -1024,13 +1024,13 @@ body.is-onboarding .card {
   margin-top: 16px;
 }
 
-.hero-img {
-  width: 100%;
-  max-width: 80%;
+/* Shared treatment for the brand illustration set (landing hero + save wall).
+   Both assets carry real alpha, so no mix-blend-mode workaround is needed. */
+.brand-illustration {
+  width: 85%;
   height: auto;
-  max-height: 450px;
+  max-height: 360px;
   object-fit: contain;
-  mix-blend-mode: multiply;
   margin: 0 auto;
   display: block;
 }
