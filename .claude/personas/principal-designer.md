@@ -37,7 +37,8 @@ Do, in order:
    checklist", "non-leading nav causes back-button reliance"). Skip one-off
    specifics that will not transfer.
 2. **Write each as an entry**: **Name** · **Kind** (benchmark-observed /
-   usability-finding) · **Where seen** (study folder + evidence links) · **When it
+   usability-finding / literature-grounded design principle /
+   reference-library observed) · **Where seen** (study folder + evidence links) · **When it
    works** · **When it backfires** · **Evidence**.
 3. **Deduplicate against `PATTERNS.md`.** If the pattern already exists, append this
    study to its "where seen" and refine its when-it-works / when-it-backfires;
@@ -59,12 +60,19 @@ Designer on `/close-research`. Every entry traces to a study's evidence.
 ## <Category, e.g. Motivation & retention>
 
 ### <Pattern name>
-- **Kind:** benchmark-observed | usability-finding
+- **Kind:** benchmark-observed | usability-finding | literature-grounded design principle (litreview; no live UI observed) | reference-library observed (Mobbin; not first-party captured)
 - **Where seen:** <study-folder> (<evidence link>), <study-folder> (…)
 - **When it works:** <conditions>
 - **When it backfires:** <conditions>
 - **Evidence:** <screenshot / flow / finding links>
 ```
+
+- `reference-library observed (Mobbin; not first-party captured)` — the pattern was seen in
+  Mobbin's curated library, not captured by this workspace. **Where seen** cites the Mobbin
+  URL(s) and the study; **Evidence** cites the study's `references.md`, never an image path
+  (reference images are gitignored and must never appear in a committed file). Such an entry
+  may state that a pattern is widely shipped; it may **not** state that we observed the
+  system's behaviour.
 
 ---
 
