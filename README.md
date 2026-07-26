@@ -33,7 +33,7 @@ patterns.
 
 ## Guardrails
 
-Two hard rules govern all research in this workspace (see `CLAUDE.md` for the
+Three hard rules govern all research in this workspace (see `CLAUDE.md` for the
 full wording):
 
 - **Never pay for anything.** This is desk research — no purchases,
@@ -45,6 +45,11 @@ full wording):
   blurred or masked *before* a screenshot or flow recording is saved. Non-
   sensitive feature mechanics (XP, streaks, progress) may remain visible as
   evidence.
+- **Never republish licensed reference material.** Mobbin is the default benchmark
+  source, and its library is licensed third-party content. Reference images are kept in
+  a gitignored `reference/` folder and cited by URL — they are never committed to this
+  public repo. A Mobbin-sourced finding is labelled as such, so "grounded in captured
+  evidence" keeps its meaning.
 
 ## Requirements & setup
 
@@ -62,7 +67,8 @@ produces its artifacts:
 | Tool | Used for | Notes |
 |---|---|---|
 | **Claude Code** / **Google Antigravity (`agy`)** | Runs the workflow commands (`/new-research`, `/plan-usability`, `/synth-findings`, `/review-research`, `/close-research`, `/publish-research`, and the optional design-output/lens commands) and drives the research. | The workspace is designed to be operated through Claude or Antigravity; see `CLAUDE.md` and `GEMINI.md`. |
-| **Google Chrome** + **Antigravity Browser Extension** or **Claude-in-Chrome** | Browsing benchmarked platforms and capturing evidence (screenshots, recorded flows). | Chrome extension ID: `eeijfnjmjelapkebgockoeaadonbchdd` (or MCP tools like `BrowserMCP`/`WebMCP` for Antigravity). |
+| **Mobbin** (MCP) | **Default source** for benchmark evidence — curated screens and flows from shipped iOS and web products, including paywalled and region-locked apps. | Registered as a claude.ai connector at `https://api.mobbin.com/mcp` (OAuth). Requires a paid Mobbin plan. Covers `ios` and `web` only — no Android. |
+| **Google Chrome** + **Claude-in-Chrome** (or Antigravity Browser Extension) | **Fallback capture** for the C1–C5 cases Mobbin cannot serve — our own products, missing coverage, live-behaviour questions, currency, and Android. | Chrome extension ID: `eeijfnjmjelapkebgockoeaadonbchdd`. |
 | **Python 3** | Runs the helper scripts below. | Standard CPython 3. |
 | ├─ **python-docx** | Markdown → `.docx` export via `.claude/scripts/md_to_docx.py` (used by `/synth-findings --docx`). | `pip install python-docx`. **`pandoc` is *not* used.** |
 | └─ **Pillow (PIL)** | Extracting PNG stills from recorded flow GIFs into `screenshots/`. | `pip install Pillow`. |
@@ -89,12 +95,14 @@ research-workspace/
 │   ├── commands/                   # workflow commands (new / plan-usability / synth / review /
 │   │                                #   brief-feature / draft-spec / design-prototype / focus / close / publish / board / lenses)
 │   ├── references/
-│   │   └── design-gates.md         # design-gate definitions used by /draft-spec & /design-prototype
+│   │   ├── design-gates.md         # design-gate definitions used by /draft-spec & /design-prototype
+│   │   └── mobbin-sourcing.md      # Mobbin sourcing standard: C1–C5, folder shapes, IP boundary
 │   ├── personas/                   # reviewer subagent specs: principal-researcher, principal-designer,
 │   │                                #   product-manager, tech-lead, head-of-product
 │   └── scripts/
 │       ├── md_to_docx.py           # Markdown → .docx export (python-docx)
-│       └── md_to_docx.ps1          # dependency-free PowerShell fallback for the same export
+│       ├── md_to_docx.ps1          # dependency-free PowerShell fallback for the same export
+│       └── md_visualize.ps1        # Mobbin links → local image embeds (gitignored *.visual.md)
 └── research/
     ├── PATTERNS.md                 # cross-study reusable-pattern library (owned by the Principal Designer)
     └── YYYY-MM-DD-<slug>/
@@ -102,11 +110,16 @@ research-workspace/
         ├── PLAN.md                 # research plan (reviewed & approved before capture)
         ├── sources.md              # running log of every URL visited (with date)
         ├── platforms/              # benchmark studies: one folder per platform
-        │   └── <platform-name>/
-        │       ├── screenshots/    # key-screen captures (numbered, described)
-        │       ├── flow.gif        # recording of the core user flow
-        │       ├── flow.md         # written step-by-step of that same flow
-        │       └── notes.md        # observations & patterns, source links
+        │   ├── <mobbin-sourced>/   #   default shape
+        │   │   ├── references.md   #     screen ↔ Mobbin URL mapping table (committed)
+        │   │   ├── reference/      #     downloaded Mobbin PNGs (GITIGNORED)
+        │   │   ├── flow.md         #     written step-by-step
+        │   │   └── notes.md        #     observations & patterns
+        │   └── <chrome-sourced>/   #   C1–C5 cases only
+        │       ├── screenshots/    #     first-party captures (committed)
+        │       ├── flow.gif        #     first-party recording (committed)
+        │       ├── flow.md
+        │       └── notes.md
         ├── test-plan.md            # usability studies: the instrument (tasks, script, metrics)
         ├── sessions/                # usability studies: session-NN.md, one per PII-redacted participant
         ├── lenses/                 # optional benchmark analysis passes (heuristic-eval / a11y-audit / tokens)
@@ -179,21 +192,30 @@ itself — returning ready / revise / reject.
 
 ## Capture standards
 
-When benchmarking a platform, capture evidence as you observe it:
+Benchmark evidence comes from **Mobbin by default**; Chrome is used for the C1–C5 cases it
+cannot serve (our own products, missing coverage, live-behaviour questions, currency,
+Android). The full standard is `.claude/references/mobbin-sourcing.md`.
 
-- **Screenshots** — one per key screen of the relevant flow, saved to
-  `platforms/<platform>/screenshots/` with descriptive, numbered names
-  (`01-onboarding.png`, `02-empty-state.png`, …).
-- **Flow recording** — the core user flow captured as `flow.gif`, with a few
-  extra frames before and after each action for smooth playback.
-- **Written flow** — the same flow written up as `platforms/<platform>/flow.md`:
-  a numbered step-by-step (each step = the user action + the screen's response,
-  with the matching screenshot/GIF cited), so the flow is readable without
-  opening the GIF.
-- **Notes** — `platforms/<platform>/notes.md` logs the observations and patterns
-  worth synthesizing, plus the source URL(s).
-- **Sources** — every URL visited is appended to the research-level
-  `sources.md` with the date it was accessed.
+**Mobbin-sourced** — screens downloaded to a gitignored `platforms/<platform>/reference/`,
+each logged in a committed `references.md` mapping table (screen, Mobbin URL, screen ID,
+local file, access date). The flow is written as `flow.md`, with system-response claims
+marked *inferred from screen sequence*. No `flow.gif`.
+
+**Chrome-sourced** — numbered PNGs in `platforms/<platform>/screenshots/`, the core flow
+recorded as `flow.gif`, the same flow written as `flow.md`, analysis in `notes.md`.
+Personal data is redacted *before* anything is saved.
+
+**Both** — every source logged in the research-level `sources.md` with its access date and
+provenance.
+
+Reading a synthesis with its screenshots inline:
+
+```bash
+powershell -File .claude/scripts/md_visualize.ps1 -Source research/<study>/SYNTHESIS.md
+```
+
+This writes a gitignored `SYNTHESIS.visual.md`. `SYNTHESIS.md` itself always carries links,
+so it is always safe to commit.
 
 ## Synthesis format
 
@@ -243,13 +265,17 @@ folder and stays grounded in the captures:
 
 ## Tooling notes
 
+- **Pattern reference & default benchmark source:** **Mobbin** via its MCP server
+  (`search_screens`, `search_flows`, `search_sections`) — curated screens and flows from
+  shipped iOS and web products. Paid plan; claude.ai connector. Covers `ios` and `web` only.
 - **Browsing & capture:** The Claude-in-Chrome MCP tools or the Antigravity Browser Extension (ID: `eeijfnjmjelapkebgockoeaadonbchdd`) and associated MCP tools (like BrowserMCP/WebMCP). Chrome is used as the browser runtime.
 - **Screenshots:** the core flow is recorded as a GIF and downloaded, then key
   frames are extracted to numbered PNGs via **Pillow (PIL)** — redaction is
   applied in-page before capture, so saved frames carry no PII.
-- **Word export:** `pandoc` is *not* installed. `.docx` files are generated
-  from Markdown via `python-docx` using `.claude/scripts/md_to_docx.py`, with a
-  dependency-free PowerShell fallback, `.claude/scripts/md_to_docx.ps1`.
+- **Word export:** `pandoc` is *not* installed. `.docx` files are generated from Markdown
+  via `.claude/scripts/md_to_docx.ps1` (or `md_to_docx.py` with python-docx). Exports are
+  written to the study's **gitignored** `docx/` folder, because an export embeds images
+  into a binary that no text check can inspect.
 - **Stakeholder decks:** built in **Canva** via the Canva MCP tools (used by
   `/brief-feature`) — free tier only.
 - **Clickable prototypes:** `/design-prototype` generates a self-contained HTML

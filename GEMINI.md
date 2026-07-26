@@ -28,9 +28,22 @@ specific one (or runs `focus-research`):
 - Report the terminal's new focus and list the other active studies.
 
 ### 2. Capturing Evidence (`benchmark` Studies)
-- **Browser Control:** Use your available browser/web tools to navigate and interact with benchmarked platforms.
-- **Redaction is CRITICAL (Hard Rule):** Before saving any visual evidence, you MUST inject CSS or manipulate the DOM to blur personal data (avatars, names, emails) to comply with the workspace's zero-PII policy. 
-- Save screenshots as numbered PNGs in `platforms/<platform>/screenshots/`.
+- **Mobbin is the default source.** Use the Mobbin MCP tools (`search_screens`,
+  `search_flows`, `search_sections`) to find the screens and flows the study needs. Platform
+  is `ios` or `web` — **Mobbin has no Android coverage.**
+- **Browser capture is the exception**, used only for a C1–C5 trigger recorded in `PLAN.md`:
+  C1 our own product · C2 no Mobbin coverage · C3 the question needs live behaviour · C4
+  currency is the question · C5 the question is Android-specific.
+- **Mobbin-sourced:** download screens to `platforms/<platform>/reference/` (**gitignored**)
+  and log each in a committed `references.md` table (screen, Mobbin URL, screen ID, local
+  file, accessed). Write `flow.md` marking system-response claims as *inferred from screen
+  sequence*. There is no `flow.gif`. **Never commit a Mobbin image** — this repo is public
+  and the library is licensed.
+- **Chrome-sourced:** **Redaction is CRITICAL (Hard Rule)** — before saving any visual
+  evidence you MUST inject CSS or manipulate the DOM to blur personal data (avatars, names,
+  emails) to comply with the workspace's zero-PII policy. Save screenshots as numbered PNGs
+  in `platforms/<platform>/screenshots/`, plus `flow.gif`.
+- Full standard: `.claude/references/mobbin-sourcing.md`.
 
 ### 2b. Gathering Evidence (`litreview` Studies) (`gather-evidence`)
 When the active study is `Type: litreview` and the user asks to gather evidence (or
@@ -64,8 +77,10 @@ When asked to synthesize the active research:
 - **Benchmark:** Read `platforms/*/notes.md` and generate `SYNTHESIS.md` with the 5-part feature structure (Feature Name, Short Description, Key Findings, Rationale, Validation). Ensure the key findings section follows the flow: **what the user sees, what the user does, and what the system does**.
 - **Usability:** Read `test-plan.md` and `sessions/session-*.md` and generate `SYNTHESIS.md` ordered by **severity (highest first)**, citing pseudonymized participants (P01…).
 - **Litreview:** Read `evidence.md` and `sources.md` (if `evidence.md` is missing, stop and tell the user to run `gather-evidence` first). Use only the `## Verified claims` as findings input. Generate `SYNTHESIS.md` as **themes → design implications**: a `## TL;DR`, then one `## Theme N` section per theme with findings as bullets carrying a confidence label and `[S#]` citation(s), a `## Design implications` section, a `## Refuted / weak claims` section (reproduced from `evidence.md`, never promoted to findings), a `## Evidence gaps for primary research` section, and a `## Sources table` mirroring `sources.md`.
-- Embed relative Markdown images directly (`![flow](../platforms/app/flow.gif)`).
-- Gate through the Principal Researcher (`Mode B — synthesis QA`) to auto-fix prose and flag structural gaps via inline `> [Principal Researcher]...` annotations before any `.docx` export (`python3 .claude/scripts/md_to_docx.py`).
+- **Cite evidence by source shape** (see §2 and `.claude/references/mobbin-sourcing.md`). A platform folder with `screenshots/` is Chrome-sourced; one with `references.md` is Mobbin-sourced.
+  - **Chrome-sourced:** embed the capture directly with relative Markdown, e.g. `![flow](platforms/<platform>/flow.gif)` or `![screen](platforms/<platform>/screenshots/01-onboarding.png)`.
+  - **Mobbin-sourced:** cite the canonical Mobbin URL as a link, e.g. `[<platform> — <screen>](https://mobbin.com/screens/<id>)`. There is no `flow.gif`. **Never embed a Mobbin reference image** — `reference/` is gitignored, `SYNTHESIS.md` is committed, and this repo is public. Generate a gitignored reading copy instead: `powershell -NoProfile -File .claude/scripts/md_visualize.ps1 -Source research/<study>/SYNTHESIS.md`.
+- Gate through the Principal Researcher (`Mode B — synthesis QA`) to auto-fix prose and flag structural gaps via inline `> [Principal Researcher]...` annotations before any `.docx` export. Export with `powershell -NoProfile -File .claude/scripts/md_to_docx.ps1 -Source "<research-folder>/SYNTHESIS.md" -Out "<research-folder>/docx/SYNTHESIS.docx"` — always into the gitignored `docx/` folder, never the study root (a docx can embed reference images invisibly). Use the PowerShell converter, not the Python one: the `python3` alias is not on PATH on this machine, and the PowerShell script's `-Out` is mandatory.
 
 ### 5. Research Peer-Review Debate (`review-research`)
 When asked to review the active research synthesis:
@@ -108,9 +123,11 @@ request, one `SPEC.md` per study at the study root:
   traceability, scope discipline, flow completeness, IA coherence, and completeness of
   the required set; revise on `revise`/`reject` and relay the verdict.
 - Re-check any embedded capture for PII before writing.
-- Only on explicit user approval, write `SPEC.md` to the study folder root (optionally
-  export `.docx` via `.claude/scripts/md_to_docx.py`, noting Mermaid renders as fenced
-  code in Word). Log a dated "spec drafted" entry in the study `README.md`.
+- Only on explicit user approval, write `SPEC.md` to the study folder root. Optionally
+  export `.docx` with `powershell -NoProfile -File .claude/scripts/md_to_docx.ps1
+  -Source "<research-folder>/SPEC.md" -Out "<research-folder>/docx/SPEC.docx"` — always
+  into the gitignored `docx/` folder, never the study root — noting Mermaid renders as
+  fenced code in Word. Log a dated "spec drafted" entry in the study `README.md`.
 
 ### 8. Clickable Prototypes (`design-prototype`)
 When asked to turn a synthesized study into a clickable prototype — optional, run only
@@ -155,6 +172,15 @@ When asked to close the active research:
 When asked to publish or commit:
 - Perform a final visual safety check on all benchmark captures (`screenshots/*.png`, `flow.gif`) and usability session notes (`session-*.md`) to guarantee zero PII is visible.
 - Ensure no paywalls were breached.
+- **Mobbin redistribution guard (required).** After staging and before committing, run:
+
+  ```bash
+  git diff --cached --name-only | grep -E '(/reference/|\.visual\.md$)' && echo LEAK || echo "clean — no reference/ or .visual.md staged"
+  git diff --cached --name-only | grep -E '\.docx$' | grep -v '/docx/' && echo DOCX_LEAK || echo "clean — no stray .docx staged"
+  ```
+
+  Both lines always print something and exit 0. If a line prints `LEAK` or `DOCX_LEAK` (with the offending path above it), **STOP** and tell the user exactly which files are staged and why they cannot be pushed: `reference/` holds licensed Mobbin library images, `*.visual.md` embeds them, and a `.docx` outside the gitignored `docx/` folder may embed them invisibly. This repo is public. Unstage them and re-run the gate — do not use `git add -f` to override.
+- Confirm a `litreview` study's `corpus/` is not staged (it must stay gitignored).
 - Commit via standard `git` terminal commands and `git push` (or `gh pr create`).
 
 ### 11. Showing the Research Board (`research-board`)

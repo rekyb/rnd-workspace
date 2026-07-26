@@ -1,12 +1,14 @@
 ---
 description: Synthesize the active research into SYNTHESIS.md, using the template for its TYPE (add --docx for a Word copy).
-argument-hint: [--docx]
+argument-hint: [--docx] [--visual]
 ---
 
 Synthesize the currently active research into a design-ready findings document. The
 synthesis template is chosen by the research **type**.
 
-Arguments: `$ARGUMENTS` (if it contains `--docx`, also produce a Word file).
+Arguments: `$ARGUMENTS` — `--docx` also produces a Word file (written to the study's
+gitignored `docx/` folder); `--visual` also produces a gitignored `SYNTHESIS.visual.md`
+with Mobbin reference images inlined for reading.
 
 Steps:
 
@@ -18,10 +20,11 @@ Steps:
    branches on it.
 
 2. **Gather the evidence — by type.**
-   - **Benchmark:** read `README.md`, `sources.md`, and every `platforms/*/notes.md`
-     and `platforms/*/flow.md`. Note which platforms have screenshots and a
-     `flow.gif`. If there are no platform notes yet, STOP — capture some platforms
-     first.
+   - **Benchmark:** read `README.md`, `sources.md`, and every `platforms/*/notes.md` and
+     `platforms/*/flow.md`. Note each platform's **source shape**: a `references.md` means
+     Mobbin-sourced (cite by URL, no `flow.gif`); a `screenshots/` folder means
+     Chrome-sourced (cite by relative image path). If there are no platform notes yet,
+     STOP — capture some platforms first.
    - **Usability:** read `README.md`, `test-plan.md`, and every
      `sessions/session-*.md`. If there is no `test-plan.md`, STOP and tell the user
      to run `/plan-usability` first. If there are no session notes yet, STOP — the
@@ -39,11 +42,14 @@ Steps:
    feature MUST have these five fields, in this order:
    1. **Feature name**
    2. **Short description** — 1–2 sentences.
-   3. **Key findings** — what we learned observing it. Cite the platform(s) and
-      evidence. **CRITICAL:** embed each cited screenshot or GIF directly with
-      relative markdown (e.g.
-      `![description](../platforms/<platform>/screenshots/filename.png)` or
-      `![flow](../platforms/<platform>/flow.gif)`).
+   3. **Key findings** — what we learned observing it. Cite the platform(s) and evidence.
+      **Citation depends on the platform's source:**
+      - **Chrome-sourced:** embed the capture directly with relative markdown, e.g.
+        `![description](platforms/<platform>/screenshots/filename.png)`.
+      - **Mobbin-sourced:** cite the canonical Mobbin URL as a link, e.g.
+        `[<platform> — <screen>](https://mobbin.com/screens/<id>)`. **Never embed a Mobbin
+        reference image in `SYNTHESIS.md`** — it is gitignored and the file is committed.
+        Run `--visual` to read it with images.
    4. **Why this feature works (rationale)** — the UX/product reasoning.
    5. **How to validate this feature in the future** — concrete next steps (usability
       test, prototype, metric, experiment…).
@@ -100,14 +106,32 @@ Steps:
    Do this **before** the docx export so the cleaned, annotated version is what gets
    exported. Relay the agent's readiness verdict and flagged items to the user.
 
-5. **Optional docx.** If `$ARGUMENTS` contains `--docx`, run:
-   `python3 .claude/scripts/md_to_docx.py "<research-folder>/SYNTHESIS.md"`
-   and confirm the `.docx` path to the user.
+5. **Optional docx.** If `$ARGUMENTS` contains `--docx`, create the study's gitignored
+   `docx/` folder if it doesn't exist, then run:
 
-6. **Update the log** in the research `README.md` with a dated "synthesis written"
+   ```
+   powershell -NoProfile -File .claude/scripts/md_to_docx.ps1 -Source "<research-folder>/SYNTHESIS.md" -Out "<research-folder>/docx/SYNTHESIS.docx"
+   ```
+
+   and confirm the `.docx` path to the user. `-Out` is **mandatory** — always write into
+   the gitignored `docx/` folder, never the study root, because an export can embed
+   `reference/` images into a binary no markdown check can inspect.
+
+6. **If `--visual` was passed**, generate the reading copy:
+
+   ```
+   powershell -File .claude/scripts/md_visualize.ps1 -Source <study>/SYNTHESIS.md
+   ```
+
+   Report the `swapped N of M` line it prints. The output `SYNTHESIS.visual.md` is
+   gitignored — never stage it, and never edit it (it is regenerated from
+   `SYNTHESIS.md`). If N is 0 and the study has Mobbin platforms, the `references.md`
+   URLs do not match the links in the synthesis — check both before reporting success.
+
+7. **Update the log** in the research `README.md` with a dated "synthesis written"
    entry (note the type, the entry count, and that the Principal Researcher QA pass
    ran with the flagged-item count).
 
-7. **Report** to the user: the type, how many features/findings/themes were synthesized, the
+8. **Report** to the user: the type, how many features/findings/themes were synthesized, the
    file path(s), the Principal Researcher's readiness verdict, the content items it
    flagged for resolution, and any gaps you noticed (thin evidence, few participants).

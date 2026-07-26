@@ -1,18 +1,18 @@
 ---
 name: synth-findings
-description: Synthesize the active research into SYNTHESIS.md, using the template for its Type (add --docx for a Word copy).
+description: Synthesize the active research into SYNTHESIS.md, using the template for its Type (add --docx for a Word copy, --visual for a reading copy with Mobbin images inlined).
 ---
 
 Synthesize the currently active research into a design-ready findings document. The synthesis template is chosen by the research **type**.
 
-Arguments: if the user prompt/arguments contain `--docx`, also produce a Word file.
+Arguments: if the user prompt/arguments contain `--docx`, also produce a Word file (written to the study's gitignored `docx/` folder); if they contain `--visual`, also produce a gitignored `SYNTHESIS.visual.md` with Mobbin reference images inlined for reading.
 
 Steps:
 
 1. **Locate the research & read its type.** Resolve the target study per `.claude/references/active-research.md` (explicit `[folder]` arg, else this terminal's binding, else the sole active study, else ask). If the registry is empty, STOP and tell the user to run `new-research` first. Read the folder's `README.md` and note its `Type` (`benchmark`, `usability`, or `litreview`). Everything below branches on it.
 
 2. **Gather the evidence — by type.**
-   - **Benchmark:** read `README.md`, `sources.md`, and every `platforms/*/notes.md` and `platforms/*/flow.md`. Note which platforms have screenshots and a `flow.gif`. If there are no platform notes yet, STOP — capture some platforms first.
+   - **Benchmark:** read `README.md`, `sources.md`, and every `platforms/*/notes.md` and `platforms/*/flow.md`. Note each platform's **source shape**: a `references.md` means Mobbin-sourced (cite by URL, no `flow.gif`); a `screenshots/` folder means Chrome-sourced (cite by relative image path). If there are no platform notes yet, STOP — capture some platforms first.
    - **Usability:** read `README.md`, `test-plan.md`, and every `sessions/session-*.md`. If there is no `test-plan.md`, STOP and tell the user to run `plan-usability` first. If there are no session notes yet, STOP — the sessions must be fielded and written into `sessions/` before there's anything to synthesize.
    - **Litreview:** read `README.md`, `sources.md`, and `evidence.md`. If there is no `evidence.md`, STOP and tell the user to run `gather-evidence` first. Use only the `## Verified claims` as findings input; keep the `## Refuted / weak claims` aside to reproduce in the synthesis's own refuted section — never promote them to findings.
 
@@ -21,7 +21,9 @@ Steps:
    **Benchmark → a list of features.** Lead with a short `## Overview` (goal, platforms studied, headline takeaways), then one `##` section per feature. Every feature MUST have these five fields, in this order:
    1. **Feature name**
    2. **Short description** — 1–2 sentences.
-   3. **Key findings** — what we learned observing it. Cite the platform(s) and evidence. **CRITICAL:** embed each cited screenshot or GIF directly with relative markdown (e.g. `![description](../platforms/<platform>/screenshots/filename.png)` or `![flow](../platforms/<platform>/flow.gif)`).
+   3. **Key findings** — what we learned observing it. Cite the platform(s) and evidence. **Citation depends on the platform's source:**
+      - **Chrome-sourced:** embed the capture directly with relative markdown, e.g. `![description](platforms/<platform>/screenshots/filename.png)` or `![flow](platforms/<platform>/flow.gif)`.
+      - **Mobbin-sourced:** cite the canonical Mobbin URL as a link, e.g. `[<platform> — <screen>](https://mobbin.com/screens/<id>)`. **Never embed a Mobbin reference image in `SYNTHESIS.md`** — it is gitignored and the file is committed. Run `--visual` to read it with images.
    4. **Why this feature works (rationale)** — the UX/product reasoning.
    5. **How to validate this feature in the future** — concrete next steps (usability test, prototype, metric, experiment…).
 
@@ -43,10 +45,22 @@ Steps:
 
    Do this **before** the docx export so the cleaned, annotated version is what gets exported. Relay the agent's readiness verdict and flagged items to the user.
 
-5. **Optional docx.** If arguments contain `--docx`, run:
-   `python3 .claude/scripts/md_to_docx.py "<research-folder>/SYNTHESIS.md"`
-   and confirm the `.docx` path to the user.
+5. **Optional docx.** If arguments contain `--docx`, create the study's gitignored `docx/` folder if it doesn't exist, then run:
 
-6. **Update the log** in the research `README.md` with a dated "synthesis written" entry (note the type, the entry count, and that the Principal Researcher QA pass ran with the flagged-item count).
+   ```
+   powershell -NoProfile -File .claude/scripts/md_to_docx.ps1 -Source "<research-folder>/SYNTHESIS.md" -Out "<research-folder>/docx/SYNTHESIS.docx"
+   ```
 
-7. **Report** to the user: the type, how many features/findings/themes were synthesized, the file path(s), the Principal Researcher's readiness verdict, the content items it flagged for resolution, and any gaps you noticed (thin evidence, few participants).
+   and confirm the `.docx` path to the user. `-Out` is **mandatory** — always write into the gitignored `docx/` folder, never the study root, because an export can embed `reference/` images into a binary no markdown check can inspect.
+
+6. **If `--visual` was passed**, generate the reading copy:
+
+   ```
+   powershell -File .claude/scripts/md_visualize.ps1 -Source <study>/SYNTHESIS.md
+   ```
+
+   Report the `swapped N of M` line it prints. The output `SYNTHESIS.visual.md` is gitignored — never stage it, and never edit it (it is regenerated from `SYNTHESIS.md`). If N is 0 and the study has Mobbin platforms, the `references.md` URLs do not match the links in the synthesis — check both before reporting success.
+
+7. **Update the log** in the research `README.md` with a dated "synthesis written" entry (note the type, the entry count, and that the Principal Researcher QA pass ran with the flagged-item count).
+
+8. **Report** to the user: the type, how many features/findings/themes were synthesized, the file path(s), the Principal Researcher's readiness verdict, the content items it flagged for resolution, and any gaps you noticed (thin evidence, few participants).

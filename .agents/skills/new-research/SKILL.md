@@ -43,11 +43,12 @@ Follow these steps exactly:
 
 7. **Draft the plan and run the quality gate — by type.**
 
-   **Benchmark** (as before — the plan is what the Principal Researcher signs off on before any capture):
-   - **You need the platforms first.** If the topic names them, draft the plan now; if not, ask the user which platforms to benchmark before drafting.
-   - **Draft `PLAN.md`:** derive key research questions from the `## Goal`, list the platforms, and for each name the specific flows/screens to capture, the success criteria, and known risks (paywalls, login/PII).
+   **Benchmark** (the plan is what the Principal Researcher signs off on before any capture):
+   - **You need the platforms first.** If the topic names them, draft the plan now; if not, **use Mobbin to propose candidates** — `mcp__claude_ai_Mobbin__search_flows` for the flow the study is about — and present the shortlist to the user rather than asking cold.
+   - **Pick a source per platform.** Mobbin is the default. Chrome requires one of the C1–C5 triggers from `.claude/references/mobbin-sourcing.md`, and the trigger **must be written into `PLAN.md`**. Before claiming C2 ("no Mobbin coverage"), actually search — do not assume.
+   - **Draft `PLAN.md`:** derive key research questions from the `## Goal`, list the platforms with their **Source** and (for Chrome) the trigger, and for each name the specific flows/screens to capture, the success criteria, and known risks.
    - **Dispatch the Principal Researcher (Mode A)** via the subagent tool (`general-purpose` / `research`) with `.claude/personas/principal-researcher.md`, the drafted `PLAN.md`, and the `README.md`. It returns must-fixes.
-   - **Revise `PLAN.md`** and **present it to the user for approval.** Capture begins (via the browser tools) only after they approve.
+   - **Revise `PLAN.md`** and **present it to the user for approval.** Capture begins only after they approve.
 
    **Usability** (the plan here is the lightweight brief; the detailed instrument comes next):
    - **Draft `PLAN.md`** with the objectives + research questions derived from the `## Goal`, the product/flow under test, and the intended participant profile at a high level. This is the goal-alignment plan, not the full script.
@@ -104,9 +105,11 @@ PLAN.md template — **benchmark** (leave the per-platform block as a skeleton i
 
 ## Per-platform capture plan
 ### <platform 1>
+- **Source:** <mobbin | chrome>
+- **Chrome trigger (chrome only):** <C1 our own product | C2 no Mobbin coverage, verified by search | C3 live behaviour needed | C4 currency is the question | C5 Android-specific>
 - **Flows/screens to capture:** <the specific flows and key screens>
 - **What we're looking for:** <the patterns/answers tied to the questions above>
-- **Risks:** <paywalls, login/PII, capture blockers>
+- **Risks:** <paywalls, login/PII, capture blockers — note that Mobbin sourcing removes the paywall and PII risks>
 
 ## Success criteria (what "done" looks like)
 - <concrete, checkable>

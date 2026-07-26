@@ -39,7 +39,13 @@ This is a synthesis-to-deliverable step, not a capture step. **Every requirement
 
 8. **Checkpoint — get explicit approval to write.** Present the review-cleared spec and confirm the user wants it saved. Only on a clear yes, write `SPEC.md` to the study folder root. (Mirrors the workspace rule to confirm before writing a deliverable.)
 
-9. **Optional docx.** If arguments contain `--docx`, run: `python3 .claude/scripts/md_to_docx.py "<research-folder>/SPEC.md"` and confirm the path. Note to the user that Mermaid diagrams render as fenced code blocks in the `.docx` (python-docx does not render Mermaid) — the GitHub view is the diagram source of truth.
+9. **Optional docx.** If arguments contain `--docx`, create the study's gitignored `docx/` folder if it doesn't exist, then run:
+
+   ```
+   powershell -NoProfile -File .claude/scripts/md_to_docx.ps1 -Source "<research-folder>/SPEC.md" -Out "<research-folder>/docx/SPEC.docx"
+   ```
+
+   and confirm the path. `-Out` is **mandatory** — always write into the gitignored `docx/` folder, never the study root, because an export can embed `reference/` images into a binary no markdown check can inspect. Note to the user that Mermaid diagrams render as fenced code blocks in the `.docx` (the converter does not render Mermaid) — the GitHub view is the diagram source of truth.
 
 10. **Update the log** in the study `README.md` with a dated "spec drafted" entry (FR count, screen count, Principal Designer Mode S verdict).
 

@@ -25,6 +25,12 @@ Steps:
    `SYNTHESIS.md` was missing and the user chose to close anyway, skip this step and
    say so.
 
+   - Tell it the study's per-platform sources (from `PLAN.md`). Patterns drawn from a
+     Mobbin-sourced platform MUST use
+     **Kind:** `reference-library observed (Mobbin; not first-party captured)` and cite the
+     Mobbin URL — never a `reference/` image path, which is gitignored. See
+     `.claude/references/mobbin-sourcing.md`.
+
    For a **litreview** study the Principal Designer harvests **evidence-based design
    principles** into `PATTERNS.md` (not observed UI patterns). It must **not force UI
    patterns where there are none** — a litreview study often has no interface to

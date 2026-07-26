@@ -37,6 +37,20 @@ Steps:
      `research/*/corpus/*` file is tracked or staged, STOP and tell the user — supplied
      source documents (copyright/PII) must never be pushed. Only `sources.md` records
      what was used.
+   - **Mobbin redistribution guard (required).** Run:
+
+     ```bash
+     git diff --cached --name-only | grep -E '(/reference/|\.visual\.md$)' && echo LEAK || echo "clean — no reference/ or .visual.md staged"
+     git diff --cached --name-only | grep -E '\.docx$' | grep -v '/docx/' && echo DOCX_LEAK || echo "clean — no stray .docx staged"
+     ```
+
+     Both lines always print something and exit 0. If a line prints `LEAK` or
+     `DOCX_LEAK` (with the offending path above it), **STOP** and tell the user exactly
+     which files are staged and why they cannot be pushed: `reference/` holds licensed
+     Mobbin library images, `*.visual.md` embeds them, and a `.docx` outside the
+     gitignored `docx/` folder may embed them invisibly. This repo is public. Unstage
+     them and re-run the gate — do not use `git add -f` to override. If a line instead
+     prints its `clean — …` message, that half of the gate passed.
    Only continue once this is clean.
 
 4. **Stage & commit.** Stage the active research folder (and any workspace docs you
