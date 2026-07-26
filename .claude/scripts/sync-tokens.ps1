@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
   Sync the production design tokens and component CSS into this repo's ui/ folder.
 
@@ -7,7 +7,7 @@
   at its TOKENS:START / TOKENS:END markers. The lines strictly between the markers
   become ui/tokens.css (the design tokens); the rest of the file, minus both marker
   lines, becomes ui/components.css (the component classes). Both are byte-exact copies
-  of the source text — nothing is regenerated, so upstream generator changes never need
+  of the source text - nothing is regenerated, so upstream generator changes never need
   tracking here.
 
 .NOTES
@@ -84,14 +84,14 @@ function Update-ProvenanceBlock {
         return $new + "`n`n" + $existing
     }
     return @"
-# ui/tokens.css — provenance
+# ui/tokens.css - provenance
 
 $new
 
 ## What this is
 
 Design tokens extracted verbatim from the Solve Education production repo. Do not
-hand-edit tokens.css or components.css — run ``/sync-tokens`` instead. Per-project
+hand-edit tokens.css or components.css - run ``/sync-tokens`` instead. Per-project
 brand divergence belongs in ``design/<project>/tokens.overlay.css``, which may
 redefine an existing token name but never introduce a new one.
 "@
@@ -108,7 +108,7 @@ function Split-TokenBlock {
 
     # Use instance Regex objects so the END search can start at an offset via the
     # Match(input, startat) overload. The static [regex]::Match(string, pattern, int)
-    # call resolves to the (string, string, RegexOptions) overload instead — PowerShell
+    # call resolves to the (string, string, RegexOptions) overload instead - PowerShell
     # then tries to coerce the start-index int into a RegexOptions enum and throws.
     $startRegex = New-Object System.Text.RegularExpressions.Regex("(?m)^[ \t]*$startRx[^\r\n]*")
     $endRegex   = New-Object System.Text.RegularExpressions.Regex("(?m)^[ \t]*$endRx[^\r\n]*")
