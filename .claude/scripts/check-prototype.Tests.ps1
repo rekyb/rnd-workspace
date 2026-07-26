@@ -121,15 +121,41 @@ $p2 = Join-Path $root 'realistic.html'
 $r2 = & powershell -NoProfile -File $ScriptUnderTest -Path $p2 -UiRoot $ui2 2>&1
 Assert-Equal '0' ([string]$LASTEXITCODE) 'legitimate raw px/hex values inside the verbatim components.css block do not trigger rule 2'
 
-# --- Test 12: a CSS id selector is not mistaken for a raw hex value
-$idSel = New-Prototype -Name 'idsel.html' -ExtraCss '#nav-bar { color: var(--ink); }' -Body '<button class="btn">Go</button>'
+# --- Test 12: a CSS id selector whose name is itself hex-shaped is not
+# mistaken for a raw hex value. "#a1b2c3" is a valid (if unusual) CSS id and
+# is shape-identical to a genuine 6-digit hex color; only its position (a
+# selector, not a declaration value) tells them apart. A non-hex-shaped id
+# like "#nav-bar" would never reach the hex regex at all (its letters aren't
+# valid hex digits), so it would not actually exercise this distinction.
+$idSel = New-Prototype -Name 'idsel.html' -ExtraCss '#a1b2c3 { color: var(--ink); }' -Body '<button class="btn">Go</button>'
 $r = Invoke-Check -Path $idSel
-Assert-Equal '0' ([string]$r.Code) 'an id selector outside the token files is not flagged as a raw hex value'
+Assert-Equal '0' ([string]$r.Code) 'a hex-shaped CSS id selector is not flagged as a raw hex value'
 
-# --- Test 13: a URL fragment in an href is not mistaken for a raw hex value
-$frag = New-Prototype -Name 'frag.html' -Body '<a class="btn" href="/docs.html#section">Go</a>'
+# --- Test 13: a URL fragment that is itself hex-shaped is not mistaken for a
+# raw hex value, for the same reason as Test 12 - "#a1b2c3" here is plain HTML
+# attribute text, not a CSS declaration value.
+$frag = New-Prototype -Name 'frag.html' -Body '<a class="btn" href="/docs.html#a1b2c3">Go</a>'
 $r = Invoke-Check -Path $frag
-Assert-Equal '0' ([string]$r.Code) 'a URL fragment is not flagged as a raw hex value'
+Assert-Equal '0' ([string]$r.Code) 'a hex-shaped URL fragment is not flagged as a raw hex value'
+
+# --- Test 13b: a raw hex WITHOUT a space after the colon still fails. This is
+# the case rule 2 must keep catching - it is the mirror image of Tests 12/13,
+# proving the declaration-value check is not simply "always pass" or anchored
+# so tightly it stops catching real violations.
+$hexNoSpace = New-Prototype -Name 'hexnospace.html' -ExtraCss '.custom { background:#abc; }' -Body '<button class="btn">Go</button>'
+$r = Invoke-Check -Path $hexNoSpace
+Assert-Equal 'True' ([string]($r.Code -ne 0))         'a raw hex immediately after a colon (no space) still fails'
+Assert-Equal 'True' ([string]($r.Out -match '#abc'))  'the offending no-space hex value is named'
+
+# --- Test 13c: a raw hex separated from its property's colon by other value
+# tokens (a length and a keyword) still fails. This is the exact shape the
+# real ui-library/components.css uses for borders ("border: 1px solid ...")
+# and is the case an over-eager "must immediately follow a colon" anchor
+# would miss.
+$hexMultiValue = New-Prototype -Name 'hexmultivalue.html' -ExtraCss '.custom { border: 1px solid #abcdef; }' -Body '<button class="btn">Go</button>'
+$r = Invoke-Check -Path $hexMultiValue
+Assert-Equal 'True' ([string]($r.Code -ne 0))            'a raw hex several value-tokens after the colon still fails'
+Assert-Equal 'True' ([string]($r.Out -match '#abcdef'))  'the offending multi-value-position hex value is named'
 
 # --- Test 14: a class name matching a file extension inside components.css'
 # url(...) is not treated as a known class. Naive `\.classname` scanning would

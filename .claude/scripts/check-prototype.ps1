@@ -26,9 +26,9 @@
   ui-library/tokens.css and ui-library/components.css inlined into a <style> block).
 
 .PARAMETER UiRoot
-  Directory containing tokens.css and components.css. Defaults to <repo-root>/ui,
-  where <repo-root> is two levels above this script's own folder
-  (.claude/scripts/../..).
+  Directory containing tokens.css and components.css. Defaults to
+  <repo-root>/ui-library, where <repo-root> is two levels above this script's
+  own folder (.claude/scripts/../..).
 
 .PARAMETER OverlayPath
   Optional path to a project's tokens.overlay.css. An overlay may redefine an
@@ -77,6 +77,38 @@ function Read-Utf8Text {
 function Get-NormalizedText {
     param([string]$P)
     return (Read-Utf8Text -P $P).Replace("`r`n", "`n")
+}
+
+# Decides whether the character at $Pos in $Text sits in a CSS declaration's
+# value position (e.g. the "#fff" in "border: 1px solid #fff;"), as opposed to
+# a selector (e.g. "#a1b2c3 { ... }") or plain text such as an HTML fragment
+# (href="#a1b2c3"). A hex-shaped token is only a raw-style violation in the
+# first case; the id selector and the URL fragment are not style values at
+# all, but they are indistinguishable from a genuine raw hex color by shape
+# alone - "#a1b2c3" is valid in all three positions.
+#
+# The heuristic: scan backward from $Pos to the nearest preceding statement
+# boundary - '{', '}', or ';' (or the start of the text, if none). If a ':'
+# appears between that boundary and $Pos, we are inside the value half of a
+# declaration (the colon that separates "property" from "value" is still
+# "open"); if no ':' appears there, we are at the start of a fresh statement
+# - a selector, or, for non-CSS text such as HTML markup, just prose that
+# happens to contain no colon nearby either.
+#
+# This deliberately does not anchor only on "immediately preceded by a colon",
+# which would cause a mirror-image bug: "border: 1px solid #fff;" has other
+# value tokens (a length, a keyword) between the colon and the hex, so an
+# immediate-colon anchor would miss it as a genuine violation. Verified
+# against the real ui-library/components.css multi-value declarations.
+function Test-InDeclarationValue {
+    param([string]$Text, [int]$Pos)
+    $boundary = -1
+    for ($i = $Pos - 1; $i -ge 0; $i--) {
+        $c = $Text[$i]
+        if ($c -eq '{' -or $c -eq '}' -or $c -eq ';') { $boundary = $i; break }
+    }
+    $span = $Text.Substring($boundary + 1, $Pos - $boundary - 1)
+    return $span.Contains(':')
 }
 
 try {
@@ -143,7 +175,9 @@ try {
         $scan = $outside
         if ($overlay) { $scan = $scan.Replace($overlay.Trim(), '') }
         foreach ($m in [regex]::Matches($scan, '(?<![&\w])#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b')) {
-            $violations += "raw hex outside the design-system files: $($m.Value)"
+            if (Test-InDeclarationValue -Text $scan -Pos $m.Index) {
+                $violations += "raw hex outside the design-system files: $($m.Value)"
+            }
         }
         foreach ($m in [regex]::Matches($scan, '(?<![\w.-])\d+px\b')) {
             $violations += "raw px outside the design-system files: $($m.Value)"
@@ -178,6 +212,15 @@ try {
     # examples verified against the current ui-library/components.css:
     # --radix-select-trigger-width, --radix-toast-swipe-move-x,
     # --radix-accordion-content-height.
+    #
+    # Trade-off (accepted, reviewed): this is a blanket prefix exemption, so a
+    # typo inside the prefix - e.g. --radix-slect-trigger-width - would pass
+    # rule 3 forever; it can never be statically compared against a known
+    # list because the names are runtime-injected by Radix, not declared
+    # anywhere. The alternative (no exemption) permanently fails every real
+    # build using the accordion/select/toast primitives, which is worse.
+    # Kept narrowly scoped to the literal "--radix-" prefix rather than a
+    # broader allowance.
     foreach ($m in [regex]::Matches($html, 'var\(\s*(--[A-Za-z0-9-]+)')) {
         $name = $m.Groups[1].Value
         if ($name -like '--radix-*') { continue }
