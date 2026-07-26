@@ -17,6 +17,14 @@ standing limits:
 1. **Web-only.** Chrome captures web surfaces. Every `research/PATTERNS.md` entry carries a
    *"desktop-web capture"* caveat, while the active design work (`design/ai-literacy-app`)
    is explicitly mobile-first and Android-first.
+
+   **Correction (verified 2026-07-26 against the live tool schemas):** Mobbin's `platform`
+   parameter accepts **`ios` and `web` only — there is no Android**. So Mobbin adds native
+   *iOS* coverage, a genuine gain over web-only, but it does **not** close the Android gap.
+   For an Android-first product, iOS patterns transfer at the level of flow structure and
+   information architecture, not at the level of platform interaction convention (back
+   behaviour, system sheets, navigation idiom). Android-specific questions still require
+   Chrome, or a device, or are simply unanswerable from this library.
 2. **Paywalls end the study.** The Guardrails forbid transacting, so capture stops at the
    paywall and the rest of the flow is recorded as "gated".
 3. **PII burden.** Capturing from a logged-in session requires the redact-before-capture
@@ -71,6 +79,7 @@ holds, and the reason is written into `PLAN.md`:
 | C2 | Mobbin has no coverage of the platform | Verified by search, not assumed |
 | C3 | The question needs live behaviour — validation response, error states, timing, "what the system does" | Stills cannot demonstrate system response |
 | C4 | Currency is itself the question | Mobbin is a snapshot; live product may have moved |
+| C5 | The question is **Android-specific** | Mobbin covers `ios` and `web` only (verified against the tool schema); Android interaction convention is out of library scope |
 
 Usability studies (`--type usability`) are unaffected: they test our own product and are
 always Chrome/first-party.
@@ -243,13 +252,21 @@ it is unavailable.
 
 ## 9. Risks and open questions
 
-- **Mobbin URL stability is unverified.** If canonical screen URLs rotate or expire, committed
-  citations rot. Mitigation: `references.md` stores the screen **ID** alongside the URL, so a
-  citation is recoverable even if the URL form changes. Worth confirming against the API
-  before relying on it at scale.
+- **Mobbin URL stability — partly resolved.** The `search_screens` schema returns a
+  `mobbin_url` it describes as *the canonical Mobbin link for that screen*, and instructs
+  clients to always cite it, so citation-by-URL is the intended usage rather than a
+  workaround. Screen IDs are UUIDs (`exclude_screen_ids` format), so `references.md` storing
+  both URL and ID keeps a citation recoverable if URL form ever changes. Remaining unknown:
+  whether a screen can be *withdrawn* from the library, which would rot the citation
+  regardless of form.
 - **Coverage is unmeasured.** How often C2 ("Mobbin has no coverage") fires is unknown until
   the first few studies run. If it fires often, Mobbin-as-default is the wrong default and
   the rule should invert.
+- **No Android coverage.** The single biggest limit, and it lands directly on the current
+  design work. `design/ai-literacy-app` targets Android-first teachers on low-end devices;
+  Mobbin can show how a flow is *structured* on iOS but not how it should *behave* on
+  Android. Treat Mobbin-sourced mobile findings as structural evidence and keep platform
+  convention questions out of them.
 - **Evidence richness drops for Mobbin platforms** — no `flow.gif`, weaker system-response
   claims. Accepted, but it should be reviewed after two or three studies rather than assumed
   permanent.
