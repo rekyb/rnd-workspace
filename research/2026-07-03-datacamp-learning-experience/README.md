@@ -1,6 +1,7 @@
 # Research: Benchmark DataCamp — 3 most valuable learning-experience features
 
 - **Status:** Closed
+- **Type:** benchmark
 - **Started:** 2026-07-03
 - **Closed:** 2026-07-03
 - **Researcher:** Claude (acting Senior UI/UX Designer)

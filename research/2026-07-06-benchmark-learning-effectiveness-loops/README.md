@@ -1,6 +1,7 @@
 # Research: Learning loop, engagement loop & measuring real upskilling
 
 - **Status:** Closed
+- **Type:** benchmark
 - **Started:** 2026-07-06
 - **Closed:** 2026-07-06
 - **Researcher:** Claude (acting Senior UI/UX Designer)

@@ -79,7 +79,7 @@ Steps:
    source in `evidence.md`; confidence labels are honest; no generalization beyond what
    the sources support; no fabricated sources or findings.
 
-   For **both** types, end with a `## Gaps & caveats` section (methodological limits,
+   For **all three** types, end with a `## Gaps & caveats` section (methodological limits,
    paywalls, thin evidence, unanswered questions). Be analytical and opinionated as a
    Senior UI/UX Designer. **Do not invent findings, participants, or sources** —
    everything traces to captured evidence or a session note.
@@ -101,7 +101,8 @@ Steps:
      AI-slop and remove em-dashes, changing no findings, numbers, or citations;
    - **flag content problems as inline `> [Principal Researcher] …` annotations**
      (never silently editing substance) and append a dated
-     `## Principal Researcher QA — <date>` record to `SYNTHESIS.md`.
+     `## Principal Researcher QA (<date>)` record to `SYNTHESIS.md`. The prose rules
+     apply to its own annotations and QA record too, not just the synthesis prose.
 
    Do this **before** the docx export so the cleaned, annotated version is what gets
    exported. Relay the agent's readiness verdict and flagged items to the user.

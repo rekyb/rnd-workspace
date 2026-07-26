@@ -1,6 +1,7 @@
 # Research: Benchmark Synthesis For The Learn-To-Hire Loop
 
 - **Status:** Closed
+- **Type:** benchmark
 - **Started:** 2026-07-09
 - **Closed:** 2026-07-09
 - **Researcher:** Codex acting as Senior UI/UX Researcher

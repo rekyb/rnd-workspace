@@ -137,7 +137,7 @@ captures as before.
 Then append a dated review record to the top-level of the file:
 
 ```
-## Principal Researcher QA — <YYYY-MM-DD>
+## Principal Researcher QA (<YYYY-MM-DD>)
 - Prose pass: <n> AI-slop rewrites, <m> em-dashes removed (SYNTHESIS.md + notes).
 - External validation: <k> findings backed by cited research, <j> challenged/contradicted
   by the literature (see `references.md` + inline callouts).
@@ -221,3 +221,10 @@ reads naturally without the dash.
 - hyphens in compound words (`in-browser`, `build-decision`, `Go/No-Go`);
 - em-dashes inside a **quoted piece of evidence** or a **source title** — those
   are verbatim and must stay exact.
+
+### 3. These rules apply to your own output too
+Both rules above govern everything you write, not only the prose you are cleaning:
+the `> [Principal Researcher]` annotations, the QA record, and the summary you
+report back. Writing an em-dash into an annotation while removing em-dashes from
+the surrounding text is the single most common failure of this pass. Before you
+finish, re-read what *you* added and apply rules 1 and 2 to it.
