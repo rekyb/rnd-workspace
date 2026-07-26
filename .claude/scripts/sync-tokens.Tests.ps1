@@ -66,7 +66,11 @@ $expectedTokens = @"
   --ink: #f5f2fa;
 }
 "@
-Assert-Equal $expectedTokens $tokensOut 'tokens.css is the lines strictly between the markers'
+# A here-string's closing "@ does not contribute the final line's own trailing
+# newline, but a "line" includes its terminator — the last between-marker line
+# ("}") is terminated the same as every other line above it, so the expected
+# value needs that terminator appended explicitly.
+Assert-Equal ($expectedTokens + "`n") $tokensOut 'tokens.css is the lines strictly between the markers'
 
 # --- Test 2: components.css is the file minus that block minus both marker lines
 $compOut = [IO.File]::ReadAllText((Join-Path $ui 'components.css'), [System.Text.Encoding]::UTF8)
@@ -76,6 +80,14 @@ $expectedComp = @"
 .post { color: blue; }
 "@
 Assert-Equal $expectedComp $compOut 'components.css is the source minus the token block and both markers'
+
+# --- Test 15: the two outputs reconstitute the source minus the two marker lines
+$srcRaw = [IO.File]::ReadAllText((Join-Path $src 'apps\web\app\(frontend)\globals.css'), [System.Text.Encoding]::UTF8)
+$startLine = [regex]::Match($srcRaw, '(?m)^[ \t]*/\* TOKENS:START[^\r\n]*\r?\n').Value
+$endLine   = [regex]::Match($srcRaw, '(?m)^[ \t]*/\* TOKENS:END[^\r\n]*\r?\n').Value
+$expectedWhole = $srcRaw.Replace($startLine, '').Replace($endLine, '')
+$rebuilt = $compOut.Substring(0, $compOut.IndexOf('.post')) + $tokensOut + $compOut.Substring($compOut.IndexOf('.post'))
+Assert-Equal $expectedWhole $rebuilt 'tokens.css + components.css reconstitute the source minus both marker lines'
 
 # --- Test 3: no custom properties leak into components.css
 Assert-Equal '0' ([string]([regex]::Matches($compOut, '(?m)^\s*--[A-Za-z0-9-]+\s*:').Count)) 'components.css contains no custom-property definitions'

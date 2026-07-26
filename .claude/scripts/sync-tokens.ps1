@@ -68,16 +68,13 @@ function Split-TokenBlock {
     $nl2 = $Raw.IndexOf("`n", $m2.Index + $m2.Length)
     if ($nl2 -lt 0) { $afterEnd = $Raw.Length } else { $afterEnd = $nl2 + 1 }
 
-    # The substring up to $tokensEnd still carries the single line terminator that
-    # ends the last between-marker line (it terminates that line, immediately
-    # followed by the END marker line) — strip exactly one, preserving whichever
-    # terminator the source used, so tokens.css has no trailing blank line.
+    # A "line" includes its terminator, so the span from the character after the
+    # START line's terminator up to the first character of the END marker line
+    # is byte-identical to the source's between-marker lines, terminator and all
+    # (including the final between-marker line's own terminator). This keeps
+    # tokens.css byte-identical to the source and lets tokens.css + components.css
+    # reconstitute the source exactly, minus the two marker lines themselves.
     $tokensRaw = $Raw.Substring($tokensStart, $tokensEnd - $tokensStart)
-    if ($tokensRaw.EndsWith("`r`n")) {
-        $tokensRaw = $tokensRaw.Substring(0, $tokensRaw.Length - 2)
-    } elseif ($tokensRaw.EndsWith("`n")) {
-        $tokensRaw = $tokensRaw.Substring(0, $tokensRaw.Length - 1)
-    }
 
     return @{
         Tokens     = $tokensRaw
