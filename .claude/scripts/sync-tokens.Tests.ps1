@@ -292,7 +292,36 @@ $out21 = & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src20 -UiRo
 Assert-Equal 'True' ([string]($LASTEXITCODE -ne 0))                                    'a genuine tokens.json content difference still fails --check'
 Assert-Equal 'True' ([string]([string]$out21 -match 'first difference at character'))  'the tokens.json drift message names where the two texts diverge, not just that they differ'
 
-foreach ($d in @($src,$ui,$src5,$ui5,$src6,$ui6,$src7,$ui7,$src8,$ui8,$src9,$ui9,$src17,$ui17,$src18,$ui18,$src19,$ui19,$src20,$ui20)) { Remove-Item -Recurse -Force $d -ErrorAction SilentlyContinue }
+# --- Test 22: --check does not report drift when the only difference between the
+# committed tokens.css / components.css and the freshly-extracted source is CRLF
+# vs LF line endings. tokens.json already gets this treatment (Test 20); these two
+# did not, and were compared raw.
+#
+# This is not hypothetical. With core.autocrlf=true git stores both files as LF
+# and checks them out as CRLF, so they match a CRLF upstream on Windows only. A
+# clone on Linux/macOS/CI materializes the LF blob as-is and every line reads as
+# drift - which would make --check, the guardrail's only verification mechanism,
+# a permanent false positive off Windows.
+#
+# The source fixture forces CRLF explicitly rather than inheriting whatever line
+# endings THIS FILE happens to have, so the test stays discriminating whether the
+# checkout is CRLF or LF.
+$crlf22 = $GOOD -replace "`r?`n", "`r`n"
+$src22  = New-SourceFixture -Globals $crlf22
+$ui22   = New-UiRoot
+& powershell -NoProfile -File $ScriptUnderTest -SourcePath $src22 -UiRoot $ui22 -SourceSha ('d' * 40) | Out-Null
+foreach ($f in @('tokens.css','components.css')) {
+    $p22 = Join-Path $ui22 $f
+    [IO.File]::WriteAllText($p22, ([IO.File]::ReadAllText($p22, [System.Text.Encoding]::UTF8)).Replace("`r`n", "`n"), $Utf8NoBom)
+}
+# Guard against a vacuous fixture: the two sides must genuinely differ in line
+# endings, or this test would pass for the wrong reason.
+$tok22 = [IO.File]::ReadAllText((Join-Path $ui22 'tokens.css'), [System.Text.Encoding]::UTF8)
+Assert-Equal 'True' ([string](-not $tok22.Contains("`r`n"))) 'Test 22 fixture is discriminating: the on-disk tokens.css is LF while the source is CRLF'
+$out22 = & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src22 -UiRoot $ui22 -SourceSha ('d' * 40) -Check 2>&1
+Assert-Equal '0' ([string]$LASTEXITCODE) '--check does not report drift when tokens.css/components.css differ from the source only by CRLF vs LF'
+
+foreach ($d in @($src,$ui,$src5,$ui5,$src6,$ui6,$src7,$ui7,$src8,$ui8,$src9,$ui9,$src17,$ui17,$src18,$ui18,$src19,$ui19,$src20,$ui20,$src22,$ui22)) { Remove-Item -Recurse -Force $d -ErrorAction SilentlyContinue }
 if ($script:Failures -gt 0) { Write-Host "`n$($script:Failures) failure(s)" -ForegroundColor Red; exit 1 }
 Write-Host "`nAll tests passed" -ForegroundColor Green
 exit 0
