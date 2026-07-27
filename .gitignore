@@ -46,7 +46,7 @@ Thumbs.db
 # Local isolated implementation worktrees
 .worktrees/
 
-# Generated single-file prototype build (~12 MB, rebuild with build-standalone.ps1)
+# Generated single-file prototype build (~3 MB, rebuild with build-standalone.ps1)
 design/onboarding-solve-edu/standalone.html
 
 # Generated single-file prototype builds (rebuild with build-standalone.ps1)
