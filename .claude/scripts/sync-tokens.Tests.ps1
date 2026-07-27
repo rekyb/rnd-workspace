@@ -70,7 +70,16 @@ $expectedTokens = @"
 # newline, but a "line" includes its terminator - the last between-marker line
 # ("}") is terminated the same as every other line above it, so the expected
 # value needs that terminator appended explicitly.
-Assert-Equal ($expectedTokens + "`n") $tokensOut 'tokens.css is the lines strictly between the markers'
+#
+# Derive that terminator from the fixture rather than hardcoding "`n". A here-string
+# carries whatever line endings THIS FILE has, and with core.autocrlf=true and no
+# .gitattributes a fresh checkout on Windows gives it CRLF. Hardcoding LF made the
+# expected value's final terminator disagree with its own interior ones, so the
+# assertion failed on a clean clone while passing on a working copy that happened
+# to be LF. The extraction is byte-preserving by design (Test 6), so the expected
+# value has to be too.
+$nl = if ($GOOD -match "`r`n") { "`r`n" } else { "`n" }
+Assert-Equal ($expectedTokens + $nl) $tokensOut 'tokens.css is the lines strictly between the markers'
 
 # --- Test 2: components.css is the file minus that block minus both marker lines
 $compOut = [IO.File]::ReadAllText((Join-Path $ui 'components.css'), [System.Text.Encoding]::UTF8)
