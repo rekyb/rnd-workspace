@@ -23,8 +23,18 @@ research/*/corpus/
 research/*/docx/
 research/*/*.docx
 
-# Subagent-driven-development scratch (ledger, briefs, reports, review packages)
+# Subagent-driven-development scratch (ledger, briefs, reports, review packages).
+# `.superpowers/` is the harness's own scratch dir; the `task-N-*` files are the same
+# per-task scratch written next to a plan under docs/superpowers/plans/. Neither is a
+# durable record — the plan and the spec are.
 .superpowers/
+docs/superpowers/plans/task-*-brief.md
+docs/superpowers/plans/task-*-report.md
+docs/superpowers/plans/task-*-review.patch
+
+# Python bytecode cache (md_to_docx.py)
+__pycache__/
+*.pyc
 
 # OS / editor cruft
 .DS_Store
