@@ -1,0 +1,119 @@
+# Design-project resolution rule (canonical)
+
+This is the single source of truth for how design commands decide **which design
+project** to act on, and for the shape of a `design/<project>/` folder. Commands
+reference this file instead of re-inlining the logic.
+
+It is the design half's counterpart to `.claude/references/active-research.md`, but it
+is deliberately **simpler by one layer** — see *Why there is no registry* below.
+
+## What a design project is
+
+A **study** is point-in-time: it is dated, it is closed, and it never reopens. A
+**design project** is long-lived and iterates, so it keeps a plain slug (no date
+prefix) and a mutable status.
+
+```
+design/<project>/
+  README.md            Status: Active | Shipped | Archived · Informed by: <studies>
+  PRD.md               the decision doc (written by /draft-prd)
+  tokens.overlay.css   OPTIONAL — per-project brand divergence
+  src/                 index.html · app.js · data.js · img/
+  build/               standalone.html (generated, gitignored)
+```
+
+`README.md` is the **only** file a command may rely on to identify a project. It is
+created by `/new-design` and carries, in its frontmatter-style header block:
+
+- `**Status:**` — exactly one of `Active`, `Shipped`, `Archived`.
+- `**Informed by:**` — zero or more `research/<study-folder>` paths, comma-separated,
+  or the literal `none (assumptions labelled in PRD §2)`.
+- `**Started:**` — `YYYY-MM-DD`.
+
+A folder under `design/` with **no `README.md`** is a legacy or scratch folder. It is
+never resolvable as a current project and is reported as `Unregistered` by
+`/research-board`. Never fabricate a status for one — report what the folder shows.
+
+## Why there is no registry
+
+Studies are many and they churn, which is why `.claude/.active-research` exists as a
+shared registry. Design projects are **few and long-lived**, so a registry would be a
+second copy of a fact already written in each `README.md` — one more file to drift.
+
+The status therefore lives in `README.md` and nowhere else. Only the per-terminal
+binding gets its own file, because that is genuinely per-terminal state that no
+committed file can hold.
+
+## The per-terminal current binding (local, not committed)
+
+`.claude/.current-design/` is a **gitignored** directory holding one file per terminal:
+
+- **Filename:** the terminal's session id.
+- **Contents:** exactly one `design/<project>` path (no trailing slash), which must be
+  an existing folder whose `README.md` says `Status: Active`.
+
+This is how a terminal remembers which project it is working on without colliding with
+other terminals. It survives context compaction and `/clear`.
+
+### Deriving the session id
+
+Identical to the research side. Every session is given a scratchpad path shaped like:
+
+```
+…\<temp>\claude\<project-slug>\<SESSION-UUID>\scratchpad
+```
+
+The `<SESSION-UUID>` directory segment is the session id. Read it off your own
+scratchpad path; create `.claude/.current-design/` if it does not exist before writing
+a binding.
+
+## The resolution rule
+
+When a command needs a target design project, resolve it in this priority order:
+
+1. **Explicit `[project]` argument** → use it, **and adopt it** as this terminal's
+   binding. Accept either a bare slug (`onboarding-solve-edu`) or a full path
+   (`design/onboarding-solve-edu`); normalize to the full path. If the folder does not
+   exist, STOP — do not create it implicitly; `/new-design` is the only command that
+   creates a project.
+   - If it exists but its status is `Shipped` or `Archived`, **warn** and continue: a
+     shipped project can legitimately be revisited, but it may also be a mistake. Adopt
+     the binding anyway — the warning repeats on each command, which is the point.
+2. **This terminal's binding** — read `.claude/.current-design/<session-id>`. If it
+   exists, the folder is still present, and its status is still `Active` → use it.
+3. **Sole active project** — if exactly one folder under `design/` has
+   `Status: Active` → use it, and write that path to this terminal's binding (adopt it).
+4. **Otherwise** (zero or several active, no argument, no usable binding) → **STOP**,
+   print the projects found with their statuses, and ask the user which to act on.
+   - Exception: `/new-design` treats any pre-existing set as normal and just proceeds.
+
+### Why step 1 adopts (and why there is no `/focus-design`)
+
+The research half has `/focus-research` because its explicit `[folder]` argument does
+**not** re-bind — a lens command may legitimately target a closed study without
+dragging the terminal's focus onto it.
+
+The design half has no such case, so it takes the simpler route: naming a project
+explicitly *is* the act of focusing on it. `/draft-prd ai-literacy-app` once, and
+subsequent unqualified commands in that terminal target it. This is what makes a
+dedicated focus command unnecessary rather than merely absent — without it, step 3
+would fail every time more than one project is `Active` and the user would be asked to
+pick on every single command.
+
+### Stale bindings
+
+A binding file whose folder is missing, or whose `README.md` no longer says
+`Status: Active`, is **ignored** by step 2 and may be pruned. `/research-board` prunes
+stale design bindings opportunistically, exactly as it does for research bindings.
+
+## How the commands touch this
+
+- **`/new-design <project>`** — creates the folder, writes `README.md` with
+  `Status: Active`, and writes this terminal's binding to it. Does not write `PRD.md`.
+- **`/draft-prd [project]`** — resolves per the rule above and writes/updates
+  `design/<project>/PRD.md`. Never creates a project.
+- **`/research-board`** — reads every `design/*/README.md` to render the Design table.
+  Read-only except for `BOARD.md`; it never changes a project's status.
+
+There is deliberately **no `/close-design`**. Changing `Status: Active` to `Shipped` is
+a one-line edit to `README.md`; a command for it would be pure overhead.

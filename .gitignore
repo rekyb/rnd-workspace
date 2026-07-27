@@ -4,6 +4,11 @@
 # Per-terminal active-research binding (machine-local, ephemeral)
 .claude/.current-research/
 
+# Per-terminal current-design binding (machine-local, ephemeral).
+# The design half has no committed registry — status lives in each design/<project>/README.md
+# — so this binding is the only tracking file. See .claude/references/design-projects.md.
+.claude/.current-design/
+
 # Raw / working research data (not committed)
 raw-data/
 

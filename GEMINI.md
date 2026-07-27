@@ -2,7 +2,7 @@
 
 This workspace is optimized for desk-research, UX benchmarking, usability testing, and litreview (evidence synthesis from documents). While originally configured for Claude Code via the `.claude/commands/` slash commands, it is fully compatible with Gemini running within the Antigravity CLI. 
 
-This file acts as the bridge for Gemini to understand how to operate this workspace natively. All 16 slash commands have been fully ported into first-class Gemini Skills (`.agents/skills/*/SKILL.md`).
+This file acts as the bridge for Gemini to understand how to operate this workspace natively. All 17 slash commands have been fully ported into first-class Gemini Skills (`.agents/skills/*/SKILL.md`).
 
 The workspace also carries a **design half** — the shared `ui-library/` design system that prototypes are built from. Its files are generated and read-only; see §13 before touching them.
 
@@ -185,11 +185,13 @@ When asked to publish or commit:
 - Confirm a `litreview` study's `corpus/` is not staged (it must stay gitignored).
 - Commit via standard `git` terminal commands and `git push` (or `gh pr create`).
 
-### 11. Showing the Research Board (`research-board`)
-When asked to show the research board, or which studies exist:
-- Treat `research/` folders as the source of truth.
-- Print two tables (`Active` and `Closed & archived`) to the terminal.
-- Automatically refresh `BOARD.md` (`## Active` and `## Closed & archived` tables + `_Last updated:_` date) so the committed board never drifts.
+### 11. Showing the Board (`research-board`)
+When asked to show the board, or which studies or design projects exist:
+- Treat the `research/` and `design/` folders as the source of truth.
+- Print three tables (`Active research`, `Closed & archived research`, `Design projects`) to the terminal.
+- Automatically refresh `BOARD.md` (all three tables + `_Last updated:_` date) so the committed board never drifts.
+- Prune stale per-terminal bindings in `.claude/.current-research/` and `.claude/.current-design/` as housekeeping.
+- The command keeps its research-centric name; renaming it would churn every skill file for no gain.
 
 ### 12. Benchmark Analysis Lenses (`heuristic-eval`, `a11y-audit`, `extract-tokens`)
 Optional retrospective analysis passes over a **benchmark** study's captured evidence (`platforms/`), writing to a `lenses/` subfolder:
@@ -220,4 +222,4 @@ Separate from the research lifecycle. `ui-library/` is the shared vocabulary a p
 
 ## Skill Architecture
 
-All 16 skills reside in `.agents/skills/<skill-name>/SKILL.md` with complete YAML frontmatter (`name`, `description`). Gemini automatically triggers these workflows when matching conversational intent or when invoked directly.
+All 17 skills reside in `.agents/skills/<skill-name>/SKILL.md` with complete YAML frontmatter (`name`, `description`). Gemini automatically triggers these workflows when matching conversational intent or when invoked directly.
