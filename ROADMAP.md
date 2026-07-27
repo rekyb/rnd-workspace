@@ -1,12 +1,13 @@
 # Roadmap
 
-Next-step options for the workspace. Last reconciled **2026-07-17**.
+Next-step options for the workspace. Last reconciled **2026-07-27**.
 
 - **PRs #4 and #5:** Both **merged into `main`** (`#4` = `b06a393`, `#5` = `25be809`). The type-aware spine, the **multiple-active-studies** model, and the **peer-review debate** rework are all upstream in `main`.
 - **Current Workspace State:**
-  - **Unstaged cleanups:** 15 deleted legacy `prototype/...` files (old landing pages and design-system drafts) still pending a stage/commit.
-  - **Active research studies:** Two studies in `research/` (`2026-07-14-ai-literacy-upskilling-indonesian-teachers` and `2026-07-16-indonesian-teacher-onboarding-literature`) plus `design/ai-literacy-app/` UX specs, now committed (product name anonymized before publishing to the public repo).
-  - **`litreview` research type — design-only:** The design spec (`docs/superpowers/specs/2026-07-16-litreview-research-type-design.md`) exists, but the type is **not implemented**: no `/gather-evidence` command/skill, no `litreview` branch in `CLAUDE.md` / `GEMINI.md` / `/synth-findings`, and the `2026-07-16` study is typed `benchmark` (not `litreview`, using `platforms/` folders as evidence pillars). Nothing is scaffolded against the type yet.
+  - **Working tree:** clean. The legacy `prototype/...` deletions were staged and committed on 2026-07-17.
+  - **Active research studies:** none — `.claude/.active-research` is empty. Eleven studies are closed/archived (see `BOARD.md`); the most recent, `2026-07-20-unified-onboarding-synthesis-and-patterns`, closed 2026-07-24.
+  - **`litreview` research type — shipped.** `/gather-evidence` exists as both a command and a skill, `litreview` branches through `CLAUDE.md`, `GEMINI.md`, and `/synth-findings`, and the type has been exercised end-to-end by the `2026-07-20` study. The `2026-07-16` study remains typed `benchmark`; it closed before the type existed and is not worth re-typing.
+  - **Design-system foundation — on branch.** `feat/rnd-workspace-design-system` carries `ui-library/`, `/sync-tokens`, and `check-prototype.ps1` (Phase 1 of `docs/superpowers/specs/2026-07-26-rnd-workspace-design.md`). Not yet merged to `main`.
 
 ## Shipped (the type-aware-spine chapter — done)
 - **PR #4 Merged into `main`** — Full expansion of the UX-research workspace including the type-aware research spine, `/draft-spec`, `/design-prototype` workflow, benchmark analysis lenses, and published onboarding benchmark (`2026-07-13`).
@@ -36,6 +37,27 @@ Next-step options for the workspace. Last reconciled **2026-07-17**.
   strengthens findings and records a `## Peer Review` section. The stakeholder review
   (PM / Tech Lead / Head of Product) moves to `/draft-spec`, whose hard gate now accepts
   `## Peer Review` (or legacy `## Agent Review`).
+
+### The litreview chapter (shipped 2026-07-17 → 2026-07-24)
+- **`litreview` research type** — `/gather-evidence` runs the `deep-research` harness
+  over an approved `PLAN.md` and writes a verified `evidence.md` + `sources.md`
+  (confirmed claims with confidence labels and `[S#]` IDs; refuted claims quarantined).
+  `/synth-findings` gained the themes → design-implications template.
+- **Exercised end to end** — `research/2026-07-20-unified-onboarding-synthesis-and-patterns`
+  (typed `litreview`) ran plan → gather → synthesize → peer review → close, and fed
+  `PATTERNS.md` with evidence-based design principles rather than observed UI patterns.
+
+### The design-system chapter (Phase 1, on `feat/rnd-workspace-design-system`)
+- **`ui-library/`** — production tokens and component CSS synced verbatim from the
+  Solve Education repo: `tokens.css` (166 custom properties), `components.css`
+  (239 class selectors), `tokens.json`, plus hand-written `COMPONENTS.md` (42 components:
+  4 ported, 19 CSS-only, 19 not yet ported) and a seeded `behaviors.js`.
+- **`/sync-tokens [--check] [--ref <branch|sha>]`** — one-directional marker-based
+  extraction that scrubs internal identifiers before writing, records provenance, and
+  exits non-zero on any drift from source.
+- **`.claude/scripts/check-prototype.ps1`** — local ADR-0003 gate (no external hosts,
+  no raw styles, no undefined custom properties, no unknown classes, overlay rule).
+- **`.claude/references/design-system.md`** — the sync contract and disclosure boundary.
 
 ---
 
@@ -119,12 +141,10 @@ From our workspace audit on 2026-07-16, four immediate technical debt and archit
 
 1. **Multiple-Active Study Support & `BOARD.md` Drift:** ✅ *Resolved 2026-07-16; merged to `main` via PR #5 (`25be809`) on 2026-07-17.*
    - The workspace now formally supports several active studies via a two-layer model — a multi-line `.claude/.active-research` **registry** plus per-terminal `.claude/.current-research/<session-id>` bindings, resolved by the shared rule in `.claude/references/active-research.md`. The stopgap `.claude/.active-research-2` pointer is retired and both studies are registered cleanly. See `docs/superpowers/specs/2026-07-16-multiple-active-research-design.md`.
-2. **Complete the `litreview` Research Type Implementation:** *(design-only — nothing implemented)*
-   - The `litreview` design spec (`docs/superpowers/specs/2026-07-16-litreview-research-type-design.md`) exists, but the type is unbuilt end-to-end: no `/gather-evidence` command/skill, and `litreview` appears nowhere in `CLAUDE.md`, `GEMINI.md`, or `/synth-findings`. The `research/2026-07-16-indonesian-teacher-onboarding-literature` study that was meant to exercise it is typed **`benchmark`**, not `litreview` (it reuses `platforms/` folders as evidence pillars) — so no study is actually scaffolded against the type.
-   - **Recommendation:** Build `/gather-evidence` in `.claude/commands/gather-evidence.md` and `.agents/skills/gather-evidence/SKILL.md`, add `litreview` branch logic to `CLAUDE.md`, `GEMINI.md`, and `/synth-findings`, and re-type the `2026-07-16` study to `litreview` once the type exists.
-3. **Clean Up Working Tree & Stale Prototype Artifacts:**
-   - There are 15 unstaged deletions (`prototype/...` landing pages and design-system drafts) and untracked `design/` experiment folders.
-   - **Recommendation:** Cleanly stage the deletions and `.gitignore` or commit any experimental folders so `git status` remains pristine for research evidence commits.
+2. **Complete the `litreview` Research Type Implementation:** ✅ *Resolved 2026-07-17; exercised end-to-end 2026-07-24.*
+   - `/gather-evidence` shipped as both `.claude/commands/gather-evidence.md` and `.agents/skills/gather-evidence/SKILL.md`; `litreview` branch logic landed in `CLAUDE.md`, `GEMINI.md`, and `/synth-findings`. The `2026-07-20-unified-onboarding-synthesis-and-patterns` study ran the full type. The `2026-07-16` study stays typed `benchmark` — it closed before the type existed, and re-typing a closed study would rewrite the record rather than reflect it.
+3. **Clean Up Working Tree & Stale Prototype Artifacts:** ✅ *Resolved 2026-07-17 (deletions), 2026-07-27 (tracked scratch).*
+   - The 15 `prototype/...` deletions were staged and committed, and `design/` was tracked. On 2026-07-27 two further batches of committed cruft were untracked and gitignored: `__pycache__/*.pyc` and the per-task subagent scratch under `docs/superpowers/plans/task-*-{brief,report,review.patch}`.
 4. **Accelerate Theme A (Engine vs. Content Decoupling):**
    - As more study types and studies accumulate, the coupling between core tooling (`.claude/`, `.agents/`) and data (`research/`) creates friction.
    - **Recommendation:** Prioritize extracting the R&D Toolkit engine into a portable plugin to allow fresh project installs without historical research baggage.
@@ -132,8 +152,20 @@ From our workspace audit on 2026-07-16, four immediate technical debt and archit
 ---
 
 ## Near-term (independent of the big themes)
-- **Complete `litreview` & resolve active-study collision** (see Diagnostics above).
+- ~~**Complete `litreview` & resolve active-study collision**~~ (done 2026-07-17; exercised 2026-07-24)
 - ~~**Stage/commit working tree cleanups** — remove stale `prototype/...` files and track `design/ai-literacy-app/` specs.~~ (done 2026-07-17)
+- **Land Phase 2 of the design spec** — the PRD lifecycle (`/new-design`, `/draft-prd`,
+  board integration, persona updates). Spec §6 sequenced the repo rename *after* Phase 2,
+  but it was executed early (2026-07-26, commit `1584f3c`) and all four moves are done:
+  repo renamed, folder renamed, `README.md` updated, memory copied to
+  `~/.claude/projects/C--rnd-workspace/`. Phase 2's doc-rewrite scope also shrank on
+  2026-07-27, when `CLAUDE.md` / `GEMINI.md` / `README.md` were brought up to date with
+  the litreview type and the design system.
+- **Migrate the existing prototypes onto `ui-library/` (Phase 3)** — today neither
+  `design/onboarding-solve-edu/standalone.html` nor the two `design/ai-literacy-app/`
+  HTML files passes `check-prototype.ps1`, and `design/ai-literacy-app/tokens.css` is a
+  parallel hand-authored token set rather than a `tokens.overlay.css`. The gate is
+  built but currently guards nothing that exists.
 - **Run a *real* usability study** — the one lifecycle step never exercised for real
   (fielding needs live participants): `/new-research … --type usability` →
   `/plan-usability` → field externally (P01…) → `/synth-findings` → `/review-research`
@@ -142,7 +174,8 @@ From our workspace audit on 2026-07-16, four immediate technical debt and archit
   research → prototype loop for the first time.
 
 ## Recommended sequence
-1. **Stabilize & Clean Up (`Immediate`):** ~~Resolve `.active-research-2` multi-study drift~~ (done — multi-active model shipped), cleanly stage `prototype/` deletions, track `design/` specs, and complete the missing `/gather-evidence` command/skill for `litreview`.
-2. **Land Theme A (Engine vs. Content Decoupling):** Extract `.claude/` and `.agents/` into a portable R&D Toolkit plugin so fresh projects don't carry previous study data (`research/`).
-3. **Expand Capability by Demand (Theme B):** Build **`/synth-data`** if real quantitative/qualitative data is waiting, or **`/plan-interview` + survey/abtest** to open generative discovery research.
-4. **Exercise End-to-End on a Real Study:** Run a full usability study fielding or data synthesis pass through the new toolkit.
+1. ~~**Stabilize & Clean Up**~~ (done) — multi-active model shipped, `prototype/` deletions staged, `design/` tracked, `/gather-evidence` built and exercised.
+2. **Finish the design chapter (`Immediate`):** land Phase 2 (PRD lifecycle + doc rewrites), then Phase 3 (migrate the two existing prototypes onto `ui-library/` so `check-prototype.ps1` guards something real), then the rename.
+3. **Land Theme A (Engine vs. Content Decoupling):** Extract `.claude/` and `.agents/` into a portable R&D Toolkit plugin so fresh projects don't carry previous study data (`research/`). Note this now competes with the design half — spec §7 defers Theme A to a separate toolkit repo.
+4. **Expand Capability by Demand (Theme B):** Build **`/synth-data`** if real quantitative/qualitative data is waiting, or **`/plan-interview` + survey/abtest** to open generative discovery research.
+5. **Exercise End-to-End on a Real Study:** Run a full usability study fielding or data synthesis pass through the new toolkit.

@@ -218,7 +218,7 @@ deliverable, each gated by the Principal Designer:
 | `/new-research <topic> [--type benchmark\|usability\|litreview]` | Creates a new dated research folder, scaffolds it **for the chosen type** (default `benchmark`), and marks it active. |
 | `/plan-usability` | *(usability studies)* Designs the `test-plan.md` instrument — tasks, moderator script, metrics — then runs a Principal Researcher methodology review before fielding. |
 | `/gather-evidence [folder]` | *(litreview studies)* Runs the `deep-research` harness over the approved `PLAN.md` (research questions + `corpus/`), then writes a verified `evidence.md` (confirmed claims with confidence + `[S#]` IDs; refuted claims quarantined) and `sources.md`. Runs only after the plan gate. |
-| `/synth-findings [--docx]` | Reads the active research and writes `SYNTHESIS.md` using the template for its `Type` (feature write-ups for benchmark, severity-ranked findings for usability); add `--docx` for a Word copy. |
+| `/synth-findings [--docx] [--visual]` | Reads the active research and writes `SYNTHESIS.md` using the template for its `Type` (feature write-ups for benchmark, severity-ranked findings for usability); add `--docx` for a Word copy in the study's gitignored `docx/` folder, `--visual` for a gitignored `SYNTHESIS.visual.md` with Mobbin reference images inlined for reading. |
 | `/review-research` | Runs a research peer-review debate over `SYNTHESIS.md` (Skeptic, Domain Expert, Evidence Auditor, moderated by the Principal Researcher) that strengthens the findings and — on approval — records a `## Peer Review` section and applies the agreed strengthenings. |
 | `/brief-feature [folder]` | Turns a synthesized study into a Canva stakeholder deck (type-aware). Drafts the slide story with you, gates it through the Principal Designer (Mode R), runs the PII check, then builds it in Canva on approval. Defaults to the active research. |
 | `/draft-spec [folder]` | *(optional)* Turns a **reviewed** synthesis into a build-ready `SPEC.md` — functional requirements, user flow, and information architecture (plus acceptance criteria, edge cases, and a wireframe-level screen list). A PM/Tech Lead/Head of Product stakeholder review vets the SPEC's requirements (the build call) and records a `## Stakeholder Review`, before the Principal Designer Mode S gate. Type-aware. Requires a `## Peer Review` (accepts legacy `## Agent Review`) to exist. Defaults to the active research. |
@@ -227,6 +227,7 @@ deliverable, each gated by the Principal Designer:
 | `/focus-research <folder>` | Points *this terminal* at one of the active studies, so unqualified workflow commands default to it. Used when several studies are active at once. |
 | `/publish-research [-m "msg"]` | Safety-checks for PII, commits the active research, and pushes to GitHub via the `gh` CLI. |
 | `/research-board` | Shows the research board — every active study and all past/closed research — in the terminal, derived fresh from the research folders, and refreshes `BOARD.md`. Read-only except for `BOARD.md`. |
+| `/sync-tokens [--check] [--ref <branch\|sha>]` | Refreshes the generated files in `ui-library/` from the production repo, scrubbing internal identifiers and the external-host font `@import` before writing. `--check` writes nothing and exits non-zero on any drift from source. Not part of the research spine — see **The `ui-library/` design system** below. |
 
 Multiple studies can be active at once — `/new-research` no longer blocks on an open
 study; it appends to the registry and binds the current terminal to the new study. Each
@@ -250,6 +251,37 @@ what stills can't show). They are additive — not part of the required spine.
 | `/heuristic-eval [folder]` | Expert evaluation against **Nielsen's 10 heuristics** — violations *and* exemplary patterns, severity-ranked and evidence-cited → `lenses/heuristic-eval.md`. |
 | `/a11y-audit [folder]` | **WCAG 2.2** audit of what captures can show (measured colour contrast via Pillow, target size, colour-only meaning, visible labels), explicitly flagging live-only criteria → `lenses/a11y-audit.md`. |
 | `/extract-tokens [folder]` | Pixel-samples screenshots (via Pillow) into an inferred **design-token** set — colour/type/spacing/radius, per platform, flagged for validation → `lenses/tokens.md`. |
+
+## The `ui-library/` design system
+
+Separate from the research spine. Where research produces evidence, `ui-library/` is the
+shared vocabulary a prototype is built *from*, so prototypes look like the real product
+instead of improvising a lookalike. Full contract: `.claude/references/design-system.md`.
+
+- **Generated, one-directional** — `tokens.css`, `components.css`, and `tokens.json` are
+  extracted verbatim from the Solve Education production repo by `/sync-tokens`, which
+  scrubs internal identifiers and the external-host font `@import` before writing. Nothing
+  flows back upstream. These are read-only; see **Guardrails**.
+- **Hand-written** — `COMPONENTS.md` (the class contract for each upstream component and
+  whether its behavior is ported), `behaviors.js` (port-on-demand JS, seeded not
+  exhaustive), and `TOKENS.md`'s prose outside the provenance markers.
+- **Port on demand, fail loudly** — a component marked `not yet ported` has working CSS
+  but no behavior. A prototype needing one must STOP, not improvise a substitute.
+- **Per-project divergence** goes in `design/<project>/tokens.overlay.css`, which may
+  redefine an existing token name but never introduce a new one.
+- **Typography is approximate, deliberately** — the external font `@import` is stripped
+  for CSP compliance, so text falls back to system faces. Do not "fix" this by re-adding
+  an external font link.
+
+`.claude/scripts/check-prototype.ps1 -Path <built.html>` is the local gate. Five rules:
+no external hosts, no raw style values outside the token/component files, every
+`var(--x)` resolves (this is also what catches an overlay defining a name absent from
+`tokens.css`), every class used in the markup exists in `components.css`, and a PII lint.
+The PII rule is a lint, not a guarantee — human review is still required. Run the gate
+before publishing a prototype Artifact.
+
+`design/<project>/` holds the design work itself — PRD, prototype sources, and any
+build script. It is authored normally and is not covered by the sync guardrail.
 
 ## Version control & publishing (GitHub via `gh`)
 

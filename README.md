@@ -95,20 +95,32 @@ rnd-workspace/
 │   ├── commands/                   # workflow commands (new / plan-usability / synth / review /
 │   │                                #   brief-feature / draft-spec / design-prototype / focus / close / publish / board / lenses)
 │   ├── references/
+│   │   ├── active-research.md      # the registry / per-terminal-focus resolution rule
 │   │   ├── design-gates.md         # design-gate definitions used by /draft-spec & /design-prototype
+│   │   ├── design-system.md        # the ui-library/ sync contract & disclosure boundary
 │   │   └── mobbin-sourcing.md      # Mobbin sourcing standard: C1–C5, folder shapes, IP boundary
 │   ├── personas/                   # reviewer subagent specs: principal-researcher, principal-designer,
+│   │                                #   research-skeptic, domain-expert, evidence-auditor,
 │   │                                #   product-manager, tech-lead, head-of-product
 │   └── scripts/
 │       ├── md_to_docx.py           # Markdown → .docx export (python-docx)
 │       ├── md_to_docx.ps1          # dependency-free PowerShell fallback for the same export
-│       └── md_visualize.ps1        # Mobbin links → local image embeds (gitignored *.visual.md)
+│       ├── md_visualize.ps1        # Mobbin links → local image embeds (gitignored *.visual.md)
+│       ├── sync-tokens.ps1         # refreshes ui-library/ from the production repo (+ --check)
+│       └── check-prototype.ps1     # local design gate for a built prototype HTML file
+├── .agents/skills/                 # the same workflow steps registered as skills
+├── ui-library/                     # the shared design system (see below) — synced, read-only
+├── design/<project>/               # design work: PRD, prototype sources, build scripts
+├── docs/superpowers/               # design specs & implementation plans (the project record)
+├── raw-data/                       # working research data (GITIGNORED)
 └── research/
     ├── PATTERNS.md                 # cross-study reusable-pattern library (owned by the Principal Designer)
     └── YYYY-MM-DD-<slug>/
         ├── README.md               # brief: goal, scope, type, platforms, status
         ├── PLAN.md                 # research plan (reviewed & approved before capture)
-        ├── sources.md              # running log of every URL visited (with date)
+        ├── sources.md              # running log of every source consulted (with date & provenance)
+        ├── corpus/                 # litreview studies: user-supplied documents (GITIGNORED)
+        ├── evidence.md             # litreview studies: verified claims + quarantined refuted ones
         ├── platforms/              # benchmark studies: one folder per platform
         │   ├── <mobbin-sourced>/   #   default shape
         │   │   ├── references.md   #     screen ↔ Mobbin URL mapping table (committed)
@@ -133,17 +145,19 @@ path per line), and `.claude/.current-research/<session-id>` (gitignored) record
 one *this* terminal is focused on. Commands resolve their target with a shared rule
 (explicit `[folder]` → this terminal's binding → the sole active study → ask); see
 `.claude/references/active-research.md`. The workflow commands read and write these, so
-the folder rarely needs to be named explicitly. A study's
-`platforms/` vs. `test-plan.md` + `sessions/` middle depends on its `Type`
-(benchmark vs. usability) — see **Workflow** below.
+the folder rarely needs to be named explicitly. The middle of a study's folder depends on
+its `Type`: `platforms/` for benchmark, `test-plan.md` + `sessions/` for usability,
+`corpus/` + `evidence.md` for litreview — see **Workflow** below.
 
 ## Workflow
 
 The workflow is **one shared lifecycle** — create → design/capture → synthesize
 → review → close → publish — that adapts to the research **type** (`benchmark`,
-the default, or `usability`; `survey`/`abtest` are planned). `/new-research`
-takes a `--type` flag, and every downstream command reads it and branches its
-template accordingly, so the same commands drive both kinds of research.
+the default, `usability`, or `litreview`; `survey`/`abtest` are planned).
+`/new-research` takes a `--type` flag, and every downstream command reads it and
+branches its template accordingly, so the same commands drive all three kinds of
+research. Only the instrument step is method-specific: `/plan-usability` for
+usability, `/gather-evidence` for litreview.
 
 Research moves through a sequence of commands — capture with `/new-research`
 (and, for usability, design the instrument with `/plan-usability`), distill with
@@ -155,9 +169,10 @@ to switch a terminal's focus, and `/close-research` to retire one study from the
 
 | Command | What it does |
 |---|---|
-| `/new-research <topic> [--type benchmark\|usability]` | Creates a new dated research folder, scaffolds it for the chosen type (default `benchmark`), and marks it active. |
+| `/new-research <topic> [--type benchmark\|usability\|litreview]` | Creates a new dated research folder, scaffolds it for the chosen type (default `benchmark`), and marks it active. |
 | `/plan-usability` | *(usability studies)* Designs the `test-plan.md` instrument — tasks, moderator script, metrics — then runs a Principal Researcher methodology review before fielding. |
-| `/synth-findings [--docx]` | Reads the active research and writes `SYNTHESIS.md` using the template for its type (add `--docx` for a Word copy). |
+| `/gather-evidence [folder]` | *(litreview studies)* Runs the `deep-research` harness over the approved `PLAN.md`, then writes a verified `evidence.md` (confirmed claims with confidence labels and `[S#]` IDs; refuted claims quarantined) and `sources.md`. Runs only after the plan gate. |
+| `/synth-findings [--docx] [--visual]` | Reads the active research and writes `SYNTHESIS.md` using the template for its type. `--docx` adds a Word copy in the study's gitignored `docx/` folder; `--visual` adds a gitignored `SYNTHESIS.visual.md` with Mobbin reference images inlined for reading. |
 | `/review-research` | Runs a research peer-review debate over `SYNTHESIS.md` (Skeptic, Domain Expert, Evidence Auditor, moderated by the Principal Researcher) that strengthens the findings and — on approval — records a `## Peer Review` section. |
 | `/brief-feature [folder]` | Turns a synthesized study into a Canva stakeholder deck, gated by the Principal Designer before it's built in Canva. Defaults to the active research. |
 | `/draft-spec [folder]` | Turns a **reviewed** synthesis into a build-ready `SPEC.md` (functional requirements, user flow, information architecture), gated by the Principal Designer. Defaults to the active research. |
@@ -166,6 +181,7 @@ to switch a terminal's focus, and `/close-research` to retire one study from the
 | `/focus-research <folder>` | Points *this terminal* at one of the active studies, so unqualified workflow commands default to it. For working several studies in parallel. |
 | `/publish-research [-m "msg"]` | Safety-checks captures for PII, commits the active research, and pushes to GitHub via the `gh` CLI. |
 | `/research-board` | Shows the research board — every active study and all past/closed research — and refreshes `BOARD.md`. |
+| `/sync-tokens [--check] [--ref <branch\|sha>]` | Refreshes the generated files in `ui-library/` from the production repo. Not part of the research lifecycle — see **The `ui-library/` design system** below. |
 
 `/brief-feature`, `/draft-spec`, and `/design-prototype` are three **optional
 design-output steps**, run only when asked, each gated by the Principal
@@ -262,6 +278,34 @@ folder and stays grounded in the captures:
   the criteria that only live testing can confirm.
 - **`/extract-tokens`** — pixel-samples screenshots into an inferred design-token
   set (colour / type / spacing), flagged for validation against the real CSS.
+
+## The `ui-library/` design system
+
+Separate from the research spine. Where research produces evidence, `ui-library/` is the
+shared vocabulary a prototype is built *from*, so prototypes look like the real product
+instead of improvising a lookalike. The full contract is
+[`.claude/references/design-system.md`](.claude/references/design-system.md).
+
+- **Generated, one-directional.** `tokens.css`, `components.css`, and `tokens.json` are
+  extracted verbatim from the Solve Education production repo by **`/sync-tokens`**,
+  which scrubs internal identifiers and the external-host font `@import` before writing.
+  Nothing flows back upstream. **Never hand-edit them** — `/sync-tokens --check` writes
+  nothing and exits non-zero on any drift.
+- **Hand-written alongside them:** `COMPONENTS.md` (each upstream component's class
+  contract and whether its behavior is ported) and `behaviors.js` (port-on-demand JS,
+  seeded rather than exhaustive).
+- **Port on demand, fail loudly.** A component marked `not yet ported` has working CSS
+  but no behavior; a prototype needing one stops rather than improvising a substitute.
+- **Per-project divergence** belongs in `design/<project>/tokens.overlay.css`, which may
+  redefine an existing token name but never introduce a new one.
+- **Typography is approximate by design** — the external font `@import` is stripped for
+  CSP compliance, so text falls back to system faces.
+
+`.claude/scripts/check-prototype.ps1 -Path <built.html>` is the local gate. Five rules:
+no external hosts, no raw style values outside the token/component files, every
+`var(--x)` resolves (which is also what catches an overlay defining a name absent from
+`tokens.css`), every class used in the markup exists in `components.css`, and a PII lint
+(a lint, not a guarantee — human review is still required).
 
 ## Tooling notes
 
