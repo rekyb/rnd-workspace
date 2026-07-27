@@ -434,18 +434,30 @@ try {
 
     if ($Check) {
         $drift = @()
+        # Normalize CRLF -> LF on BOTH sides before comparing, exactly as the
+        # tokens.json comparison below already does. The write path stays byte-
+        # preserving (Test 6) - this affects only what counts as drift.
+        #
+        # Without this, --check is a permanent false positive off Windows. With
+        # core.autocrlf=true git stores tokens.css and components.css as LF and
+        # checks them out as CRLF, so they match a CRLF upstream on Windows only;
+        # a clone on Linux/macOS/CI materializes the LF blob as-is and every line
+        # reads as drift. Line endings are not what the guardrail exists to catch
+        # - a hand-edited value is, and that still surfaces (Test 22 vs the
+        # existing "--check exits non-zero on drift" / "names the drifted token").
+        $normalizeEol = { param($t) $t.Replace("`r`n", "`n") }
         if (-not (Test-Path -LiteralPath $tokensPath)) {
             $drift += "tokens.css is missing from $UiRoot"
         } else {
-            $current = Read-Utf8Text -Path $tokensPath
-            if ($current -ne $split.Tokens) {
+            $current = & $normalizeEol (Read-Utf8Text -Path $tokensPath)
+            if ($current -ne (& $normalizeEol $split.Tokens)) {
                 $drift += "tokens.css differs from the source:"
                 $drift += (Compare-TokenMaps -Old (Get-TokenMap $current) -New (Get-TokenMap $split.Tokens))
             }
         }
         if (-not (Test-Path -LiteralPath $compPath)) {
             $drift += "components.css is missing from $UiRoot"
-        } elseif ((Read-Utf8Text -Path $compPath) -ne $scrubbedComponents) {
+        } elseif ((& $normalizeEol (Read-Utf8Text -Path $compPath)) -ne (& $normalizeEol $scrubbedComponents)) {
             $drift += "components.css differs from the scrubbed source"
         }
         if (-not (Test-Path -LiteralPath $jsonPath)) {
