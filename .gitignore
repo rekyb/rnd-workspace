@@ -23,8 +23,18 @@ research/*/corpus/
 research/*/docx/
 research/*/*.docx
 
-# Subagent-driven-development scratch (ledger, briefs, reports, review packages)
+# Subagent-driven-development scratch (ledger, briefs, reports, review packages).
+# `.superpowers/` is the harness's own scratch dir; the `task-N-*` files are the same
+# per-task scratch written next to a plan under docs/superpowers/plans/. Neither is a
+# durable record — the plan and the spec are.
 .superpowers/
+docs/superpowers/plans/task-*-brief.md
+docs/superpowers/plans/task-*-report.md
+docs/superpowers/plans/task-*-review.patch
+
+# Python bytecode cache (md_to_docx.py)
+__pycache__/
+*.pyc
 
 # OS / editor cruft
 .DS_Store
@@ -36,8 +46,8 @@ Thumbs.db
 # Local isolated implementation worktrees
 .worktrees/
 
-# Generated single-file prototype build (~12 MB, rebuild with build-standalone.ps1)
+# Generated single-file prototype build (~3 MB, rebuild with build-standalone.ps1)
 design/onboarding-solve-edu/standalone.html
 
-# Subagent-driven-development scratch (review packages, task briefs/reports)
-.superpowers/
+# Generated single-file prototype builds (rebuild with build-standalone.ps1)
+design/*/build/

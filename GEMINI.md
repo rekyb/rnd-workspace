@@ -2,7 +2,9 @@
 
 This workspace is optimized for desk-research, UX benchmarking, usability testing, and litreview (evidence synthesis from documents). While originally configured for Claude Code via the `.claude/commands/` slash commands, it is fully compatible with Gemini running within the Antigravity CLI. 
 
-This file acts as the bridge for Gemini to understand how to operate this workspace natively. All 15 slash commands have been fully ported into first-class Gemini Skills (`.agents/skills/*/SKILL.md`).
+This file acts as the bridge for Gemini to understand how to operate this workspace natively. All 16 slash commands have been fully ported into first-class Gemini Skills (`.agents/skills/*/SKILL.md`).
+
+The workspace also carries a **design half** — the shared `ui-library/` design system that prototypes are built from. Its files are generated and read-only; see §13 before touching them.
 
 ---
 
@@ -195,8 +197,27 @@ Optional retrospective analysis passes over a **benchmark** study's captured evi
 - **A11y audit:** Sample pixels with Pillow to measure colour contrast, target size, and visible labels (`lenses/a11y-audit.md`).
 - **Extract tokens:** Sample design tokens (colour/type/spacing/radius) with Pillow (`lenses/tokens.md`).
 
+### 13. The `ui-library/` Design System (`sync-tokens`)
+Separate from the research lifecycle. `ui-library/` is the shared vocabulary a prototype is built *from*, so prototypes look like the real product instead of improvising a lookalike. The full contract is `.claude/references/design-system.md` — read it before touching anything here.
+
+- **`ui-library/tokens.css`, `components.css`, and `tokens.json` are GENERATED and read-only.** They are extracted verbatim from the Solve Education production repo by `sync-tokens`, which scrubs internal identifiers (a project UUID, an unannounced rebrand, internal PRD and wiki paths) and the external-host font `@import` before writing. **Never hand-edit them and never commit a hand-edit.** The sync is one-directional; nothing flows back upstream.
+- **`sync-tokens --check` is the drift guard.** It writes no file and exits non-zero on any divergence from source for the three generated files. Run it before trusting the library. `--ref <branch|sha>` pins a specific upstream revision.
+  ```bash
+  powershell -NoProfile -File .claude/scripts/sync-tokens.ps1 -Check
+  ```
+- **`ui-library/TOKENS.md`'s provenance block is NOT machine-verified.** `--check` never reads it. Treat it as a hand-editing convention, not a guarantee.
+- **Hand-written files** in `ui-library/` — `COMPONENTS.md` (each upstream component's class contract and ported status) and `behaviors.js` (port-on-demand JS) — are authored normally and are not covered by the read-only rule.
+- **Port on demand, fail loudly.** A component marked `not yet ported` has working CSS but no behavior. When a prototype calls for one, **STOP** and say so — do not improvise a lookalike.
+- **Per-project divergence** goes in `design/<project>/tokens.overlay.css`, which may redefine an existing token name but never introduce a new one. Never edit a synced file to change a value.
+- **Typography is approximate by design.** The external font `@import` is stripped for CSP compliance, so text falls back to system faces. Do not "fix" this by re-adding an external font link.
+- **Gate a built prototype** before publishing it:
+  ```bash
+  powershell -NoProfile -File .claude/scripts/check-prototype.ps1 -Path <built.html>
+  ```
+  Five rules: no external hosts, no raw style values outside the token/component files, every `var(--x)` resolves (this is also what catches an overlay defining a name absent from `tokens.css`), every class used in the markup exists in `components.css`, and a PII lint. Every violation is listed, not just the first. The PII rule is a lint, not a guarantee — human review is still required.
+
 ---
 
 ## Skill Architecture
 
-All 15 skills reside in `.agents/skills/<skill-name>/SKILL.md` with complete YAML frontmatter (`name`, `description`). Gemini automatically triggers these workflows when matching conversational intent or when invoked directly.
+All 16 skills reside in `.agents/skills/<skill-name>/SKILL.md` with complete YAML frontmatter (`name`, `description`). Gemini automatically triggers these workflows when matching conversational intent or when invoked directly.

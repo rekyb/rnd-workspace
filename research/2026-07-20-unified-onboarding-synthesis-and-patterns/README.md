@@ -18,6 +18,19 @@ Establish the onboarding strategy and reusable UX patterns for solve.education b
 - [ ] `corpus/teacher-litreview-synth.md`
 - [ ] `corpus/youth-onboarding-synth.md`
 
+## Specs
+
+This study iterated its spec five times. **`SPEC-5.md` is the current one — build from that.**
+The earlier four are retained for decision provenance, not for implementation.
+
+| Spec | Status | Note |
+|---|---|---|
+| `SPEC.md` | Superseded (2026-07-21) | First draft: try-first + placement fork + Lesson 0 |
+| `SPEC-2.md` | Deprecated (2026-07-21) | Program-confirmation onboarding |
+| `SPEC-3.md` | Deprecated (2026-07-21) | Streamlined try-first; dropped placement fork + Lesson 0 |
+| `SPEC-4.md` | Superseded (2026-07-22) | V2-aligned; age gate upfront |
+| **`SPEC-5.md`** | **Current** — Reviewed (Mode S: ready) | Prototype-aligned; 9 FRs, 10 screens |
+
 ## Log
 - 2026-07-20 — research created (type: litreview).
 - 2026-07-20 — evidence gathered (3 sources provided, 10 verified claims, 3 refuted/weak claims).

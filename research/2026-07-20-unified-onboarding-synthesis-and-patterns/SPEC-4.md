@@ -3,7 +3,7 @@
 - **Source study:** 2026-07-20-unified-onboarding-synthesis-and-patterns (Type: litreview)
 - **Supersedes:** `SPEC-3.md`
 - **Audience:** design (Figma pickup) + engineering (scoping)
-- **Status:** Draft
+- **Status:** Superseded 2026-07-22 by `SPEC-5.md` (current). Retained for decision provenance — do not build from this file.
 
 ## Overview
 This spec defines the unified onboarding architecture for solve.education, aligning with the V2 "Try-First" flow but aggressively streamlining it. It enforces a strict age gate (15+) upfront, utilizes code-first routing for program cohorts, and directly removes the "Lesson 0" (foundational task, level selection, placement fork) to minimize drop-off. Organic learners go straight from Goal Intake to the Save-Progress wall, and Program learners go straight from Code Entry to Assigned Content, then to the Save-Progress wall.
