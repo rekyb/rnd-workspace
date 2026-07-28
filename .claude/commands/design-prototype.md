@@ -1,5 +1,5 @@
 ---
-description: Turn a synthesized study (ideally via its SPEC.md) into a clickable, self-contained HTML prototype published as a claude.ai Artifact, generated and audited against the design gates. Gated by the Principal Designer (Mode T).
+description: Turn a design project's PRD.md (or a synthesized study) into a clickable, self-contained HTML prototype published as a claude.ai Artifact, generated and audited against the design gates. Gated by the Principal Designer (Mode T).
 argument-hint: [optional study folder] [--fidelity lo|hi] [--gate name,…] [--scope moment]
 ---
 
@@ -7,11 +7,11 @@ Produce the **clickable prototype** for a synthesized research study: a single
 self-contained HTML page/flow, published as a **claude.ai Artifact**, that realizes
 *what we learned* as *something you can click through*. This is the third design-output
 step — where `/brief-feature` makes the stakeholder *narrative* ("should we build
-this") and `/draft-spec` makes the maker's *definition* ("here is what to build"),
+this") and `/draft-prd` makes the maker's *definition* ("here is what to build"),
 `/design-prototype` makes the *artifact* ("here is what it looks and feels like"), for
 a stakeholder to react to or a designer to build from.
 
-It is an **optional, additive** step (like the benchmark lenses and `/draft-spec`), run
+It is an **optional, additive** step (like the benchmark lenses and `/draft-prd`), run
 only when the user asks — not part of the required spine. The prototype is published to
 the user's Artifacts gallery at `claude.ai/code/artifacts`: default-private, shareable
 when they choose, and updated in place at the same URL on later passes.
@@ -86,11 +86,17 @@ prototype that fails a gate unless the failure is declared.
    redeploying the same file path → same URL. If no prototype exists yet, tell the user
    to run a default `/design-prototype` first, then STOP.
 
-3. **Soft gate on the spec.** If `<folder>/SPEC.md` exists, use it as the source of the
-   screen list, user flow, IA, and per-screen states. If it is **absent**, warn the
-   user that screens will be derived from `SYNTHESIS.md` with weaker traceability, offer
-   to run `/draft-spec` first, and suggest `--fidelity lo` for a cheap first pass.
-   Proceed only on the user's yes.
+3. **Soft gate on the definition doc.** Prefer a design project's **`PRD.md`** — its §8
+   vertical slices, §11 Screens/IA/Empty States, §12 Modal Reference, and the Prototype
+   Element Dictionary appendix are the source of the screen list, flow, IA, and per-screen
+   states. Falling back, in order: a study's legacy **`SPEC.md`** (same role, FR-based),
+   then `SYNTHESIS.md` alone. If neither a PRD nor a SPEC exists, warn the user that
+   screens will be derived from `SYNTHESIS.md` with weaker traceability, offer to run
+   `/draft-prd` first, and suggest `--fidelity lo` for a cheap first pass. Proceed only on
+   the user's yes.
+
+   *(This command still resolves a **study** folder. Running it directly against a design
+   project is the Phase 3 rework; until then, point it at the study and hand it the PRD.)*
 
 4. **Read the ground truth & note the type.** Read `SPEC.md` (if present) and
    `SYNTHESIS.md` in full, plus the research `README.md` for the `Type`, the stated

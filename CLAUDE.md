@@ -92,7 +92,9 @@ research/YYYY-MM-DD-<slug>/
 │       └── notes.md        # observations & patterns, source links
 ├── lenses/                # optional analysis passes (heuristic-eval, a11y-audit, tokens)
 ├── SYNTHESIS.md           # cross-platform synthesis (created at synth time)
-└── SPEC.md                # optional build-ready spec (created by /draft-spec, post-review)
+└── SPEC.md                # legacy: build-ready spec from the retired /draft-spec.
+                           #   New build definitions are PRDs in design/<project>/ — see
+                           #   **The design half** below.
 ```
 
 That tree is the **benchmark** layout. The `lenses/` folder is optional — it appears
@@ -144,8 +146,8 @@ panel personas (`.claude/personas/research-skeptic.md`, `domain-expert.md`,
 `evidence-auditor.md`), dispatched chained and moderated by the Principal Researcher
 (Mode C), pressure-test and *strengthen* the findings and record a `## Peer Review`
 section. The three build-stakeholder personas (`product-manager.md`, `tech-lead.md`,
-`head-of-product.md`) now serve `/draft-spec`, where they review the drafted SPEC's
-functional requirements (the build decision) and record a `## Stakeholder Review`
+`head-of-product.md`) now serve `/draft-prd`, where they review the drafted PRD's
+**vertical slices** (the build decision) and record a `## Stakeholder Review`
 section. Each spec is the single source of its persona's remit, verdict scale, and
 guardrails; the commands dispatch them (chained, so they cross-talk) rather than
 inlining their instructions.
@@ -162,9 +164,9 @@ design-facing deliverables at three points, each judged against the study's synt
 never opening the tool or browsing the platforms:
 - **Mode R** (`/brief-feature`) — judges the drafted Canva deck outline for story,
   evidence grounding, altitude, and PII-safety.
-- **Mode S** (`/draft-spec`) — judges the drafted `SPEC.md` for traceability (no
-  invented scope), scope discipline, flow completeness, IA coherence, and
-  completeness of the required set.
+- **Mode S** (`/draft-prd`) — judges the drafted `PRD.md` for traceability (every §2
+  claim cited or labelled an assumption), scope discipline against the appetite, slice
+  integrity, flow completeness, IA coherence, and completeness of the required set.
 - **Mode T** (`/design-prototype`) — judges the drafted HTML prototype for
   traceability (no invented screens), gate compliance (the DoD table is honest), flow
   completeness, fidelity honesty, and PII-safety.
@@ -187,19 +189,19 @@ downstream command reads it and branches its template. One spine, several behavi
 
 The method-specific instrument steps are `/plan-usability` (usability) and
 `/gather-evidence` (litreview). Everything else on the spine — `/synth-findings`,
-`/review-research`, `/brief-feature`, `/draft-spec`, `/close-research`,
-`/publish-research` — is shared and type-aware. Three **optional design-output steps** turn a synthesized study into a
-deliverable, each gated by the Principal Designer:
+`/review-research`, `/brief-feature`, `/close-research`,
+`/publish-research` — is shared and type-aware. Two **optional design-output steps** turn a
+synthesized study into a deliverable, each gated by the Principal Designer:
 - `/brief-feature` — a Canva **stakeholder deck** (feature story for benchmark,
   severity-ranked findings for usability): the *narrative* — "should we build this".
-- `/draft-spec` — a build-ready **`SPEC.md`** (functional requirements, user flow,
-  information architecture): the maker's *definition* — "here is what to build". It
-  requires a **reviewed** synthesis (`/review-research` must have run first).
 - `/design-prototype` — a clickable **HTML prototype** published as a claude.ai
   Artifact (the *artifact*: "here is what it looks and feels like"). Generated and
   audited against the design gates, gated by the Principal Designer (Mode T). Prefers a
-  `SPEC.md` but will run from a reviewed synthesis; supports `--fidelity lo|hi` and
-  à-la-carte `--gate` passes that update the same Artifact.
+  `PRD.md`, falls back to a legacy `SPEC.md` or a reviewed synthesis; supports
+  `--fidelity lo|hi` and à-la-carte `--gate` passes that update the same Artifact.
+
+The maker's *definition* — "here is what to build" — is no longer a study output. It is
+`/draft-prd`, which writes a `PRD.md` into a **design project**. See **The design half**.
 
 ### Litreview sourcing standards
 - User-supplied documents go in the study's `corpus/`, which is **gitignored**
@@ -221,13 +223,13 @@ deliverable, each gated by the Principal Designer:
 | `/synth-findings [--docx] [--visual]` | Reads the active research and writes `SYNTHESIS.md` using the template for its `Type` (feature write-ups for benchmark, severity-ranked findings for usability); add `--docx` for a Word copy in the study's gitignored `docx/` folder, `--visual` for a gitignored `SYNTHESIS.visual.md` with Mobbin reference images inlined for reading. |
 | `/review-research` | Runs a research peer-review debate over `SYNTHESIS.md` (Skeptic, Domain Expert, Evidence Auditor, moderated by the Principal Researcher) that strengthens the findings and — on approval — records a `## Peer Review` section and applies the agreed strengthenings. |
 | `/brief-feature [folder]` | Turns a synthesized study into a Canva stakeholder deck (type-aware). Drafts the slide story with you, gates it through the Principal Designer (Mode R), runs the PII check, then builds it in Canva on approval. Defaults to the active research. |
-| `/draft-spec [folder]` | *(optional)* Turns a **reviewed** synthesis into a build-ready `SPEC.md` — functional requirements, user flow, and information architecture (plus acceptance criteria, edge cases, and a wireframe-level screen list). A PM/Tech Lead/Head of Product stakeholder review vets the SPEC's requirements (the build call) and records a `## Stakeholder Review`, before the Principal Designer Mode S gate. Type-aware. Requires a `## Peer Review` (accepts legacy `## Agent Review`) to exist. Defaults to the active research. |
-| `/design-prototype [folder]` | *(optional)* Turns a synthesized study into a clickable **HTML prototype** published as a claude.ai Artifact, generated and audited against the design gates (`.claude/references/design-gates.md`). Type-aware, gated by the Principal Designer (Mode T). Prefers a `SPEC.md`; supports `--fidelity lo\|hi` and à-la-carte `--gate` passes. Defaults to the active research. |
+| `/design-prototype [folder]` | *(optional)* Turns a synthesized study into a clickable **HTML prototype** published as a claude.ai Artifact, generated and audited against the design gates (`.claude/references/design-gates.md`). Type-aware, gated by the Principal Designer (Mode T). Prefers a `PRD.md`, falls back to a legacy `SPEC.md`; supports `--fidelity lo\|hi` and à-la-carte `--gate` passes. Defaults to the active research. |
 | `/close-research` | Verifies synthesis exists, updates the `PATTERNS.md` library via the Principal Designer, marks the research closed, and removes it from the active registry (other active studies stay). |
 | `/focus-research <folder>` | Points *this terminal* at one of the active studies, so unqualified workflow commands default to it. Used when several studies are active at once. |
 | `/publish-research [-m "msg"]` | Safety-checks for PII, commits the active research, and pushes to GitHub via the `gh` CLI. |
-| `/research-board` | Shows the research board — every active study and all past/closed research — in the terminal, derived fresh from the research folders, and refreshes `BOARD.md`. Read-only except for `BOARD.md`. |
-| `/sync-tokens [--check] [--ref <branch\|sha>]` | Refreshes the generated files in `ui-library/` from the production repo, scrubbing internal identifiers and the external-host font `@import` before writing. `--check` writes nothing and exits non-zero on any drift from source. Not part of the research spine — see **The `ui-library/` design system** below. |
+| `/research-board` | Shows the board — every active study, all past/closed research, **and every design project** — in the terminal, derived fresh from the research and design folders, and refreshes `BOARD.md`. Read-only except for `BOARD.md`. |
+| `/save-session [note]` | Writes a session handoff to `SAVE.md` — real git state, what shipped and what is verified, the decisions and their reasoning, what is deferred vs blocked, and the next steps. `SAVE.md` is **gitignored**; it is working state, not a repo artifact. |
+| `/sync-tokens [--check] [--ref <branch\|sha>]` | Refreshes the generated files in `ui-library/` from the upstream production repo, scrubbing internal identifiers and the external-host font `@import` before writing. **Asks you for the upstream repo URL on every run** — it is deliberately not stored in this repo. `--check` writes nothing and exits non-zero on any drift from source. Not part of the research spine — see **The `ui-library/` design system** below. |
 
 Multiple studies can be active at once — `/new-research` no longer blocks on an open
 study; it appends to the registry and binds the current terminal to the new study. Each
@@ -252,6 +254,69 @@ what stills can't show). They are additive — not part of the required spine.
 | `/a11y-audit [folder]` | **WCAG 2.2** audit of what captures can show (measured colour contrast via Pillow, target size, colour-only meaning, visible labels), explicitly flagging live-only criteria → `lenses/a11y-audit.md`. |
 | `/extract-tokens [folder]` | Pixel-samples screenshots (via Pillow) into an inferred **design-token** set — colour/type/spacing/radius, per platform, flagged for validation → `lenses/tokens.md`. |
 
+## The design half (`design/<project>/`)
+
+Research is the **discover** half; design is the **make** half. They are one pipeline:
+
+```
+discover ──► synthesize ──► DECIDE ──► MAKE ──► validate
+research/     SYNTHESIS.md   PRD.md    prototype
+(optional)                   design/<project>/
+```
+
+**A design project is not a study.** A study is point-in-time — dated, closed, never
+reopened. A design project is long-lived and iterates, so it takes a plain slug (no date)
+and a mutable status. The canonical contract is
+`.claude/references/design-projects.md`; read it before deviating.
+
+```
+design/<project>/
+  README.md            Status: Active | Shipped | Archived · Informed by: <studies>
+  PRD.md               the decision doc (written by /draft-prd)
+  tokens.overlay.css   OPTIONAL — per-project brand divergence
+  src/                 index.html · app.js · data.js · img/
+  build/               standalone.html (generated, gitignored)
+```
+
+| Command | What it does |
+|---|---|
+| `/new-design <project> [--informed-by research/<study> …]` | Creates `design/<project>/`, scaffolds its `README.md` and `src/`, and binds this terminal to it. The **container only** — it writes no `PRD.md`. |
+| `/draft-prd [project] [--docx]` | Turns the project's evidence into a build-ready **`PRD.md`** — the Shape-Up decision doc: jobs, appetite, solution shape, **vertical slices**, and acceptance criteria per slice, plus screens/IA, modals, and data model. A PM/Tech Lead/Head of Product stakeholder review vets the **slices** (the build call) and records a `## Stakeholder Review`, before the Principal Designer Mode S gate. Defaults to this terminal's current project. |
+
+**There is no `/close-design`** — status is a one-line edit to `README.md`, and a command
+for that is pure overhead. There is also **no `/focus-design`**: naming a project
+explicitly *is* focusing on it (see the resolution rule below).
+
+### Resolving which project (no registry)
+
+Studies are many and churn, so they need `.claude/.active-research`. Design projects are
+few and long-lived, so the status lives in each `README.md` and **nowhere else** — one
+less file to drift. Only the per-terminal binding gets a file:
+`.claude/.current-design/<session-id>`, gitignored.
+
+Resolution order: **explicit `[project]` argument** (which also *adopts* the binding) →
+**this terminal's binding** → **the sole `Status: Active` project** → otherwise **stop and
+ask**.
+
+### The PRD format
+
+17 numbered sections plus a *Prototype Element Dictionary* appendix and the
+`## Stakeholder Review`. It is organized around **vertical slices** — each independently
+shippable and demoable end to end — not a flat requirements list. There is deliberately
+**no FR/MoSCoW section**: §9 Acceptance Criteria per Slice carries that content, and the
+slice is the unit both the stakeholder chain and the Principal Designer judge.
+
+Three sections bind outward: **§2 Problem & Evidence** cites the study `SYNTHESIS.md`s,
+**§7 Solution Shape** carries a Mermaid flowchart, and the **Prototype Element
+Dictionary** points at `ui-library/COMPONENTS.md`.
+
+**Research is optional but never invisible.** A PRD may be written with no study behind
+it, but then §2 must say so and label its claims as assumptions with validation paths —
+and the Principal Designer Mode S gate **fails a PRD that states unevidenced claims as
+fact**. Where a study *is* cited it must be reviewed (`## Peer Review`, or legacy
+`## Agent Review`). This keeps the workspace's core rule — never fabricate a finding —
+without forcing a study before every design.
+
 ## The `ui-library/` design system
 
 Separate from the research spine. Where research produces evidence, `ui-library/` is the
@@ -259,9 +324,10 @@ shared vocabulary a prototype is built *from*, so prototypes look like the real 
 instead of improvising a lookalike. Full contract: `.claude/references/design-system.md`.
 
 - **Generated, one-directional** — `tokens.css`, `components.css`, and `tokens.json` are
-  extracted verbatim from the Solve Education production repo by `/sync-tokens`, which
+  extracted verbatim from the upstream production repo by `/sync-tokens`, which
   scrubs internal identifiers and the external-host font `@import` before writing. Nothing
-  flows back upstream. These are read-only; see **Guardrails**.
+  flows back upstream. These are read-only; see **Guardrails**. The upstream repo URL is
+  deliberately **not stored in this repo** — `/sync-tokens` asks for it on every run.
 - **Hand-written** — `COMPONENTS.md` (the class contract for each upstream component and
   whether its behavior is ported), `behaviors.js` (port-on-demand JS, seeded not
   exhaustive), and `TOKENS.md`'s prose outside the provenance markers.

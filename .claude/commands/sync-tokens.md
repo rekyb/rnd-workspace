@@ -3,7 +3,7 @@ description: Sync the production design tokens and component CSS into ui-library
 argument-hint: [--check] [--ref <branch|sha>]
 ---
 
-Sync `ui-library/` from the Solve Education production repo. Read
+Sync `ui-library/` from the upstream production repo. Read
 `.claude/references/design-system.md` first — it carries the marker contract, the
 disclosure boundary, and the overlay rule.
 
@@ -12,16 +12,27 @@ disclosure boundary, and the overlay rule.
    tags upstream, so `main` is a moving target — prefer a pinned SHA when reproducibility
    matters.
 
-2. **Run the script.**
-   - Sync: `powershell -NoProfile -File .claude/scripts/sync-tokens.ps1`
-   - Check: `powershell -NoProfile -File .claude/scripts/sync-tokens.ps1 -Check`
-   - Pinned: `powershell -NoProfile -File .claude/scripts/sync-tokens.ps1 -Ref <sha>`
+2. **Ask the user for the upstream repo URL — every run.** The URL is deliberately **not
+   stored anywhere in this repo**, so there is no default to fall back on and you must not
+   guess one, reuse one from an earlier session, or read one out of git history. STOP and
+   ask the user to paste the clone URL, then pass it as `-RepoUrl`. The script fails with a
+   clear message if it is missing.
+   - Do **not** echo the URL back into any file the repo commits — not `TOKENS.md`, not a
+     commit message, not a report. It is used for the clone and then discarded.
+   - If the user already supplied a local checkout path, use `-SourcePath <path>` instead
+     and skip the URL entirely — that path needs no clone.
 
-3. **Report.** Show the token diff the script prints (added / removed / changed). On a
+3. **Run the script.**
+   - Sync: `powershell -NoProfile -File .claude/scripts/sync-tokens.ps1 -RepoUrl <url>`
+   - Check: `powershell -NoProfile -File .claude/scripts/sync-tokens.ps1 -RepoUrl <url> -Check`
+   - Pinned: `powershell -NoProfile -File .claude/scripts/sync-tokens.ps1 -RepoUrl <url> -Ref <sha>`
+   - Local checkout (no URL needed): `… -SourcePath <path>`
+
+4. **Report.** Show the token diff the script prints (added / removed / changed). On a
    `--check` failure, show the drift and stop — do not sync as a "fix" unless the user
    asks, because a sync overwrites local `ui-library/` edits.
 
-4. **Never** commit `manifest.json` or anything from the source repo's `.claude/`. The
+5. **Never** commit `manifest.json` or anything from the source repo's `.claude/`. The
    script already refuses to write them; if you see either under `ui-library/`, stop and report a
    disclosure-boundary breach. Path exclusion alone is not enough — the first real sync
    proved that internal notes can leak through comments inside the two permitted files,

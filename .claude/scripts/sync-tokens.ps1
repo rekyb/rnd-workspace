@@ -3,7 +3,7 @@
   Sync the production design tokens and component CSS into this repo's ui-library/ folder.
 
 .DESCRIPTION
-  Slices apps/web/app/(frontend)/globals.css from the Solve Education production repo
+  Slices apps/web/app/(frontend)/globals.css from the upstream production repo
   at its TOKENS:START / TOKENS:END markers. The lines strictly between the markers
   become ui-library/tokens.css (the design tokens); the rest of the file, minus both marker
   lines, becomes ui-library/components.css (the component classes). Both are byte-exact copies
@@ -19,10 +19,18 @@
 
 .EXAMPLE
   powershell -File sync-tokens.ps1 -SourcePath C:\tmp\checkout -UiRoot C:\repo\ui-library
+
+.EXAMPLE
+  powershell -File sync-tokens.ps1 -RepoUrl https://host/group/project.git -Ref main
+
+.NOTES
+  -RepoUrl has no default on purpose. The upstream repo URL is not stored anywhere in
+  this public repo, so /sync-tokens asks the user for it on every run and passes it in.
+  Supplying -SourcePath (a local checkout) instead skips the clone and needs no URL.
 #>
 [CmdletBinding()]
 param(
-    [string]$RepoUrl = 'https://gitlab.solveeducation.org/solveearn/solveeducation.git',
+    [string]$RepoUrl,
     [string]$Ref = 'main',
     [string]$SourcePath,
     [string]$UiRoot,
@@ -308,7 +316,7 @@ $new
 
 ## What this is
 
-Design tokens extracted verbatim from the Solve Education production repo. Do not
+Design tokens extracted verbatim from the upstream production repo. Do not
 hand-edit tokens.css or components.css - run ``/sync-tokens`` instead. Per-project
 brand divergence belongs in ``design/<project>/tokens.overlay.css``, which may
 redefine an existing token name but never introduce a new one.
@@ -374,6 +382,9 @@ function Split-TokenBlock {
 try {
 try {
     if (-not $SourcePath) {
+        if (-not $RepoUrl) {
+            throw "-RepoUrl is required when no -SourcePath is given. The upstream repo URL is deliberately not stored in this repo, so /sync-tokens asks for it on every run. Re-run with -RepoUrl <url>, or pass -SourcePath <local checkout> to skip the clone."
+        }
         $base = $env:TEMP
         if (-not $base) { $base = [System.IO.Path]::GetTempPath() }
         $script:TempClone = Join-Path $base ("setokens_" + [guid]::NewGuid().ToString('N'))
@@ -507,7 +518,7 @@ try {
 
     $stamp = (Get-Date).ToString('yyyy-MM-dd')
     $block = @"
-- **Source repo:** https://gitlab.solveeducation.org/solveearn/solveeducation.git
+- **Source repo:** upstream production repo (URL configured in .claude/scripts/sync-tokens.ps1)
 - **Commit:** ``$SourceSha``
 - **Synced:** $stamp
 - **tokens.css:** $propCount custom properties

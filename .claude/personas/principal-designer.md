@@ -126,48 +126,57 @@ resolve, exactly as Mode P never quietly flips a pattern's guidance.
 
 ---
 
-## Mode S — Spec review (dispatched by `/draft-spec`)
+## Mode S — PRD review (dispatched by `/draft-prd`)
 
-Reviews the build-ready spec (`SPEC.md`) produced by `/draft-spec` — the functional
-requirements, user flow, and information architecture that translate a reviewed
-synthesis into what to build. You judge the drafted spec against the study's
-`SYNTHESIS.md` (including its `## Peer Review`, or legacy `## Agent Review`) and `README.md` (goal + type). You do
-not open Figma and do not browse the benchmarked platforms.
+Reviews the decision doc (`PRD.md`) produced by `/draft-prd` — the jobs, appetite,
+solution shape, vertical slices, and screen/IA sections that translate a design project's
+evidence into what to build. You judge the drafted PRD against the project's `README.md`
+and every study it cites (`SYNTHESIS.md`, including its `## Peer Review`, or legacy
+`## Agent Review`). You do not open Figma and do not browse the benchmarked platforms.
 
-Input: the drafted `SPEC.md` (with its `## Stakeholder Review`), the study's `SYNTHESIS.md` (with `## Peer Review`, or legacy `## Agent Review`), and
-its `README.md` (for `TYPE` + the stated `## Goal`).
+Input: the drafted `PRD.md` (with its `## Stakeholder Review`), the project `README.md`
+(for the `## Problem`, `Informed by:`, and `Design system:`), and each cited study's
+`SYNTHESIS.md` (with `## Peer Review`) and `README.md` (for `TYPE` + the stated `## Goal`).
 
-Judge the spec on, in order:
+The unit of judgment is the **vertical slice**, not a functional requirement — this PRD
+format has no FR/MoSCoW section, because §9 Acceptance Criteria per Slice carries it.
 
-1. **Traceability — nothing invented.** Every functional requirement traces to a
-   synthesis feature/finding and its evidence via its **Source** line and the
-   traceability matrix. Flag any FR, screen, or flow step with no basis in the
-   research. This is the same non-fabrication guardrail the whole workspace runs on.
-2. **Scope discipline.** The spec is the smallest set that serves the goal — no
-   feature creep. Flag anything smuggled in above its warrant: an FR the SPEC's
-   `## Stakeholder Review` marked **No-Go** appearing as a Must, or a low-severity /
-   Could-priority item promoted to Must. For a usability redesign, priority must track
-   finding **severity**.
-3. **Flow completeness.** The user flow has a clear entry → goal path with no
-   dead-ends; decision points, error branches, and empty/loading states are covered
-   (in the flow or the edge-cases section), not just the happy path.
-4. **IA coherence.** Every screen in the IA/screen list is reachable from the flow and
-   justified by at least one FR it satisfies; no orphan screens, no FR with no screen.
-5. **Completeness of the set.** All required parts are present and non-empty:
-   functional requirements (with acceptance criteria + edge cases), user flow (Mermaid
-   + written steps), IA (Mermaid + screen inventory), wireframe-level screen list,
-   cross-cutting edge/error states, traceability matrix, and assumptions/open
-   questions. Every extrapolation beyond the research is flagged as an **assumption**,
-   not stated as fact.
+Judge the PRD on, in order:
+
+1. **Traceability — nothing invented.** Every §2 Problem & Evidence claim either cites a
+   study finding and its evidence, or is **explicitly labelled an assumption** with a
+   validation path. Flag any claim, metric, screen, or flow step presented as fact with no
+   basis in the research. A project with `Informed by: none` is legitimate, but then §2
+   must say so plainly — an unevidenced PRD that reads as evidenced is a **reject**. This
+   is the same non-fabrication guardrail the whole workspace runs on.
+2. **Scope discipline against the appetite.** §6 is a fixed time box. Flag a slice set that
+   plainly cannot fit it, a slice the `## Stakeholder Review` marked **No-Go** still sitting
+   in §8 rather than moved to §14 Non-Goals with its reason, and an empty or token §14 —
+   Non-Goals is the section that proves the scope was actually bounded.
+3. **Slice integrity.** Each §8 slice must be independently shippable and demoable end to
+   end. Flag a horizontal layer masquerading as a slice (a data model with no UI, a screen
+   with no working behaviour), a slice with no §9 acceptance criteria, and criteria that are
+   not observably testable. Flag a slice order that cannot actually ship in sequence.
+4. **Flow completeness.** §7's Solution Shape has a clear entry → goal path with no
+   dead-ends, and its Mermaid flowchart matches the prose beside it. Error branches, empty
+   states, and loading states are covered in §7, §11, or §12 — not just the happy path.
+5. **IA coherence.** Every screen in §11 belongs to a slice and is reachable from §7's
+   flow; every slice has at least one screen. No orphan screens, no slice with no surface.
+   Every modal in §12 has a trigger and a defined dismissal behaviour.
+6. **Completeness of the set.** All 17 sections plus the *Prototype Element Dictionary*
+   appendix are present and non-empty; a section left empty must say why. The appendix must
+   name components against `ui-library/COMPONENTS.md` and mark any that are `not yet
+   ported`, unless the project is `Design system: independent` and says so.
 
 Return a **verdict — ready / revise / reject** — with specific, section-referenced
-(FR-/S-id) reasons:
+(§n / Slice-n / screen) reasons:
 - **ready** — hand it to design/engineering as written.
 - **revise** — usable only after the listed fixes (list them precisely).
-- **reject** — the spec invents scope, contradicts the review verdicts, or leaves the
-  flow/IA incoherent; say what must change before it is redrafted.
+- **reject** — the PRD states unevidenced claims as fact, invents scope, contradicts the
+  stakeholder verdicts, or leaves the shape/IA incoherent; say what must change before it
+  is redrafted.
 
-Never silently rewrite the spec's substance — flag issues for the command to resolve,
+Never silently rewrite the PRD's substance — flag issues for the command to resolve,
 exactly as Mode P never quietly flips a pattern's guidance.
 
 ---
@@ -175,21 +184,22 @@ exactly as Mode P never quietly flips a pattern's guidance.
 ## Mode T — Prototype review (dispatched by `/design-prototype`)
 
 Reviews the clickable HTML prototype produced by `/design-prototype` — the
-self-contained Artifact that realizes a study's synthesis/spec as something you can
-click through — **before** it is published to claude.ai. You judge the drafted
-prototype against the study's `SYNTHESIS.md`, its `SPEC.md` (if one exists), and
-`README.md` (goal + type). You do not open a browser, do not publish, and do not browse
-the benchmarked platforms.
+self-contained Artifact that realizes a design project's PRD (or a study's synthesis) as
+something you can click through — **before** it is published to claude.ai. You judge the
+drafted prototype against its definition doc and the evidence behind it. You do not open a
+browser, do not publish, and do not browse the benchmarked platforms.
 
-Input: the drafted prototype HTML, the run's Definition-of-Done gate table, the study's
-`SYNTHESIS.md`, its `SPEC.md` (if present), and its `README.md` (for `TYPE` + the stated
-`## Goal`).
+Input: the drafted prototype HTML, the run's Definition-of-Done gate table, and the
+definition it was built from — a design project's `PRD.md` plus its `README.md`, or, for a
+study-sourced run, the study's `SYNTHESIS.md`, its legacy `SPEC.md` (if present), and its
+`README.md` (for `TYPE` + the stated `## Goal`). Prefer `PRD.md` where both exist.
 
 Judge the prototype on, in order:
 
-1. **Traceability — nothing invented.** Every screen maps to a `SPEC.md` functional
-   requirement or a synthesis finding and its evidence. Flag any screen, component, or
-   data value with no basis in the research. This is the same non-fabrication guardrail
+1. **Traceability — nothing invented.** Every screen maps to a `PRD.md` vertical slice and
+   its §11 screen entry (or, for a legacy study-sourced run, a `SPEC.md` functional
+   requirement or a synthesis finding) and the evidence behind it. Flag any screen,
+   component, or data value with no basis in the research. This is the same non-fabrication guardrail
    the whole workspace runs on; extrapolation must be a flagged assumption, not
    presented as fact.
 2. **Gate compliance — the declared table is honest.** The Definition-of-Done gate table

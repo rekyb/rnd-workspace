@@ -7,8 +7,13 @@ sync between files.
 
 ## Upstream source and the marker contract
 
-The production repo is `https://gitlab.solveeducation.org/solveearn/solveeducation.git`
-(default branch `main`, no release tags — see **Access constraints** below).
+The production repo is a **private, self-hosted GitLab** repository (default branch
+`main`, no release tags — see **Access constraints** below). **Its URL is deliberately
+not recorded anywhere in this repo**, which is public: `/sync-tokens` asks the user to
+paste the clone URL on every run and passes it to the script as `-RepoUrl`. There is no
+default, no stored config, and no committed artifact that names the host or the
+organisation. Never reconstruct the URL from git history or an old session and never
+write it into a committed file.
 
 It materializes its token SSOT (`packages/tokens/tokens.json`) into
 `apps/web/app/(frontend)/globals.css`. **The path contains parentheses** — always
@@ -50,7 +55,7 @@ discards the clone. 29 MB per run is acceptable for an occasional command.
 | `tokens.json` | GENERATED | the 133 DTCG tokens, kept for drift checking |
 | `components.css` | GENERATED | `globals.css` with the marker block, both markers, and the scrub (below) removed |
 | `behaviors.js` | HAND-WRITTEN | vanilla behavior for the interactive (non-CSS-only) components |
-| `TOKENS.md` | HAND-WRITTEN | digest + provenance — source repo, resolved commit SHA, sync date, counts |
+| `TOKENS.md` | HAND-WRITTEN | digest + provenance — resolved commit SHA, sync date, counts (no repo URL / org name) |
 | `COMPONENTS.md` | HAND-WRITTEN | the component catalogue: class contract, behavior, ported status |
 
 **Extract, do not reimplement.** `tokens.css` and `components.css` are sliced from
@@ -112,8 +117,10 @@ on the live site, so these are not secrets.
 **Never committed:** `packages/tokens/manifest.json` (contains an internal project
 UUID, DesignSync references, and rebrand notes), anything from the source repo's
 own `.claude/` (`DESIGN.md`, `project-profile.md`, `constitution.md`, `PRIVACY.md`),
-and any `apps/` source. Provenance in `TOKENS.md` is recorded as repo URL + commit
-SHA + date only — no internal prose.
+and any `apps/` source. Provenance in `TOKENS.md` is recorded as commit SHA + sync
+date + counts only — no internal prose, and **no upstream repo URL or org name**. The
+committed `ui-library/` artifacts name no organisation; the clone URL lives only in
+`.claude/scripts/sync-tokens.ps1`, which is where a maintainer looks for it.
 
 ### Path exclusion is not sufficient — scrub content too
 

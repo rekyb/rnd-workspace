@@ -1,8 +1,17 @@
 # AI-Literacy App Design Notes
 
+**Status:** Active
+**Started:** 2026-07-17
+**Informed by:** research/2026-07-14-ai-literacy-upskilling-indonesian-teachers, research/2026-07-13-onboarding-activation-education-apps, research/2026-07-16-indonesian-teacher-onboarding-literature, research/2026-07-17-certificate-vs-badge-gamification
+**Design system:** independent — a different product with a deliberately different brand (indigo, overriding the teal decision); `tokens.css` uses its own token vocabulary. See `.claude/references/design-projects.md`.
+
 ## Purpose
 
 This folder captures the Principal Designer direction for **AI-Literacy App**, a mobile-first app for Indonesian teachers learning and applying AI literacy.
+
+*(This section is the project's `## Problem` in the terms of
+`.claude/references/design-projects.md` — it predates that contract and is kept under its
+original heading rather than duplicated.)*
 
 The product direction is grounded in:
 
@@ -80,3 +89,11 @@ flowchart LR
 | Values | `tokens.css` | the hexes and sizes themselves |
 | Components | `DESIGN.md` | anatomy, states, rules, surface map |
 | Screens | prototype / `SPEC.md` | composition |
+
+## Status log
+
+| Date | Entry |
+|---|---|
+| 2026-07-17 | Project started; design foundations, IA, journey, and validation model authored. |
+| 2026-07-27 | `README.md` backfilled to the `design-projects.md` contract (status header + this log). |
+

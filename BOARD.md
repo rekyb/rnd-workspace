@@ -1,13 +1,15 @@
-# Research Board
+# R&D Board
 
-A single view of every research effort in this workspace — the **active**
-studies and all **closed / archived** ones. This is the human-readable board;
-`/research-board` renders it to the terminal and refreshes it as studies open and
-close. The source of truth is each study's own `README.md` (`Type`, `Started`,
-`Closed`, `Status`) plus the active registry `.claude/.active-research` (one active
-study per line).
+A single view of everything in this workspace — the **active** studies, all
+**closed / archived** ones, and every **design project**. This is the human-readable
+board; `/research-board` renders it to the terminal and refreshes it as studies open
+and close and projects are created. The source of truth is each study's own
+`README.md` (`Type`, `Started`, `Closed`, `Status`) plus the active registry
+`.claude/.active-research` (one active study per line), and each project's own
+`README.md` (`Status`, `Started`, `Informed by`, `Design system`). The design half has
+no registry by design — see `.claude/references/design-projects.md`.
 
-_Last updated: 2026-07-24_
+_Last updated: 2026-07-27_
 
 ## Active
 
@@ -33,3 +35,13 @@ Past studies, most recent first.
 | [Benchmark DataCamp — 3 most valuable learning-experience features](research/2026-07-03-datacamp-learning-experience/) | benchmark | 2026-07-03 | 2026-07-03 | Closed |
 | [Benchmark Busuu — 3 most valuable learning-experience features](research/2026-07-03-busuu-learning-experience/) | benchmark | 2026-07-03 | 2026-07-03 | Closed |
 | [Briliant — early benchmark notes](research/2026-07-02-briliant/) | benchmark | 2026-07-02 | — | Archived (notes only) |
+
+## Design projects
+
+The MAKE half — long-lived projects, not dated studies. Status lives in each project's
+own `README.md`; start one with `/new-design <name>`.
+
+| Project | Status | Started | Informed by | Design system | PRD | Prototype |
+|---|---|---|---|---|---|---|
+| [Learner Acquisition &amp; Onboarding](design/onboarding-solve-edu/) | Active | 2026-07-21 | [unified-onboarding-synthesis-and-patterns](research/2026-07-20-unified-onboarding-synthesis-and-patterns/) | independent _(migration to `ui-library/` pending)_ | ✓ | ✓ |
+| [AI-Literacy App](design/ai-literacy-app/) | Active | 2026-07-17 | [ai-literacy-upskilling](research/2026-07-14-ai-literacy-upskilling-indonesian-teachers/), [onboarding-activation](research/2026-07-13-onboarding-activation-education-apps/), [teacher-onboarding-literature](research/2026-07-16-indonesian-teacher-onboarding-literature/), [certificate-vs-badge](research/2026-07-17-certificate-vs-badge-gamification/) | independent _(different brand)_ | — | ✓ |
