@@ -53,6 +53,10 @@ Thumbs.db
 # Local isolated implementation worktrees
 .worktrees/
 
+# Session handoff written by /save-session. Working state, not a repo artifact —
+# it would otherwise ride along in whatever PR happens to be open.
+SAVE.md
+
 # Generated single-file prototype build (~3 MB, rebuild with build-standalone.ps1)
 design/onboarding-solve-edu/standalone.html
 
