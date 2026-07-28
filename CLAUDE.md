@@ -346,6 +346,17 @@ no external hosts, no raw style values outside the token/component files, every
 The PII rule is a lint, not a guarantee — human review is still required. Run the gate
 before publishing a prototype Artifact.
 
+**The gate governs prototypes authored by `/design-prototype`**, which build on
+`ui-library/` from the start and so are gate-clean by construction; `/export-prototype`
+runs it on every export. The two projects that predate the design system —
+`onboarding-solve-edu` and `ai-literacy-app` — are `Design system: independent` and are
+**not** expected to pass it. That is a settled terminal state, not a pending migration:
+measured 2026-07-28, migrating `onboarding-solve-edu` would mean 46 of its 49 classes are
+absent from `components.css` (rule 4 has no project-class exemption), 246 raw values in its
+`styles.css` (rule 2), and 10 token names that do not exist upstream (rule 3). Do not
+re-attempt it, and do not weaken the gate on its behalf — see
+`.claude/references/design-projects.md`, *Which projects the gate governs*.
+
 `design/<project>/` holds the design work itself — PRD, prototype sources, and any
 build script. It is authored normally and is not covered by the sync guardrail.
 
