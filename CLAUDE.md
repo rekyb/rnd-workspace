@@ -160,8 +160,9 @@ A second senior persona (`.claude/personas/principal-designer.md`) owns
 and merge them into the library (deduping against, and flagging contradictions with,
 what is already there). Like the Principal Researcher it never browses the
 benchmarked platforms; it judges the synthesis on disk. It will also review
-design-facing deliverables at three points, each judged against the study's synthesis,
-never opening the tool or browsing the platforms:
+design-facing deliverables at three points — Mode R against a study's synthesis, Modes
+S and T against a design project's `PRD.md` — never opening the tool or browsing the
+platforms:
 - **Mode R** (`/brief-feature`) — judges the drafted Canva deck outline for story,
   evidence grounding, altitude, and PII-safety.
 - **Mode S** (`/draft-prd`) — judges the drafted `PRD.md` for traceability (every §2
