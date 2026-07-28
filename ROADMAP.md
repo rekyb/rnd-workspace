@@ -49,7 +49,7 @@ Next-step options for the workspace. Last reconciled **2026-07-27**.
 
 ### The design-system chapter (Phase 1, on `feat/rnd-workspace-design-system`)
 - **`ui-library/`** — production tokens and component CSS synced verbatim from the
-  Solve Education repo: `tokens.css` (166 custom properties), `components.css`
+  upstream production repo: `tokens.css` (166 custom properties), `components.css`
   (239 class selectors), `tokens.json`, plus hand-written `COMPONENTS.md` (42 components:
   4 ported, 19 CSS-only, 19 not yet ported) and a seeded `behaviors.js`.
 - **`/sync-tokens [--check] [--ref <branch|sha>]`** — one-directional marker-based

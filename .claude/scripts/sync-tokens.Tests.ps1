@@ -321,7 +321,27 @@ Assert-Equal 'True' ([string](-not $tok22.Contains("`r`n"))) 'Test 22 fixture is
 $out22 = & powershell -NoProfile -File $ScriptUnderTest -SourcePath $src22 -UiRoot $ui22 -SourceSha ('d' * 40) -Check 2>&1
 Assert-Equal '0' ([string]$LASTEXITCODE) '--check does not report drift when tokens.css/components.css differ from the source only by CRLF vs LF'
 
-foreach ($d in @($src,$ui,$src5,$ui5,$src6,$ui6,$src7,$ui7,$src8,$ui8,$src9,$ui9,$src17,$ui17,$src18,$ui18,$src19,$ui19,$src20,$ui20,$src22,$ui22)) { Remove-Item -Recurse -Force $d -ErrorAction SilentlyContinue }
+# --- Test 23: with neither -SourcePath nor -RepoUrl the script fails loudly and
+# clones nothing. -RepoUrl deliberately has no default: the upstream URL is not
+# stored in this public repo, so /sync-tokens asks the user for it on every run.
+# Without this guard the script would fall through to `git clone` with an empty
+# URL and fail with git's own opaque usage error instead of an actionable one.
+$ui23  = New-UiRoot
+$out23 = & powershell -NoProfile -File $ScriptUnderTest -UiRoot $ui23 2>&1
+Assert-Equal 'True' ([string]($LASTEXITCODE -ne 0))                     'missing -RepoUrl with no -SourcePath exits non-zero'
+Assert-Equal 'True' ([string]([string]$out23 -match '-RepoUrl'))        'the failure names the missing -RepoUrl parameter'
+Assert-Equal 'True' ([string]([string]$out23 -notmatch 'cloning'))      'no clone is attempted without a URL'
+Assert-Equal 'False' ([string](Test-Path -LiteralPath (Join-Path $ui23 'tokens.css'))) 'a missing -RepoUrl writes no tokens.css'
+
+# --- Test 24: the script source carries no upstream URL or organisation name.
+# This is the regression guard for the de-branding: a future edit that restores a
+# hardcoded default would silently re-publish the org name in a public repo, and
+# would also defeat Test 23's ask-every-run contract.
+$srcText24 = [IO.File]::ReadAllText($ScriptUnderTest, [System.Text.Encoding]::UTF8)
+Assert-Equal 'True' ([string]($srcText24 -notmatch '(?i)solve\s?education|solveearn')) 'sync-tokens.ps1 names no organisation'
+Assert-Equal 'True' ([string]($srcText24 -notmatch '(?i)\$RepoUrl\s*=\s*[''"]http'))   '$RepoUrl has no hardcoded URL default'
+
+foreach ($d in @($src,$ui,$src5,$ui5,$src6,$ui6,$src7,$ui7,$src8,$ui8,$src9,$ui9,$src17,$ui17,$src18,$ui18,$src19,$ui19,$src20,$ui20,$src22,$ui22,$ui23)) { Remove-Item -Recurse -Force $d -ErrorAction SilentlyContinue }
 if ($script:Failures -gt 0) { Write-Host "`n$($script:Failures) failure(s)" -ForegroundColor Red; exit 1 }
 Write-Host "`nAll tests passed" -ForegroundColor Green
 exit 0

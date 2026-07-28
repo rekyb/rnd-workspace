@@ -1,4 +1,4 @@
-# Solve Education! Learner Acquisition & Onboarding
+# Learner Acquisition & Onboarding
 
 **Status:** Active
 **Started:** 2026-07-21
@@ -7,7 +7,7 @@
 
 ## Problem
 
-Learners arrive at Solve Education! with very different amounts of context — some with a
+Learners arrive at the platform with very different amounts of context — some with a
 facilitator-issued program code and a destination already decided, some browsing with no
 idea what to learn, some returning to an account they already have. One undifferentiated
 entry path forces all three through decisions that only apply to one of them, and loses
