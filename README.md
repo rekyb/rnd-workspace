@@ -111,6 +111,7 @@ rnd-workspace/
 │       ├── md_to_docx.ps1          # dependency-free PowerShell fallback for the same export
 │       ├── md_visualize.ps1        # Mobbin links → local image embeds (gitignored *.visual.md)
 │       ├── sync-tokens.ps1         # refreshes ui-library/ from the upstream repo (+ --check; asks for the URL)
+│       ├── build-prototype.ps1     # inlines a design project's src/ into one self-contained HTML file
 │       └── check-prototype.ps1     # local design gate for a built prototype HTML file
 ├── .agents/skills/                 # the same workflow steps registered as skills
 ├── ui-library/                     # the shared design system (see below) — synced, read-only

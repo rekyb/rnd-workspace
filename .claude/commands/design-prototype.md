@@ -24,7 +24,7 @@ component classes only, never an improvised lookalike. A component that
 `ui-library/COMPONENTS.md` marks `not yet ported` has working CSS but no behavior: the run
 STOPs and says so rather than substituting something that merely looks close.
 
-**Every screen must trace back to a `PRD.md` vertical slice and its §11 screen entry — do
+**Every screen must trace back to a `PRD.md` vertical slice and its screen entry — do
 not invent screens, flows, data, or sources** (same non-fabrication guardrail as the rest
 of the workspace). Where the prototype must extrapolate beyond what the PRD and its cited
 evidence support, say so explicitly as a flagged **assumption**, exactly as the lenses
@@ -100,8 +100,15 @@ prototype that fails a gate unless the failure is declared.
    say so and STOP — there is nothing to deepen.
 
 4. **Read the ground truth.** Read `PRD.md` in full — §7 Solution Shape (the Mermaid
-   flow), §8 vertical slices, §9 acceptance criteria per slice, §11 Screens / IA / Empty
-   States, §12 Modal Reference, and the **Prototype Element Dictionary** appendix. Read
+   flow), §8 vertical slices, §9 acceptance criteria per slice, and the sections carrying
+   **Screens / IA / Empty States**, the **Modal Reference**, the **Data Model**, and the
+   **Prototype Element Dictionary**. **Locate those four by heading name, not by number** —
+   only `/draft-prd`'s template puts them at §11/§12/§13; a real PRD may number
+   differently, and where a numbered section does not carry the expected content, fall back
+   to the appendices. (In `design/onboarding-solve-edu/PRD.md`, §11–§13 are Rabbit Holes /
+   Technical Constraints / Dependencies; its screens, modals, and elements live in
+   `Appendix A: Prototype Element Dictionary` — one `###` per screen — and its data model in
+   `Appendix B: Core Data Model`.) Read
    the project `README.md` for the title and `Informed by:`. For each study named there,
    read its `SYNTHESIS.md` — that is where the *evidence* behind a screen lives, and what
    lets the prototype cite real findings instead of asserting them.
@@ -113,7 +120,7 @@ prototype that fails a gate unless the failure is declared.
      never a new name and never a raw value.
    - **Components** — `ui-library/components.css`, catalogued in
      `ui-library/COMPONENTS.md`.
-   - **Screens** — the §11 list, verbatim.
+   - **Screens** — the screen list from the section step 4 identified, verbatim.
    - **Definition of Done** — G1–G8.
    If any is missing, ask. Do not guess.
 
@@ -122,7 +129,8 @@ prototype that fails a gate unless the failure is declared.
    Any component whose **Status** is `not yet ported` has working CSS but **no
    behavior**. STOP. Report which components are unported and offer the three real
    options: port the behavior into `ui-library/behaviors.js` first, change the PRD to use
-   a ported component, or scope the prototype to exclude that screen with `--scope`.
+   a ported component, or use `--scope` to prototype only a slice that does *not* include
+   that screen.
    **Do not improvise a lookalike** — improvisation is what produced the `--sub` / `--mut`
    divergence this library exists to end (spec §3.3).
 
@@ -136,11 +144,15 @@ prototype that fails a gate unless the failure is declared.
      an ES `import` would survive the build as an unresolvable reference.
    - `app.js` — behavior. Use the ported behaviors `ui-library/behaviors.js` exposes (the
      global `RndUI`) for any ported component, rather than reimplementing it.
-   - `data.js` — the sample data, shaped per PRD §13 Data Model.
+   - `data.js` — the sample data, shaped per the PRD's data-model section (found by
+     heading name per step 4, not by number).
    - `img/` — any local images.
 
-   Tokens and component classes only: no raw hex, no raw px. Every screen traces to a §11
-   entry and a §8 slice. All states (§6), specific load-bearing copy (§7), no dead-ends.
+   Tokens and component classes only: no raw hex, no raw px, and **no external URL in any
+   `href`/`src`** — a plain `<a href="https://…">` builds fine and then hard-fails the gate
+   on rule 1 (`external host:`), so link out with `href="#"` or a local anchor instead.
+   Every screen traces to a screen entry (per step 4) and a §8 slice. All states (§6),
+   specific load-bearing copy (§7), no dead-ends.
    Flag every extrapolation beyond the PRD as an assumption; do not present it as fact.
    Honour `--scope` and `--fidelity` if set.
 

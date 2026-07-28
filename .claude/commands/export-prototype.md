@@ -38,7 +38,10 @@ failure never sends you back through a whole authoring pass.
 4. **Gate.** Run:
    `powershell -NoProfile -File .claude/scripts/check-prototype.ps1 -Path design/<project>/build/standalone.html`
    Add `-OverlayPath design/<project>/tokens.overlay.css` **if that file exists** —
-   without it, every token the overlay redefines reads as unresolved.
+   without it the overlay's own declarations are read as raw values sitting outside the
+   recognised design-system blocks, and **rule 2** fails (`raw hex outside the
+   design-system files: #…`). It is not rule 3 that breaks: an overlay may only redefine
+   names `tokens.css` already defines, so `var(--x)` still resolves either way.
    Branch on `$LASTEXITCODE`, never on output text. On a non-zero exit, report **every**
    violation (the script collects them all deliberately) and STOP.
 
@@ -60,11 +63,21 @@ failure never sends you back through a whole authoring pass.
 7. **`--artifact` only — checkpoint.** Ask for explicit confirmation to publish, naming
    what will be published and that Artifacts start private. Proceed only on a clear yes.
 
-8. **`--artifact` only — publish.** Copy the built file into the session scratchpad and
-   publish it with the **Artifact** tool. Use a **stable file path per project** so a
-   later export redeploys the **same URL** rather than minting a new one. Title = the
-   project's `README.md` title + " Prototype". Keep the favicon stable across redeploys.
-   If the project has been published before, pass its existing `url`.
+8. **`--artifact` only — publish.** Copy the built file into the session scratchpad, then
+   **strip the outer document wrapper from the scratchpad copy** before publishing: remove
+   the `<!DOCTYPE>`, `<html …>`, `<head>`/`</head>`, `<body …>`, `</body>`, and `</html>`
+   tags, keeping every `<style>` and `<script>` block (wherever it sat) and all body
+   content intact and in order. This is required, not tidying: the Artifact tool wraps the
+   file it publishes in its own `<!doctype html>…<head></head><body>` skeleton, so a file
+   carrying its own document tags nests one document inside another. Do **not** "simplify"
+   this back to publishing `standalone.html` directly. `build/standalone.html` itself stays
+   a complete, openable document — the stripping happens only on the scratchpad copy.
+   Then publish that copy with the **Artifact** tool. Use a **stable file path per
+   project** so a later export redeploys the **same URL** rather than minting a new one.
+   Title = the project's `README.md` title + " Prototype". Keep the favicon stable across
+   redeploys. If the project has been published before, pass its existing `url`.
+   *(No design project has been published yet, so this seam is untested — if the publish
+   errors, report what it said rather than guessing at a fix.)*
 
 9. **Update the log** in `design/<project>/README.md` with a dated status-log row: built,
    gate result, and the Artifact URL if one was published.

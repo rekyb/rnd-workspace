@@ -213,14 +213,22 @@ mechanical ones — a missing asset, a raw hex value):
   design/<project>`; on a non-zero exit relay the builder's message verbatim and STOP.
 - Run `powershell -NoProfile -File .claude/scripts/check-prototype.ps1 -Path
   design/<project>/build/standalone.html` (add `-OverlayPath
-  design/<project>/tokens.overlay.css` if it exists). Branch on `$LASTEXITCODE`, never on
+  design/<project>/tokens.overlay.css` if it exists — without it the overlay's own
+  declarations count as raw values outside the recognised design-system blocks and **rule
+  2** fails with `raw hex outside the design-system files: #…`; rule 3 is unaffected,
+  since an overlay may only redefine names `tokens.css` already defines). Branch on
+  `$LASTEXITCODE`, never on
   output text, and report **every** violation. If `tokens.css`/`components.css` was not
   found inlined verbatim, the raw-value rule did not run — say so; a skipped rule is not a
   passed gate.
 - Without `--artifact`, stop here and report the built path and gate result.
 - With `--artifact`: re-check for internal specifics, un-redacted PII, and organization
   impersonation; ask for **explicit confirmation** naming what will publish (Artifacts
-  start private); then publish. **Note for Gemini:** publishing to
+  start private); then publish — from a scratchpad copy with the outer `<!DOCTYPE>` /
+  `<html>` / `<head>` / `<body>` tags stripped (styles, scripts, and body content kept),
+  because the Artifact tool supplies its own document skeleton and would otherwise nest one
+  document inside another; `build/standalone.html` itself stays a complete document.
+  **Note for Gemini:** publishing to
   `claude.ai/code/artifacts` via the Artifact tool is a Claude-specific surface — where
   that tool isn't available, hand over the built `standalone.html` locally instead and say
   so explicitly in the report. Use a **stable file path per project** so a later export

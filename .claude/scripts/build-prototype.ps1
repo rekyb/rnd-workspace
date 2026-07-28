@@ -27,6 +27,30 @@
     6. External image URLs are passed through untouched. Policy on external hosts
        belongs to check-prototype.ps1 rule 1 - one owner for that rule, not two.
 
+  LOAD-BEARING DEPENDENCY - why check-prototype.ps1 rule 2 currently works.
+  Rule 2 (no raw hex / raw px outside the design-system files) can only run if it
+  finds tokens.css AND components.css inlined BYTE-FOR-BYTE VERBATIM in the built
+  file, so it can subtract them before scanning. Today they do survive verbatim
+  only by luck of content, not by any guarantee in this script: tokens.css
+  contains no url() at all, and components.css's single asset reference is
+  root-absolute - url("/brand/logo-icon.svg") - which rule 5 above passes through
+  untouched thanks to the negative lookahead in $assetPattern.
+  If a future /sync-tokens ever lands ONE RELATIVE image reference in either file
+  (e.g. url("img/logo.svg")), pass 4 would rewrite it to a data: URI, the inlined
+  text would no longer match the file on disk, and rule 2 would stop enforcing
+  anything. It fails closed rather than silently: check-prototype.ps1 emits a
+  "... was not inlined verbatim into this build" violation and exits non-zero, so
+  every export would start failing the gate until this builder is taught to
+  exempt the ui-library/ stylesheets from asset rewriting. Fix it there - do not
+  "fix" it by loosening rule 2.
+
+  RELATED, currently harmless: ui-library/behaviors.js is inlined by pass 2 but is
+  NOT exempted from rule 2 (only the two stylesheets are). It contains zero px and
+  zero hex values today, so there is no conflict. But any future ported behavior
+  that writes a raw value - el.style.height = x + 'px' - would fail rule 2 on
+  every export of every project. That exemption would have to be added to
+  check-prototype.ps1, not worked around here.
+
   This script builds; it does not judge. Run check-prototype.ps1 on the result.
 
 .PARAMETER ProjectPath
