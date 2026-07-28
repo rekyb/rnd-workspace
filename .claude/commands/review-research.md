@@ -8,7 +8,7 @@ findings stronger, then — only after the user approves — record it in `SYNTH
 `## Peer Review` and apply the agreed strengthenings.
 
 This is a critique-and-strengthen step, not a capture step, and not a build decision (the
-build call lives at `/draft-spec`). The panel judges the findings we synthesized; they do
+build call lives at `/draft-prd`). The panel judges the findings we synthesized; they do
 not go browsing the product. Everything they say must trace to what is already in the
 research folder or, for the Domain Expert, to a real retrieved scholarly source. **Do not
 invent evidence, metrics, findings, or citations.**

@@ -2,7 +2,7 @@
 
 This workspace is optimized for desk-research, UX benchmarking, usability testing, and litreview (evidence synthesis from documents). While originally configured for Claude Code via the `.claude/commands/` slash commands, it is fully compatible with Gemini running within the Antigravity CLI. 
 
-This file acts as the bridge for Gemini to understand how to operate this workspace natively. All 17 slash commands have been fully ported into first-class Gemini Skills (`.agents/skills/*/SKILL.md`).
+This file acts as the bridge for Gemini to understand how to operate this workspace natively. All 18 slash commands have been fully ported into first-class Gemini Skills (`.agents/skills/*/SKILL.md`).
 
 The workspace also carries a **design half** — the shared `ui-library/` design system that prototypes are built from. Its files are generated and read-only; see §13 before touching them.
 
@@ -88,7 +88,7 @@ When asked to synthesize the active research:
 When asked to review the active research synthesis:
 - Run three chained panel personas (`research-skeptic`, `domain-expert`, `evidence-auditor`) from `.claude/personas/` against the stated `## Goal` + `Type`, debating the findings to strengthen them; the `domain-expert` may use scoped scholarly web-search.
 - Have the Principal Researcher (`Mode C — peer-review moderation`) synthesize a `## Peer Review` block: per-finding **Robust / Strengthen / Unsupported** verdicts with a `### Legend`, a `### Strengthened findings` table, and a `### Actions to apply` list (each with the original wording preserved).
-- Present the block and the strengthening actions in chat for user approval, then append `## Peer Review` to `SYNTHESIS.md` and apply the approved strengthenings into the findings. (The build decision now lives at `draft-spec`.)
+- Present the block and the strengthening actions in chat for user approval, then append `## Peer Review` to `SYNTHESIS.md` and apply the approved strengthenings into the findings. (The build decision now lives at `draft-prd`, in the design half.)
 
 ### 6. Canva Feature & Stakeholder Briefs (`brief-feature`)
 When asked to create a Canva presentation deck for a reviewed study:
@@ -96,49 +96,91 @@ When asked to create a Canva presentation deck for a reviewed study:
 - Gate the outline through the Principal Designer (`Mode R — design review`) and verify zero-PII compliance.
 - Once approved by the user, build the presentation via Canva MCP tools using the free tier only.
 
-### 7. Build-Ready Spec Drafting (`draft-spec`)
-When asked to turn a reviewed study into a build-ready spec — optional, run only on
-request, one `SPEC.md` per study at the study root:
-- Locate the study (named folder, else resolve per `.claude/references/active-research.md`);
-  confirm `SYNTHESIS.md` exists, else tell the user to run `synth-findings` first.
-- **Hard gate:** require `SYNTHESIS.md` to already contain a `## Peer Review` section
-  (written by `review-research`), or a legacy `## Agent Review`. If neither is present,
-  stop and tell the user to run `review-research` first — proceed only on an explicit override.
-- Read `SYNTHESIS.md` (incl. its `## Peer Review`, or legacy `## Agent Review`, and any `## Gaps & caveats`) plus the
-  `README.md` `Type`/`Goal`/`Scope`. Branch on `Type`: **benchmark** → a forward spec
-  (features become requirements, prioritized by the synthesis's own sequencing; Go/No-Go
-  is decided at the stakeholder review below, not read from the synthesis); **usability** → a redesign
-  spec (findings' recommendations become requirements, priority follows severity).
-- Draft `SPEC.md` with the user section by section: MoSCoW-prioritized **functional
-  requirements** (each with a stable ID, a **Source** back-reference to its synthesis
-  entry + evidence, acceptance criteria, edge cases), a **Mermaid** user-flow diagram
-  plus written step-by-step, an **information architecture** Mermaid sitemap + screen
-  table, a **wireframe-level screen list** (purpose, content, actions, FRs satisfied,
-  states), cross-cutting **edge cases & error states**, a **traceability matrix** (FR ↔
-  synthesis source ↔ screen), and flagged **assumptions & open questions**. Every
-  requirement must trace to a synthesis entry — never invent scope.
-- After drafting, run a **stakeholder review** of the SPEC's functional requirements via
-  the chained `product-manager`, `tech-lead`, and `head-of-product` personas (PM soundness;
-  build effort; Go/Conditional Go/No-Go), recording a `## Stakeholder Review` section and
-  dropping any No-Go FR, before the Principal Designer Mode S gate.
-- Gate the draft through the Principal Designer (`Mode S — spec review`) for
-  traceability, scope discipline, flow completeness, IA coherence, and completeness of
-  the required set; revise on `revise`/`reject` and relay the verdict.
-- Re-check any embedded capture for PII before writing.
-- Only on explicit user approval, write `SPEC.md` to the study folder root. Optionally
-  export `.docx` with `powershell -NoProfile -File .claude/scripts/md_to_docx.ps1
-  -Source "<research-folder>/SPEC.md" -Out "<research-folder>/docx/SPEC.docx"` — always
-  into the gitignored `docx/` folder, never the study root — noting Mermaid renders as
-  fenced code in Word. Log a dated "spec drafted" entry in the study `README.md`.
+### 7. The Design Half — Projects & PRDs (`new-design`, `draft-prd`)
+Research is the **discover** half; design is the **make** half. One pipeline:
+`discover → synthesize → DECIDE (PRD.md) → MAKE (prototype) → validate`. The build
+decision moved here from the retired `draft-spec`: a PRD belongs to a **design project**,
+not to a study. The canonical contract is `.claude/references/design-projects.md`.
+
+**A design project is not a study.** A study is point-in-time — dated, closed, never
+reopened. A design project is long-lived and iterates, so it takes a plain slug (no date
+prefix) and a mutable status:
+
+```
+design/<project>/
+  README.md            Status: Active | Shipped | Archived · Informed by: <studies>
+  PRD.md               the decision doc (written by draft-prd)
+  tokens.overlay.css   OPTIONAL — per-project brand divergence
+  src/                 index.html · app.js · data.js · img/
+  build/               standalone.html (generated, gitignored)
+```
+
+**Resolving the project — there is no registry.** Studies churn, so they need
+`.claude/.active-research`; design projects are few and long-lived, so status lives in
+each `README.md` and nowhere else. Only the per-terminal binding gets a file
+(`.claude/.current-design/<session-id>`, gitignored). Resolve in order: explicit
+`[project]` argument (which also **adopts** the binding) → this terminal's binding → the
+sole `Status: Active` project → otherwise stop and ask. Naming a project explicitly *is*
+focusing on it, so there is no `focus-design`; status is a one-line edit, so there is no
+`close-design`.
+
+**`new-design <project> [--informed-by research/<study> …]`** — creates the container
+only: the folder, a `README.md` (status, `Informed by:`, problem statement), and an empty
+`src/`. It does **not** write `PRD.md`. Refuse to clobber an existing project; require a
+real problem statement rather than a `TBD`; validate each `--informed-by` study exists and
+has a `SYNTHESIS.md`. Zero studies is allowed — record
+`none (assumptions labelled in PRD §2)`. Bind this terminal, then refresh `BOARD.md`.
+
+**`draft-prd [project] [--docx]`** — writes `design/<project>/PRD.md`:
+- Resolve the project per the rule above; never create one here. Read its `README.md`
+  (`## Problem`, `Informed by:`, `Design system:`). An existing `PRD.md` means this is a
+  **revision** — preserve decisions that still hold and say what changed.
+- **Evidence gate (soft, but honest).** Each cited study must be reviewed (`## Peer
+  Review`, or legacy `## Agent Review`); a study with a synthesis but no review may not be
+  cited as settled evidence — offer to run `review-research`, drop it, or demote its claims
+  to §2 assumptions. Zero studies is allowed, but §2 must then declare the project
+  unevidenced and label every claim as an assumption with a validation path.
+- Read each cited `SYNTHESIS.md` in full. **benchmark** → features are "what good looks
+  like" elsewhere, never proof our users need them; **usability** → findings are diagnosed
+  pain, severity drives slice order; **litreview** → carry confidence labels and `[S#]`
+  citations through verbatim. Drop findings the peer review marked **Unsupported**.
+- Read `ui-library/COMPONENTS.md` for the class contract and ported status, unless the
+  project is `Design system: independent`. Flag anything `not yet ported` — the prototype
+  step **stops** on one rather than improvising.
+- Draft **with the user**, section by section. The template is **17 numbered sections**
+  plus a *Prototype Element Dictionary* appendix and a `## Stakeholder Review`: TL;DR ·
+  Problem & Evidence · Primary JTBD · Related Jobs · Success Metrics · Appetite · Solution
+  Shape · Vertical Slices · Acceptance Criteria per Slice · Users & Roles · Screens, IA &
+  Empty States · Modal Reference · Data Model · Non-Goals · Rabbit Holes & Open Questions ·
+  Technical Constraints · Dependencies. There is **no FR/MoSCoW section** — §9 carries it.
+  §2 cites the study syntheses, §7 carries a **Mermaid** flowchart, and the appendix points
+  at `ui-library/COMPONENTS.md`.
+- Each **vertical slice** must be independently shippable and demoable end to end; a slice
+  that cannot be demoed alone is a layer, so re-cut it. §6 Appetite is a fixed time box,
+  not an estimate — if the slices do not fit, cut scope, never extend the box.
+- Run a **stakeholder review of the slices** via the chained `product-manager`,
+  `tech-lead`, and `head-of-product` personas (PM soundness; build effort + top risk;
+  Go/Conditional Go/No-Go + sequencing). Record `## Stakeholder Review` with a
+  `Slice | PM | Tech Lead | Head of Product` table. A **No-Go** slice must leave §8 — move
+  it to §14 Non-Goals with the reason, or cut it.
+- Gate the draft through the Principal Designer (`Mode S — PRD review`) for traceability,
+  scope discipline against the appetite, slice integrity, flow completeness, IA coherence,
+  and completeness of the set; revise on `revise`/`reject` and relay the verdict.
+- Re-check any embedded capture for PII; never embed a Mobbin `reference/` image.
+- Only on explicit user approval, write `PRD.md`. Optionally export `.docx` with
+  `powershell -NoProfile -File .claude/scripts/md_to_docx.ps1 -Source
+  "design/<project>/PRD.md" -Out "design/<project>/docx/PRD.docx"` — always into the
+  gitignored `docx/` folder, never the project root — noting Mermaid renders as fenced
+  code in Word. Log a dated row in the project `README.md`'s `## Status log`.
 
 ### 8. Clickable Prototypes (`design-prototype`)
 When asked to turn a synthesized study into a clickable prototype — optional, run only
 on request:
 - Locate the study and confirm `SYNTHESIS.md` exists (else point to `synth-findings`).
-  Prefer `SPEC.md` as the source of the screen list, flow, IA, and per-screen states if
-  present; if absent, warn that traceability will be weaker, offer to run `draft-spec`
-  first, and suggest `--fidelity lo` for a cheap first pass — proceed only on the
-  user's yes.
+  Prefer a design project's `PRD.md` as the source of the screen list, flow, IA, and
+  per-screen states, falling back to a legacy `SPEC.md`; if neither is present, warn that
+  traceability will be weaker, offer to run `draft-prd` first, and suggest `--fidelity lo`
+  for a cheap first pass — proceed only on the user's yes.
 - Support `--fidelity lo|hi` (default `hi`: full tokens/colour/type/motion plus the
   full Definition-of-Done audit; `lo`: grayscale structure-only, reduced gate set), an
   à-la-carte `--gate <name,…>` fast path that redeploys the same existing artifact, and
@@ -202,10 +244,10 @@ Optional retrospective analysis passes over a **benchmark** study's captured evi
 ### 13. The `ui-library/` Design System (`sync-tokens`)
 Separate from the research lifecycle. `ui-library/` is the shared vocabulary a prototype is built *from*, so prototypes look like the real product instead of improvising a lookalike. The full contract is `.claude/references/design-system.md` — read it before touching anything here.
 
-- **`ui-library/tokens.css`, `components.css`, and `tokens.json` are GENERATED and read-only.** They are extracted verbatim from the Solve Education production repo by `sync-tokens`, which scrubs internal identifiers (a project UUID, an unannounced rebrand, internal PRD and wiki paths) and the external-host font `@import` before writing. **Never hand-edit them and never commit a hand-edit.** The sync is one-directional; nothing flows back upstream.
+- **`ui-library/tokens.css`, `components.css`, and `tokens.json` are GENERATED and read-only.** They are extracted verbatim from the upstream production repo by `sync-tokens`, which scrubs internal identifiers (a project UUID, an unannounced rebrand, internal PRD and wiki paths) and the external-host font `@import` before writing. The upstream repo URL is deliberately **not stored in this repo** — `sync-tokens` asks for it on every run and passes it as `-RepoUrl`. **Never hand-edit them and never commit a hand-edit.** The sync is one-directional; nothing flows back upstream.
 - **`sync-tokens --check` is the drift guard.** It writes no file and exits non-zero on any divergence from source for the three generated files. Run it before trusting the library. `--ref <branch|sha>` pins a specific upstream revision.
   ```bash
-  powershell -NoProfile -File .claude/scripts/sync-tokens.ps1 -Check
+  powershell -NoProfile -File .claude/scripts/sync-tokens.ps1 -RepoUrl <url> -Check
   ```
 - **`ui-library/TOKENS.md`'s provenance block is NOT machine-verified.** `--check` never reads it. Treat it as a hand-editing convention, not a guarantee.
 - **Hand-written files** in `ui-library/` — `COMPONENTS.md` (each upstream component's class contract and ported status) and `behaviors.js` (port-on-demand JS) — are authored normally and are not covered by the read-only rule.
@@ -222,4 +264,4 @@ Separate from the research lifecycle. `ui-library/` is the shared vocabulary a p
 
 ## Skill Architecture
 
-All 17 skills reside in `.agents/skills/<skill-name>/SKILL.md` with complete YAML frontmatter (`name`, `description`). Gemini automatically triggers these workflows when matching conversational intent or when invoked directly.
+All 18 skills reside in `.agents/skills/<skill-name>/SKILL.md` with complete YAML frontmatter (`name`, `description`). Gemini automatically triggers these workflows when matching conversational intent or when invoked directly.

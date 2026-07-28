@@ -41,9 +41,12 @@ path; create `.claude/.current-research/` if it does not exist before writing a 
 When a command needs a target study, resolve it in this priority order:
 
 1. **Explicit `[folder]` argument** → use it.
-   - Spine commands (`synth-findings`, `review-research`, `draft-spec`, `brief-feature`,
+   - Spine commands (`synth-findings`, `review-research`, `brief-feature`,
      `publish-research`, `plan-usability`): if the folder is not in the registry, warn — it
      may be a closed study and this may be a mistake.
+   - `draft-prd` is **not** on this list: it resolves a *design project*, not a study, and
+     follows `.claude/references/design-projects.md` instead. It reads studies only through
+     the project's `Informed by:` header.
    - Retrospective lens commands (`heuristic-eval`, `a11y-audit`, `extract-tokens`) may
      legitimately target a **closed** study, so a non-registry folder is allowed there.
 2. **This terminal's binding** — read `.claude/.current-research/<session-id>`. If it exists

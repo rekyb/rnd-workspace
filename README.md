@@ -88,15 +88,18 @@ rnd-workspace/
 ├── CLAUDE.md                       # authoritative project brief & working rules
 ├── GEMINI.md                       # Antigravity/Gemini entry point (mirrors CLAUDE.md)
 ├── ROADMAP.md                      # workspace roadmap
-├── BOARD.md                        # research board (active + closed studies), rendered by /research-board
+├── BOARD.md                        # R&D board (active + closed studies, design projects), rendered by /research-board
 ├── .claude/
 │   ├── .active-research            # registry of active research folders (one path per line)
 │   ├── .current-research/          # per-terminal focus (gitignored; one file per session id)
+│   ├── .current-design/            # per-terminal design-project focus (gitignored; no registry — see below)
 │   ├── commands/                   # workflow commands (new / plan-usability / synth / review /
-│   │                                #   brief-feature / draft-spec / design-prototype / focus / close / publish / board / lenses)
+│   │                                #   brief-feature / design-prototype / focus / close / publish / board / lenses,
+│   │                                #   plus the design half: new-design / draft-prd)
 │   ├── references/
 │   │   ├── active-research.md      # the registry / per-terminal-focus resolution rule
-│   │   ├── design-gates.md         # design-gate definitions used by /draft-spec & /design-prototype
+│   │   ├── design-projects.md      # the design/<project>/ contract & project-resolution rule
+│   │   ├── design-gates.md         # design-gate definitions used by /design-prototype
 │   │   ├── design-system.md        # the ui-library/ sync contract & disclosure boundary
 │   │   └── mobbin-sourcing.md      # Mobbin sourcing standard: C1–C5, folder shapes, IP boundary
 │   ├── personas/                   # reviewer subagent specs: principal-researcher, principal-designer,
@@ -106,11 +109,12 @@ rnd-workspace/
 │       ├── md_to_docx.py           # Markdown → .docx export (python-docx)
 │       ├── md_to_docx.ps1          # dependency-free PowerShell fallback for the same export
 │       ├── md_visualize.ps1        # Mobbin links → local image embeds (gitignored *.visual.md)
-│       ├── sync-tokens.ps1         # refreshes ui-library/ from the production repo (+ --check)
+│       ├── sync-tokens.ps1         # refreshes ui-library/ from the upstream repo (+ --check; asks for the URL)
 │       └── check-prototype.ps1     # local design gate for a built prototype HTML file
 ├── .agents/skills/                 # the same workflow steps registered as skills
 ├── ui-library/                     # the shared design system (see below) — synced, read-only
-├── design/<project>/               # design work: PRD, prototype sources, build scripts
+├── design/<project>/               # a design project (see The design half): README, PRD.md,
+│                                    #   optional tokens.overlay.css, src/, build/ (gitignored)
 ├── docs/superpowers/               # design specs & implementation plans (the project record)
 ├── raw-data/                       # working research data (GITIGNORED)
 └── research/
@@ -136,7 +140,8 @@ rnd-workspace/
         ├── sessions/                # usability studies: session-NN.md, one per PII-redacted participant
         ├── lenses/                 # optional benchmark analysis passes (heuristic-eval / a11y-audit / tokens)
         ├── SYNTHESIS.md            # cross-platform / cross-session synthesis (created at synth time)
-        └── SPEC.md                 # optional build-ready spec (created by /draft-spec, post-review)
+        └── SPEC.md                 # legacy: spec from the retired /draft-spec. New build
+                                    #   definitions are PRDs in design/<project>/
 ```
 
 **Several studies can be active at once**, worked in parallel across terminals.
@@ -175,22 +180,20 @@ to switch a terminal's focus, and `/close-research` to retire one study from the
 | `/synth-findings [--docx] [--visual]` | Reads the active research and writes `SYNTHESIS.md` using the template for its type. `--docx` adds a Word copy in the study's gitignored `docx/` folder; `--visual` adds a gitignored `SYNTHESIS.visual.md` with Mobbin reference images inlined for reading. |
 | `/review-research` | Runs a research peer-review debate over `SYNTHESIS.md` (Skeptic, Domain Expert, Evidence Auditor, moderated by the Principal Researcher) that strengthens the findings and — on approval — records a `## Peer Review` section. |
 | `/brief-feature [folder]` | Turns a synthesized study into a Canva stakeholder deck, gated by the Principal Designer before it's built in Canva. Defaults to the active research. |
-| `/draft-spec [folder]` | Turns a **reviewed** synthesis into a build-ready `SPEC.md` (functional requirements, user flow, information architecture), gated by the Principal Designer. Defaults to the active research. |
-| `/design-prototype [folder]` | Turns a synthesized study (ideally via its `SPEC.md`) into a clickable, self-contained HTML prototype published as a claude.ai Artifact, gated by the Principal Designer. Defaults to the active research. |
+| `/design-prototype [folder]` | Turns a synthesized study (ideally via a `PRD.md`, else a legacy `SPEC.md`) into a clickable, self-contained HTML prototype published as a claude.ai Artifact, gated by the Principal Designer. Defaults to the active research. |
 | `/close-research` | Verifies synthesis exists, updates the `PATTERNS.md` pattern library via the Principal Designer, marks the research closed, and removes it from the active registry (other active studies stay). |
 | `/focus-research <folder>` | Points *this terminal* at one of the active studies, so unqualified workflow commands default to it. For working several studies in parallel. |
 | `/publish-research [-m "msg"]` | Safety-checks captures for PII, commits the active research, and pushes to GitHub via the `gh` CLI. |
-| `/research-board` | Shows the research board — every active study and all past/closed research — and refreshes `BOARD.md`. |
-| `/sync-tokens [--check] [--ref <branch\|sha>]` | Refreshes the generated files in `ui-library/` from the production repo. Not part of the research lifecycle — see **The `ui-library/` design system** below. |
+| `/research-board` | Shows the board — every active study, all past/closed research, and every design project — and refreshes `BOARD.md`. |
+| `/save-session [note]` | Writes a session handoff to `SAVE.md` so the next session resumes cold — real git state, what is verified vs assumed, the decisions and why, and what is deferred vs blocked. `SAVE.md` is gitignored. |
+| `/sync-tokens [--check] [--ref <branch\|sha>]` | Refreshes the generated files in `ui-library/` from the upstream production repo, asking you for the repo URL on every run. Not part of the research lifecycle — see **The `ui-library/` design system** below. |
 
-`/brief-feature`, `/draft-spec`, and `/design-prototype` are three **optional
-design-output steps**, run only when asked, each gated by the Principal
-Designer: `/brief-feature` is the stakeholder **narrative** ("should we build
-this"), `/draft-spec` is the maker's **definition** ("here is what to build"),
-and `/design-prototype` is the clickable **artifact** ("here is what it looks
-and feels like"). `/draft-spec` requires a reviewed synthesis; `/design-prototype`
-prefers a `SPEC.md` (it will fall back to `SYNTHESIS.md` with weaker
-traceability if none exists).
+`/brief-feature` and `/design-prototype` are **optional design-output steps**, run only
+when asked, each gated by the Principal Designer: `/brief-feature` is the stakeholder
+**narrative** ("should we build this"), and `/design-prototype` is the clickable
+**artifact** ("here is what it looks and feels like"). The maker's **definition**
+("here is what to build") is `/draft-prd`, which lives in the design half below and
+writes a `PRD.md` into a design project rather than a study.
 
 A **Principal Researcher** review persona
 (`.claude/personas/principal-researcher.md`) runs as a subagent quality gate at
@@ -202,8 +205,8 @@ resolve, and never silently changing a finding.
 
 A **Principal Designer** persona (`.claude/personas/principal-designer.md`)
 owns `research/PATTERNS.md`, the cross-study pattern library, and reviews every
-design-output step (`/brief-feature`, `/draft-spec`, `/design-prototype`)
-against the study's synthesis — never browsing the benchmarked platforms
+design-output step (`/brief-feature`, `/draft-prd`, `/design-prototype`)
+against the evidence on disk — never browsing the benchmarked platforms
 itself — returning ready / revise / reject.
 
 ## Capture standards
@@ -259,10 +262,10 @@ summary` (task success rates, SEQ/SUS, time-on-task).
 
 ## Research board
 
-Every active study and the full history of closed/archived research live on the
-**[Research Board](BOARD.md)**. Render it to the terminal any time with
-**`/research-board`** (it also refreshes `BOARD.md` from the research folders and
-the active registry, so the board never drifts).
+Every active study, the full history of closed/archived research, and every design
+project live on the **[R&D Board](BOARD.md)**. Render it to the terminal any time with
+**`/research-board`** (it also refreshes `BOARD.md` from the research folders, the
+design folders, and the active registry, so the board never drifts).
 
 ## Benchmark analysis lenses (optional)
 
@@ -279,6 +282,56 @@ folder and stays grounded in the captures:
 - **`/extract-tokens`** — pixel-samples screenshots into an inferred design-token
   set (colour / type / spacing), flagged for validation against the real CSS.
 
+## The design half (`design/<project>/`)
+
+Research is the **discover** half; design is the **make** half. One pipeline:
+
+```
+discover ──► synthesize ──► DECIDE ──► MAKE ──► validate
+research/     SYNTHESIS.md   PRD.md    prototype
+(optional)                   design/<project>/
+```
+
+A **design project is not a study**. A study is point-in-time — dated, closed, never
+reopened. A design project is long-lived and iterates, so it takes a plain slug (no date
+prefix) and a mutable status. The full contract is
+[`.claude/references/design-projects.md`](.claude/references/design-projects.md).
+
+```
+design/<project>/
+  README.md            Status: Active | Shipped | Archived · Informed by: <studies>
+  PRD.md               the decision doc (written by /draft-prd)
+  tokens.overlay.css   OPTIONAL — per-project brand divergence
+  src/                 index.html · app.js · data.js · img/
+  build/               standalone.html (generated, gitignored)
+```
+
+| Command | What it does |
+|---|---|
+| `/new-design <project> [--informed-by research/<study> …]` | Creates `design/<project>/`, scaffolds its `README.md` and `src/`, and binds this terminal to it. The **container only** — it writes no `PRD.md`. |
+| `/draft-prd [project] [--docx]` | Turns the project's evidence into a build-ready **`PRD.md`** — the Shape-Up decision doc: jobs, appetite, solution shape, **vertical slices**, and acceptance criteria per slice, plus screens/IA, modals, and data model. A PM / Tech Lead / Head of Product review vets the **slices** (the build call), then the Principal Designer Mode S gate. Defaults to this terminal's current project. |
+
+**No registry, and no `/focus-design`.** Studies churn, so they need
+`.claude/.active-research`; design projects are few and long-lived, so status lives in
+each `README.md` and nowhere else. Only the per-terminal binding gets a file
+(`.claude/.current-design/<session-id>`, gitignored). Resolution: explicit `[project]`
+argument (which also *adopts* the binding) → this terminal's binding → the sole
+`Status: Active` project → otherwise ask. Naming a project explicitly *is* focusing on
+it. There is likewise **no `/close-design`** — status is a one-line edit.
+
+**The PRD format** is 17 numbered sections plus a *Prototype Element Dictionary*
+appendix and a `## Stakeholder Review`, organized around **vertical slices** (each
+independently shippable and demoable) rather than a flat requirements list. There is
+deliberately no FR/MoSCoW section — §9 Acceptance Criteria per Slice carries it, and the
+slice is the unit every reviewer judges. Three sections bind outward: §2 cites the study
+`SYNTHESIS.md`s, §7 carries a Mermaid flowchart, and the appendix points at
+`ui-library/COMPONENTS.md`.
+
+**Research is optional but never invisible.** A PRD may start with no study behind it,
+but then §2 must say so and label its claims as assumptions with validation paths — and
+the Principal Designer gate **fails a PRD that states unevidenced claims as fact**. Where
+a study *is* cited, it must have been peer-reviewed first.
+
 ## The `ui-library/` design system
 
 Separate from the research spine. Where research produces evidence, `ui-library/` is the
@@ -287,10 +340,11 @@ instead of improvising a lookalike. The full contract is
 [`.claude/references/design-system.md`](.claude/references/design-system.md).
 
 - **Generated, one-directional.** `tokens.css`, `components.css`, and `tokens.json` are
-  extracted verbatim from the Solve Education production repo by **`/sync-tokens`**,
+  extracted verbatim from the upstream production repo by **`/sync-tokens`**,
   which scrubs internal identifiers and the external-host font `@import` before writing.
   Nothing flows back upstream. **Never hand-edit them** — `/sync-tokens --check` writes
-  nothing and exits non-zero on any drift.
+  nothing and exits non-zero on any drift. The upstream repo URL is deliberately **not
+  stored in this repo** — `/sync-tokens` asks for it on every run.
 - **Hand-written alongside them:** `COMPONENTS.md` (each upstream component's class
   contract and whether its behavior is ported) and `behaviors.js` (port-on-demand JS,
   seeded rather than exhaustive).
