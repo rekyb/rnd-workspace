@@ -183,43 +183,48 @@ exactly as Mode P never quietly flips a pattern's guidance.
 
 ## Mode T — Prototype review (dispatched by `/design-prototype`)
 
-Reviews the clickable HTML prototype produced by `/design-prototype` — the
-self-contained Artifact that realizes a design project's PRD (or a study's synthesis) as
-something you can click through — **before** it is published to claude.ai. You judge the
-drafted prototype against its definition doc and the evidence behind it. You do not open a
+Reviews the **authored `src/` source for a design project** produced by
+`/design-prototype` — the multi-file prototype that realizes the project's PRD as
+something you can click through — **before** `/export-prototype` builds and publishes it.
+You judge the drafted source against its PRD and the evidence behind it. You do not open a
 browser, do not publish, and do not browse the benchmarked platforms.
 
-Input: the drafted prototype HTML, the run's Definition-of-Done gate table, and the
-definition it was built from — a design project's `PRD.md` plus its `README.md`, or, for a
-study-sourced run, the study's `SYNTHESIS.md`, its legacy `SPEC.md` (if present), and its
-`README.md` (for `TYPE` + the stated `## Goal`). Prefer `PRD.md` where both exist.
+Input: the authored `src/` files, the run's Definition-of-Done gate table, the
+`check-prototype.ps1` result, the project's `PRD.md` and `README.md`, and the
+`SYNTHESIS.md` of each study named in `Informed by:`.
 
 Judge the prototype on, in order:
 
-1. **Traceability — nothing invented.** Every screen maps to a `PRD.md` vertical slice and
-   its §11 screen entry (or, for a legacy study-sourced run, a `SPEC.md` functional
-   requirement or a synthesis finding) and the evidence behind it. Flag any screen,
-   component, or data value with no basis in the research. This is the same non-fabrication guardrail
-   the whole workspace runs on; extrapolation must be a flagged assumption, not
-   presented as fact.
+1. **Traceability — nothing invented.** Every screen maps to a `PRD.md` §8 vertical slice
+   and its §11 screen entry, and to the evidence behind it. Flag any screen, component, or
+   data value with no basis in the PRD or the studies it cites. This is the same
+   non-fabrication guardrail the whole workspace runs on; extrapolation must be a flagged
+   assumption, not presented as fact.
 2. **Gate compliance — the declared table is honest.** The Definition-of-Done gate table
-   (G1–G8) must match what the HTML actually does; no silent fails. Flag any gate marked
+   (G1–G8) must match what the source actually does; no silent fails. Flag any gate marked
    pass that the markup contradicts (e.g. a hardcoded colour against G1, a dead-end
    against G4, a missing error/empty state against G3).
-3. **Flow completeness.** The prototype has a clear entry → goal path with no dead-ends;
+3. **Design-system compliance.** Every value is a `ui-library/` token or a project-overlay
+   redefinition of one; every class used exists in `ui-library/components.css`; no
+   component marked `not yet ported` in `ui-library/COMPONENTS.md` is used. A prototype
+   that hand-rolls a colour or invents a class has recreated the divergence the library
+   exists to end, even when it looks right.
+4. **Flow completeness.** The prototype has a clear entry → goal path with no dead-ends;
    error, empty, and loading states are present and reachable, not just the happy path.
-4. **Fidelity honesty.** A `--fidelity lo` run is an honest grayscale wireframe (not
+5. **Fidelity honesty.** A `--fidelity lo` run is an honest grayscale wireframe (not
    dressed up as hi-fi), and a hi-fi run actually carries tokens, states, a11y, and
    responsive behaviour — it does not claim polish it lacks.
-5. **PII-safety for an external surface.** Since the prototype publishes to claude.ai,
-   spot-check that no internal specifics (product / program / funder names), real
-   people's names, avatars, emails, or account data ride along, and that it does not
-   impersonate a real organisation (generic-branded only).
+6. **PII-safety for an external surface.** Spot-check that no internal specifics
+   (product / program / funder names), real people's names, avatars, emails, or account
+   data ride along, and that it does not impersonate a real organisation (generic-branded
+   only). The source is judged here **before** `/export-prototype` publishes it to
+   claude.ai, so this is the review that matters — nothing downstream re-reads the source
+   with design eyes.
 
 Return a **verdict — ready / revise / reject** — with specific, screen-referenced
 reasons:
-- **ready** — publish it as drafted.
-- **revise** — publish only after the listed fixes (list them precisely).
+- **ready** — hand it to `/export-prototype` as drafted.
+- **revise** — export only after the listed fixes (list them precisely).
 - **reject** — the prototype invents screens, misdeclares its gates, or leaves the flow
   incomplete; say what must change before it is redrafted.
 

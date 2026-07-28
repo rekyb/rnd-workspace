@@ -160,16 +160,18 @@ A second senior persona (`.claude/personas/principal-designer.md`) owns
 and merge them into the library (deduping against, and flagging contradictions with,
 what is already there). Like the Principal Researcher it never browses the
 benchmarked platforms; it judges the synthesis on disk. It will also review
-design-facing deliverables at three points, each judged against the study's synthesis,
-never opening the tool or browsing the platforms:
+design-facing deliverables at three points — Mode R against a study's synthesis, Modes
+S and T against a design project's `PRD.md` — never opening the tool or browsing the
+platforms:
 - **Mode R** (`/brief-feature`) — judges the drafted Canva deck outline for story,
   evidence grounding, altitude, and PII-safety.
 - **Mode S** (`/draft-prd`) — judges the drafted `PRD.md` for traceability (every §2
   claim cited or labelled an assumption), scope discipline against the appetite, slice
   integrity, flow completeness, IA coherence, and completeness of the required set.
-- **Mode T** (`/design-prototype`) — judges the drafted HTML prototype for
-  traceability (no invented screens), gate compliance (the DoD table is honest), flow
-  completeness, fidelity honesty, and PII-safety.
+- **Mode T** (`/design-prototype`) — judges the authored `src/` prototype source
+  against the project's PRD and the design system for traceability (no invented
+  screens), gate compliance (the DoD table is honest), flow completeness, fidelity
+  honesty, and PII-safety.
 All three return ready / revise / reject.
 
 ## Research types (the type-aware spine)
@@ -190,18 +192,15 @@ downstream command reads it and branches its template. One spine, several behavi
 The method-specific instrument steps are `/plan-usability` (usability) and
 `/gather-evidence` (litreview). Everything else on the spine — `/synth-findings`,
 `/review-research`, `/brief-feature`, `/close-research`,
-`/publish-research` — is shared and type-aware. Two **optional design-output steps** turn a
-synthesized study into a deliverable, each gated by the Principal Designer:
+`/publish-research` — is shared and type-aware. One **optional design-output step** turns a
+synthesized study into a deliverable, gated by the Principal Designer:
 - `/brief-feature` — a Canva **stakeholder deck** (feature story for benchmark,
   severity-ranked findings for usability): the *narrative* — "should we build this".
-- `/design-prototype` — a clickable **HTML prototype** published as a claude.ai
-  Artifact (the *artifact*: "here is what it looks and feels like"). Generated and
-  audited against the design gates, gated by the Principal Designer (Mode T). Prefers a
-  `PRD.md`, falls back to a legacy `SPEC.md` or a reviewed synthesis; supports
-  `--fidelity lo|hi` and à-la-carte `--gate` passes that update the same Artifact.
 
 The maker's *definition* — "here is what to build" — is no longer a study output. It is
-`/draft-prd`, which writes a `PRD.md` into a **design project**. See **The design half**.
+`/draft-prd`, which writes a `PRD.md` into a **design project**, and the clickable
+prototype (`/design-prototype`, shipped by `/export-prototype`) now lives in the design
+half too. See **The design half**.
 
 ### Litreview sourcing standards
 - User-supplied documents go in the study's `corpus/`, which is **gitignored**
@@ -223,7 +222,6 @@ The maker's *definition* — "here is what to build" — is no longer a study ou
 | `/synth-findings [--docx] [--visual]` | Reads the active research and writes `SYNTHESIS.md` using the template for its `Type` (feature write-ups for benchmark, severity-ranked findings for usability); add `--docx` for a Word copy in the study's gitignored `docx/` folder, `--visual` for a gitignored `SYNTHESIS.visual.md` with Mobbin reference images inlined for reading. |
 | `/review-research` | Runs a research peer-review debate over `SYNTHESIS.md` (Skeptic, Domain Expert, Evidence Auditor, moderated by the Principal Researcher) that strengthens the findings and — on approval — records a `## Peer Review` section and applies the agreed strengthenings. |
 | `/brief-feature [folder]` | Turns a synthesized study into a Canva stakeholder deck (type-aware). Drafts the slide story with you, gates it through the Principal Designer (Mode R), runs the PII check, then builds it in Canva on approval. Defaults to the active research. |
-| `/design-prototype [folder]` | *(optional)* Turns a synthesized study into a clickable **HTML prototype** published as a claude.ai Artifact, generated and audited against the design gates (`.claude/references/design-gates.md`). Type-aware, gated by the Principal Designer (Mode T). Prefers a `PRD.md`, falls back to a legacy `SPEC.md`; supports `--fidelity lo\|hi` and à-la-carte `--gate` passes. Defaults to the active research. |
 | `/close-research` | Verifies synthesis exists, updates the `PATTERNS.md` library via the Principal Designer, marks the research closed, and removes it from the active registry (other active studies stay). |
 | `/focus-research <folder>` | Points *this terminal* at one of the active studies, so unqualified workflow commands default to it. Used when several studies are active at once. |
 | `/publish-research [-m "msg"]` | Safety-checks for PII, commits the active research, and pushes to GitHub via the `gh` CLI. |
@@ -259,9 +257,9 @@ what stills can't show). They are additive — not part of the required spine.
 Research is the **discover** half; design is the **make** half. They are one pipeline:
 
 ```
-discover ──► synthesize ──► DECIDE ──► MAKE ──► validate
-research/     SYNTHESIS.md   PRD.md    prototype
-(optional)                   design/<project>/
+discover ──► synthesize ──► DECIDE ──► MAKE ──────────────────────► validate
+research/     SYNTHESIS.md   PRD.md    /design-prototype (author src/)
+(optional)                             /export-prototype (ship build/standalone.html)
 ```
 
 **A design project is not a study.** A study is point-in-time — dated, closed, never
@@ -282,6 +280,8 @@ design/<project>/
 |---|---|
 | `/new-design <project> [--informed-by research/<study> …]` | Creates `design/<project>/`, scaffolds its `README.md` and `src/`, and binds this terminal to it. The **container only** — it writes no `PRD.md`. |
 | `/draft-prd [project] [--docx]` | Turns the project's evidence into a build-ready **`PRD.md`** — the Shape-Up decision doc: jobs, appetite, solution shape, **vertical slices**, and acceptance criteria per slice, plus screens/IA, modals, and data model. A PM/Tech Lead/Head of Product stakeholder review vets the **slices** (the build call) and records a `## Stakeholder Review`, before the Principal Designer Mode S gate. Defaults to this terminal's current project. |
+| `/design-prototype [project]` | Authors the project's clickable prototype as multi-file source in `src/`, built from its `PRD.md` against `ui-library/`. STOPs on a component `COMPONENTS.md` marks `not yet ported`. Gated by the Principal Designer (Mode T). Does not publish. |
+| `/export-prototype [project] [--artifact]` | Builds `src/` into `build/standalone.html`, runs `.claude/scripts/check-prototype.ps1`, and with `--artifact` publishes it to claude.ai after an explicit confirmation. |
 
 **There is no `/close-design`** — status is a one-line edit to `README.md`, and a command
 for that is pure overhead. There is also **no `/focus-design`**: naming a project
