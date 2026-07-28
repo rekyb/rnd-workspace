@@ -21,7 +21,7 @@
       <div class="custom-select">
         <div class="select-selected" id="lang-select-selected" style="width: 210px; justify-content: space-between; white-space: nowrap;">
           <div style="display: flex; align-items: center; gap: 8px;">
-            <img id="selected-flag" class="flag-icon" src="https://flagcdn.com/w20/us.png" alt="English">
+            <img id="selected-flag" class="flag-icon" src="https://flagcdn.com/w20/us.png" alt="English" onerror="this.style.visibility='hidden'">
             <span id="selected-lang">English</span>
           </div>
           <span class="material-symbols-rounded" style="font-size: 18px;">expand_more</span>
@@ -269,15 +269,15 @@
 
     <!-- S2: Code Entry (Modal) -->
     <div id="code_entry_modal" class="modal-overlay">
-      <div class="modal-content text-center">
+      <div class="modal-content text-center" role="dialog" aria-modal="true" aria-labelledby="code_modal_title" tabindex="-1">
         <button class="modal-close" aria-label="Close" id="close-code-modal-btn">
           <span class="material-symbols-rounded">close</span>
         </button>
-        <h1 class="title" style="margin-top: 8px;">Join your program</h1>
+        <h1 class="title" id="code_modal_title" style="margin-top: 8px;">Join your program</h1>
         <p class="subtitle">Enter the 6-character code from your facilitator or teacher. (Hint: Try "123456")</p>
         
         <div class="code-input-group" id="code-group">
-          <input type="text" maxlength="1" class="code-digit" autofocus>
+          <input type="text" maxlength="1" class="code-digit">
           <input type="text" maxlength="1" class="code-digit">
           <input type="text" maxlength="1" class="code-digit">
           <input type="text" maxlength="1" class="code-digit">
@@ -313,7 +313,7 @@
       <div style="max-width: 600px; width: 100%; margin: 32px auto;">
         <div id="country_combobox" class="custom-select" style="width: 100%; text-align: left; position: relative;">
           <div class="input-field" style="display: flex; align-items: center; gap: 12px; margin-bottom: 0; background: var(--surf);">
-            <img id="country_select_flag" class="flag-icon" src="" alt="" style="display: none; width: 24px; height: 18px;">
+            <img id="country_select_flag" class="flag-icon" src="" alt="" onerror="this.style.display='none'" style="display: none; width: 24px; height: 18px;">
             <input type="text" id="country_search" role="combobox" aria-labelledby="country_gate_title" aria-autocomplete="list" aria-controls="country_list" aria-expanded="false" autocomplete="off" placeholder="Type your country here" style="flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; color: var(--ink); text-align: center;">
           </div>
           <div id="country_dropdown" class="select-items select-hide" role="presentation" style="width: 100%; max-height: 300px; top: 100%; left: 0; position: absolute; overflow-y: auto; z-index: 100; margin-top: 8px; padding: 0;">
@@ -484,11 +484,11 @@
     
     <!-- S8: Sign In (Modal) -->
     <div id="sign_in_modal" class="modal-overlay">
-      <div class="modal-content text-center">
+      <div class="modal-content text-center" role="dialog" aria-modal="true" aria-labelledby="sign_in_modal_title" tabindex="-1">
         <button class="back-button" aria-label="Close" id="close-signin-modal-btn" style="position: absolute; top: 16px; left: 16px;">
           <span class="material-symbols-rounded">close</span>
         </button>
-        <h1 class="title" style="margin-top: 16px;">Login</h1>
+        <h1 class="title" id="sign_in_modal_title" style="margin-top: 16px;">Login</h1>
         <div style="height: 1px; background: var(--hair); margin: 24px 0;"></div>
         
         <input type="email" id="login_email_input" placeholder="Email address" class="input-field" style="margin-bottom: 12px; text-align: left;">
@@ -582,9 +582,9 @@
     </div>
   </main>
 
-  <div id="snackbar" class="snackbar">
-    <span class="material-symbols-rounded">block</span>
-    <span id="snackbar_text">You must be at least 15 years old to join.</span>
+  <div id="snackbar" class="snackbar" role="status">
+    <span class="material-symbols-rounded">info</span>
+    <span id="snackbar_text"></span>
   </div>
 
   <script>

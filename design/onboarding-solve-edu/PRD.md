@@ -36,6 +36,12 @@ The reviewed research supports five product principles used in this PRD:
 | Localized interface chrome is necessary for learners who may not be fluent in English | Unified onboarding synthesis, Theme 4 | High | English and Bahasa Indonesia must cover the complete funnel, including errors |
 | A verified identity is eventually required to protect durable learning records and credentials | Unified onboarding peer review | High | Authentication must complete before temporary onboarding data becomes a durable learner record |
 
+One further intake field is **not** research-backed and is recorded here as an assumption rather than a finding:
+
+| Assumption | Basis | Validation path |
+|---|---|---|
+| Programs need learner gender for segmentation and reporting, so it is worth one extra onboarding step | None. No study in the cited synthesis examines gender collection, and no funder or program-reporting requirement is documented in this repo. The field exists because the approved prototype collects it. | Program Operations and Legal/Privacy must confirm the purpose and lawful basis before Slice 5 is built (§11). If no reporting requirement is confirmed, drop the step rather than keep an unjustified field — §11's rabbit hole against speculative fields applies. |
+
 The prototype validates the intended flow shape and interaction model, but it does not validate conversion performance, legal age policy, provider reliability, backend contracts, or production failure handling. All numeric success targets below are launch hypotheses to be reviewed after four weeks of stable production data.
 
 ---
@@ -125,8 +131,9 @@ flowchart TD
         OrganicSession --> OName["Name"]
         OName --> OCountry["Country"]
         OCountry --> OAge["Age segment and policy check"]
-        OAge -->|Eligible| Goal["Select one learning goal"]
+        OAge -->|Eligible| OGender["Gender segment, opt-out available"]
         OAge -->|Registration restricted| PolicyExit["Localized policy guidance and safe exit"]
+        OGender --> Goal["Select one learning goal"]
     end
 
     subgraph Program["Program learner path"]
@@ -138,11 +145,12 @@ flowchart TD
         ProgramPreview --> PName["Name"]
         PName --> PCountry["Country"]
         PCountry --> PAge["Age segment and policy check"]
+        PAge -->|Eligible| PGender["Gender segment, opt-out available"]
         PAge -->|Registration restricted| PolicyExit
     end
 
     Goal --> OrganicWall["Account wall: save personalized profile"]
-    PAge -->|Eligible| ProgramWall["Account wall: finalize program registration"]
+    PGender --> ProgramWall["Account wall: finalize program registration"]
 
     OrganicWall --> Identity["Create or link verified identity"]
     ProgramWall --> Identity
@@ -168,6 +176,7 @@ Starting either new-learner path creates an opaque onboarding session. The sessi
 - current step and completed-step markers
 - selected country code
 - selected age band
+- selected gender key, including the explicit opt-out value
 - selected organic goal, if applicable
 - validated program reference and validation timestamp, if applicable
 - display name
@@ -229,13 +238,17 @@ A program learner enters a six-character, case-insensitive code. The client norm
 
 Both new-learner paths collect display name and country one question per screen. The country control is a searchable, localized ARIA combobox. Back navigation preserves valid entries. Program context remains visible through contextual copy, without introducing extra fields.
 
-### Slice 5 — Age segmentation and eligibility handling
+### Slice 5 — Age and gender segmentation, and eligibility handling
 
 The learner selects a recognition-based age range: 13–17, 18–24, or 25–64, with the adult branch refined to 25–34, 35–44, 45–54, or 55+. The selected band supports segmentation and policy evaluation. Country-specific minimum-age or consent rules are returned from policy configuration; the UI does not hard-code a universal eligibility threshold.
 
 If policy blocks self-service registration, the product shows a localized explanation and safe next action approved by Legal/Privacy. It does not silently discard previously entered data, promise parental consent where none exists, or expose internal policy logic.
 
-This order intentionally follows the approved prototype (Name → Country → Age). Because that means limited profile data is collected before eligibility is known, Legal/Privacy must approve the temporary-session handling before launch. If they require eligibility before personal-data collection, Age moves before Name for both entry paths without changing the remaining requirements.
+After an eligible age result, both paths ask a single gender question — Female, Male, or **Prefer not to say** — as a recognition-based, single-choice step. The opt-out is a first-class option presented at the same visual weight as the other two, not a de-emphasized escape hatch, and choosing it satisfies the step: the learner is never blocked or re-prompted for declining. The stored value is a stable key (including a distinct key for the opt-out), never the localized label.
+
+This step is the one intake field with no research behind it (see §2). It ships only if Program Operations and Legal/Privacy confirm a purpose and lawful basis for collecting it; absent that confirmation, the step is removed rather than launched, and Slice 5 reduces to age and eligibility alone.
+
+This order intentionally follows the approved prototype (Name → Country → Age → Gender). Because that means limited profile data is collected before eligibility is known, Legal/Privacy must approve the temporary-session handling before launch. If they require eligibility before personal-data collection, Age moves before Name for both entry paths without changing the remaining requirements.
 
 ### Slice 6 — Organic learning-goal selection
 
@@ -315,7 +328,7 @@ Every slice supports English and Bahasa Indonesia, keyboard and assistive-techno
 - [ ] Returning to Name or Country restores the prior valid value.
 - [ ] The server stores ISO 3166-1 alpha-2 country code as the canonical value, not the localized label or flag URL.
 
-### Slice 5 — Age segmentation and eligibility handling
+### Slice 5 — Age and gender segmentation, and eligibility handling
 
 - [ ] Selecting 13–17 or 18–24 immediately creates one valid single-choice result.
 - [ ] Selecting Adult reveals 25–34, 35–44, 45–54, and 55+; Continue stays disabled until a subrange is selected.
@@ -324,6 +337,12 @@ Every slice supports English and Bahasa Indonesia, keyboard and assistive-techno
 - [ ] A blocked result shows localized, legally approved copy and an explicit safe exit or approved consent route.
 - [ ] Analytics stores only the configured age-band key and policy result, never an inferred date of birth.
 - [ ] Policy configuration is versioned so consent and eligibility decisions can be audited.
+- [ ] The gender step offers Female, Male, and Prefer not to say as a single-choice group with a programmatic group label.
+- [ ] Each option exposes its selected state via `aria-pressed` or radio semantics, and shows a visible focus ring.
+- [ ] Prefer not to say is styled at the same weight as the other options and satisfies the step; Continue enables on any of the three.
+- [ ] Continue stays disabled until one of the three is chosen, and the choice survives Back navigation.
+- [ ] The stored and analytics value is a stable key — including a distinct key for the opt-out — never the localized label, and gender is nullable in the durable profile.
+- [ ] The step is behind its own configuration flag so it can be removed without touching the rest of the funnel if §11's purpose-and-lawful-basis decision lands negative.
 
 ### Slice 6 — Organic learning-goal selection
 
@@ -390,6 +409,8 @@ Every slice supports English and Bahasa Indonesia, keyboard and assistive-techno
 - Program creation, cohort administration, facilitator tools, or reporting
 - Recommendation-model development; MVP uses deterministic goal-to-course configuration
 - Multiple simultaneous organic goals
+- A free-text or self-describe gender field, and any gender option set beyond the three in Slice 5, in this release
+- Using gender to personalize content, recommendations, or routing; it is a reporting dimension only
 - Program discovery or browsing without a valid code
 - Editing or switching a validated program during onboarding
 - Cross-device continuation of an incomplete anonymous onboarding session
@@ -413,7 +434,7 @@ Every slice supports English and Bahasa Indonesia, keyboard and assistive-techno
 - **Do not attach a program solely because it was valid earlier.** Revalidate it during finalization.
 - **Do not log raw program codes or profile PII in analytics.** Use opaque references and controlled dimensions.
 - **Do not introduce a general recommendation engine.** A configuration map is sufficient for the approved MVP.
-- **Do not add fields merely because they may be useful later.** Name, country, age band, goal or program, identity, and consent are the approved minimum.
+- **Do not add fields merely because they may be useful later.** Name, country, age band, goal or program, identity, and consent are the approved minimum. Gender is the one field beyond that minimum, and it is provisional: it survives only if §11's purpose-and-lawful-basis decision confirms it.
 - **Do not treat social providers as guaranteed.** Each provider needs health monitoring, configuration, and an alternate path.
 
 ### Open Questions requiring named decisions
@@ -421,6 +442,7 @@ Every slice supports English and Bahasa Indonesia, keyboard and assistive-techno
 | Decision | Owner | Decision deadline | Default if unresolved |
 |---|---|---|---|
 | Country-specific age/consent policy and whether any range must be blocked | Legal/Privacy + Product | Before Slice 5 development starts | Do not launch in a market without an approved rule |
+| Whether gender is collected at all — the documented purpose, lawful basis, and retention for it | Program Operations + Legal/Privacy | Before Slice 5 development starts | Do not collect it; ship Slice 5 as age and eligibility only |
 | Production identity-provider set and account-linking policy | Security + Engineering | Before Slice 2 integration | Email/password + Google only |
 | Program code character set and cohort-capacity rules | Program Operations + Backend | Before Slice 3 API freeze | Six case-insensitive alphanumeric characters; no client-visible capacity detail |
 | Canonical goal taxonomy and goal-to-first-course map | Content + Product | Before Slice 6 content freeze | Use the six prototype identifiers and manually approved mappings |
@@ -490,6 +512,7 @@ Common safe properties:
 - step identifier
 - device class
 - identity provider
+- stable age-band key and stable gender key, where collected
 - stable goal identifier
 - opaque program reference
 - controlled result category
@@ -547,6 +570,7 @@ Prohibited analytics properties include display name, email, password, raw progr
 | Name | Learner-facing display name | Unicode string, 3–50 grapheme clusters |
 | Country | Selected country | ISO alpha-2 code |
 | Age | Recognition-based age segment | Stable configured band key and policy version |
+| Gender | Reporting segment, opt-out available | Stable key or the opt-out key; nullable |
 | Goal | Organic personalization choice | Stable goal identifier |
 | Program preview | Validated routing context | Opaque program/cohort reference |
 
@@ -584,6 +608,7 @@ OnboardingSession
   display_name
   country_code
   age_band
+  gender_key?
   eligibility_policy_version
   eligibility_result
   goal_id?
@@ -599,6 +624,7 @@ LearnerProfile
   display_name
   country_code
   age_band
+  gender_key?
   onboarding_source
   initial_goal_id?
   locale
