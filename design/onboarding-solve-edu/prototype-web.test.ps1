@@ -150,3 +150,44 @@ Assert-Matches "programProgressMap\s*=\s*\{[^}]*'age_gate':\s*67" 'Program age w
 Assert-Matches "programProgressMap\s*=\s*\{[^}]*'gender_gate':\s*83" 'Program gender weighting.'
 
 Write-Output 'PASS: progress bar weighting'
+
+Assert-Matches 'id="code_entry_modal"[\s\S]{0,120}?role="dialog"\s+aria-modal="true"\s+aria-labelledby="code_modal_title"' 'Code entry must be a named modal dialog.'
+Assert-Matches 'id="sign_in_modal"[\s\S]{0,120}?role="dialog"\s+aria-modal="true"\s+aria-labelledby="sign_in_modal_title"' 'Login must be a named modal dialog.'
+Assert-Matches 'id="code_modal_title"' 'Code modal needs the heading its dialog is named by.'
+Assert-Matches 'id="sign_in_modal_title"' 'Login modal needs the heading its dialog is named by.'
+Assert-Matches 'class="modal-content[^"]*"[^>]*tabindex="-1"' 'Modal content must be focusable as a fallback target.'
+Assert-NotMatches 'class="code-digit"\s+autofocus' 'A closed modal must not steal focus on page load.'
+Assert-Matches '\.modal-overlay\s*\{[^}]*visibility:\s*hidden' 'A closed modal must leave the tab order.'
+Assert-Matches '\.modal-overlay\.show\s*\{[^}]*visibility:\s*visible' 'An open modal must be focusable.'
+
+Write-Output 'PASS: modal dialog semantics'
+
+Assert-Matches 'function\s+openModal\s*\(id,\s*initialFocusSelector\)' 'Modal open helper is required.'
+Assert-Matches 'modalReturnFocus\s*=\s*document\.activeElement' 'Opening a modal must record its trigger.'
+Assert-Matches "setAttribute\('inert',\s*''\)" 'Opening a modal must make the background inert.'
+Assert-Matches "removeAttribute\('inert'\)" 'Closing the last modal must un-inert the background.'
+Assert-Matches 'function\s+trapModalTab\s*\(event\)' 'Modal Tab trap is required.'
+Assert-Matches "addEventListener\('keydown',\s*event\s*=>\s*\{\s*if\s*\(event\.key\s*===\s*'Escape'\)" 'Escape must close the open modal.'
+Assert-Matches 'returnTo\.isConnected[\s\S]*?returnTo\.focus\(\)' 'Closing a modal must restore focus to a still-visible trigger.'
+Assert-Matches "openModal\('code_entry_modal',\s*'\.code-digit'\)" 'Program entry must focus the first code digit.'
+Assert-Matches "openModal\('sign_in_modal',\s*'#login_email_input'\)" 'Login must focus the email field.'
+Assert-NotMatches "getElementById\('(?:code_entry_modal|sign_in_modal)'\)\.classList\.add\('show'\)" 'Modals must open through openModal, not a bare class toggle.'
+
+Write-Output 'PASS: modal focus management'
+
+Assert-Matches 'function\s+validateSaveGate[\s\S]*?pwd\.length\s*>=\s*8' 'Account creation must apply the 8-character PRD policy.'
+
+foreach ($goalId in $goalIds) {
+  Assert-Matches "'$goalId':\s*'" "Goal '$goalId' must map to a first course."
+}
+Assert-NotMatches "'digital_literacy':|'entrepreneurship':|'workplace':\s*'Workplace Communication'" 'Stale course-map keys must be removed.'
+
+Write-Output 'PASS: password policy and goal-to-course map'
+
+Assert-NotMatches 'new RegExp\(`\(\$\{q\}\)`' 'An unescaped query must not be interpolated into a regex.'
+Assert-Matches 'q\.replace\(' 'Country highlight must escape the query first.'
+Assert-Matches "onerror=""this\.style\.visibility='hidden'""" 'Flag images must fail closed rather than show a broken icon.'
+Assert-NotMatches 'signin-btn-telegram|sso-btn-telegram|signin-btn-apple|sso-btn-apple' 'Handlers for absent Apple/Telegram controls must be removed.'
+Assert-NotMatches 'at least 15 years old' 'Vestigial age-block copy must be removed.'
+
+Write-Output 'PASS: country search hardening and dead-code removal'

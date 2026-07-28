@@ -672,11 +672,16 @@ body.is-onboarding .card {
   z-index: 2000;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  /* visibility keeps a closed modal out of the tab order; the 0.3s delay lets
+     the opacity fade-out finish before it is hidden. */
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
 .modal-overlay.show {
   opacity: 1;
   pointer-events: auto;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0s;
 }
 .modal-content {
   background: var(--surf);

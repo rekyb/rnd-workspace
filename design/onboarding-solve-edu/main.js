@@ -23,11 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('age-btn-adult-55')?.addEventListener('click', function() { selectAgeOption(this, 'adult_55_plus', true); });
   document.getElementById('age-btn-young-adult')?.addEventListener('click', function() { selectAgeOption(this, 'young_adult'); });
   document.getElementById('start-lesson-btn')?.addEventListener('click', () => goTo('learning_home'));
-  document.getElementById('signin-btn-telegram')?.addEventListener('click', () => { goTo('learning_home'); closeModal('sign_in_modal'); });
   document.getElementById('lang-en')?.addEventListener('click', () => selectLang('en', 'English', 'https://flagcdn.com/w20/us.png'));
   document.getElementById('global-continue-btn')?.addEventListener('click', handleGlobalContinue);
   document.getElementById('bottom-start-organic-btn')?.addEventListener('click', startOrganic);
-  document.getElementById('sso-btn-telegram')?.addEventListener('click', () => goTo('learning_home'));
   document.getElementById('age-btn-adult')?.addEventListener('click', function() { selectAgeOption(this, 'adult'); });
   document.getElementById('hero-start-program-btn')?.addEventListener('click', startProgram);
   document.getElementById('lang-id')?.addEventListener('click', () => selectLang('id', 'Bahasa Indonesia', 'https://flagcdn.com/w20/id.png'));
@@ -37,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('age-btn-adult-25')?.addEventListener('click', function() { selectAgeOption(this, 'adult_25_34', true); });
   document.getElementById('join_btn')?.addEventListener('click', submitCode);
   document.getElementById('age-btn-adult-35')?.addEventListener('click', function() { selectAgeOption(this, 'adult_35_44', true); });
-  document.getElementById('signin-btn-apple')?.addEventListener('click', () => { goTo('learning_home'); closeModal('sign_in_modal'); });
   document.getElementById('hero-start-organic-btn')?.addEventListener('click', startOrganic);
   document.getElementById('age-btn-adult-45')?.addEventListener('click', function() { selectAgeOption(this, 'adult_45_54', true); });
   document.getElementById('sso-btn-google')?.addEventListener('click', () => goTo('learning_home'));
@@ -47,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('gender-btn-male')?.addEventListener('click', function() { selectGender(this, 'male'); });
   document.getElementById('gender-btn-prefer')?.addEventListener('click', function() { selectGender(this, 'prefer_not_to_say'); });
   document.getElementById('header-signin-btn')?.addEventListener('click', openSignInModal);
-  document.getElementById('sso-btn-apple')?.addEventListener('click', () => goTo('learning_home'));
   document.getElementById('logo-link')?.addEventListener('click', (e) => { e.preventDefault(); goTo('landing'); });
   document.getElementById('close-signin-modal-btn')?.addEventListener('click', () => closeModal('sign_in_modal'));
   document.getElementById('signin-btn-google')?.addEventListener('click', () => { goTo('learning_home'); closeModal('sign_in_modal'); });
@@ -56,10 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('signin-modal-signup-btn')?.addEventListener('click', () => { closeModal('sign_in_modal'); startOrganic(); });
   document.getElementById('signin-btn-facebook')?.addEventListener('click', () => { goTo('learning_home'); closeModal('sign_in_modal'); });
 
-  const backBtn = document.getElementById('onboarding-back-btn');
-  if (backBtn) {
-    backBtn.addEventListener('click', goBack);
-  }
   document.getElementById('name_input')?.addEventListener('input', validateName);
   document.getElementById('country_search')?.addEventListener('input', handleCountryInput);
   document.getElementById('country_search')?.addEventListener('keydown', handleCountryKeydown);
@@ -79,8 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn) return;
     
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    const isValidPwd = pwd.length >= 6;
-    
+    // PRD 7.3: production password policy is at least 8 characters. The UI only
+    // guides; the server remains the source of truth.
+    const isValidPwd = pwd.length >= 8;
+
     btn.disabled = !(isValidEmail && isValidPwd);
   }
 
@@ -91,8 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn) return;
     
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    // Deliberately lower than the 8-character creation policy: an existing
+    // account may predate it, and login must not lock out valid credentials.
     const isValidPwd = pwd.length >= 6;
-    
+
     btn.disabled = !(isValidEmail && isValidPwd);
   }
 
@@ -267,17 +263,91 @@ const progressMap = {
 
     function startProgram() {
       appState.entryPath = 'program';
-      document.getElementById('code_entry_modal').classList.add('show');
+      openModal('code_entry_modal', '.code-digit');
     }
 
     function openSignInModal() {
-      // Just in case they were in a card, but sign in modal floats above everything.
-      document.getElementById('sign_in_modal').classList.add('show');
+      openModal('sign_in_modal', '#login_email_input');
+    }
+
+    // --- Modal focus management -------------------------------------------
+    // The modals live inside <main> alongside the screen cards, so the
+    // background is made inert per-element rather than on one container.
+
+    const MODAL_FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    let modalReturnFocus = null;
+
+    function backgroundElements() {
+      return [
+        document.getElementById('global-header'),
+        document.getElementById('onboarding-header'),
+        document.getElementById('onboarding-footer'),
+        ...document.querySelectorAll('.card')
+      ].filter(Boolean);
+    }
+
+    function openModal(id, initialFocusSelector) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+
+      modalReturnFocus = document.activeElement;
+      modal.classList.add('show');
+      backgroundElements().forEach(el => el.setAttribute('inert', ''));
+
+      const target = (initialFocusSelector && modal.querySelector(initialFocusSelector))
+        || modal.querySelector(MODAL_FOCUSABLE)
+        || modal.querySelector('.modal-content');
+      target?.focus();
     }
 
     function closeModal(id) {
-      document.getElementById(id).classList.remove('show');
+      const modal = document.getElementById(id);
+      if (!modal) return;
+
+      modal.classList.remove('show');
+      if (!document.querySelector('.modal-overlay.show')) {
+        backgroundElements().forEach(el => el.removeAttribute('inert'));
+      }
+
+      const returnTo = modalReturnFocus;
+      modalReturnFocus = null;
+      // Only restore focus when the trigger is still on screen. Navigating away
+      // (login -> learning_home) legitimately removes it, and focusing a hidden
+      // element would drop focus into nowhere.
+      if (returnTo && returnTo.isConnected && returnTo.offsetParent !== null) {
+        returnTo.focus();
+      }
     }
+
+    function trapModalTab(event) {
+      const modal = document.querySelector('.modal-overlay.show');
+      if (!modal) return;
+
+      const focusables = Array.from(modal.querySelectorAll(MODAL_FOCUSABLE))
+        .filter(el => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        const modal = document.querySelector('.modal-overlay.show');
+        if (modal) closeModal(modal.id);
+      } else if (event.key === 'Tab') {
+        trapModalTab(event);
+      }
+    });
 
     function submitCode() {
       const inputs = document.querySelectorAll('.code-digit');
@@ -547,10 +617,11 @@ const progressMap = {
         return;
       }
 
-      // Helper to highlight matching text
+      // Helper to highlight matching text. The query is escaped first so a
+      // regex metacharacter typed by the learner cannot throw a SyntaxError.
       const highlight = (text, q) => {
         if (!q) return text;
-        const regex = new RegExp(`(${q})`, 'gi');
+        const regex = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
         return text.replace(regex, '<strong>$1</strong>');
       };
 
@@ -565,7 +636,7 @@ const progressMap = {
         const isoCode = country.code.toUpperCase();
         
         option.innerHTML = `
-          <img class="flag-icon" src="https://flagcdn.com/w20/${country.code}.png" alt="" style="flex-shrink: 0;">
+          <img class="flag-icon" src="https://flagcdn.com/w20/${country.code}.png" alt="" onerror="this.style.visibility='hidden'" style="flex-shrink: 0;">
           <span style="flex-grow: 1;">${highlightedName}</span>
           <span style="color: var(--sub); font-size: 14px; font-weight: bold; flex-shrink: 0;">${isoCode}</span>
         `;
@@ -639,15 +710,18 @@ const progressMap = {
         const uName = document.getElementById('name_input').value.trim() || 'Learner';
         document.getElementById('home_greeting').innerText = `Hi, ${uName}!`;
         
-        // Course mapping
+        // Deterministic goal -> first-course map (PRD Slice 9). Keys must stay in
+        // sync with the goal identifiers in data.js. Titles are placeholders
+        // pending the Content/Product taxonomy decision in PRD 11.
         const courseMap = {
-            'english': 'English for Workplace',
-            'math': 'Practical Math Skills',
-            'workplace': 'Workplace Communication',
-            'digital_literacy': 'Digital Skills for the Modern World',
-            'entrepreneurship': 'Start Your Own Business'
+            'data': 'Data and Analysis Foundations',
+            'customer': 'Customer Service Essentials',
+            'project': 'Project Management Basics',
+            'marketing': 'Digital Marketing Fundamentals',
+            'communication': 'Workplace Communication',
+            'language': 'English for the Workplace'
         };
-        
+
         const courseTitle = courseMap[appState.selectedGoal] || 'General Skills Mastery';
         document.getElementById('home_course_title').innerText = courseTitle;
         
