@@ -311,6 +311,11 @@ design/<project>/
 | `/new-design <project> [--informed-by research/<study> …]` | Creates `design/<project>/`, scaffolds its `README.md` and `src/`, and binds this terminal to it. The **container only** — it writes no `PRD.md`. |
 | `/draft-prd [project] [--docx]` | Turns the project's evidence into a build-ready **`PRD.md`** — the Shape-Up decision doc: jobs, appetite, solution shape, **vertical slices**, and acceptance criteria per slice, plus screens/IA, modals, and data model. A PM / Tech Lead / Head of Product review vets the **slices** (the build call), then the Principal Designer Mode S gate. Defaults to this terminal's current project. |
 
+**Prototyping a design project** still goes through `/design-prototype`, which today
+resolves a *study* folder and reads the PRD handed to it. Teaching it to resolve a design
+project directly — and adding `/export-prototype` to build and publish it — is the next
+phase of work; see `docs/superpowers/specs/2026-07-26-rnd-workspace-design.md` §5.
+
 **No registry, and no `/focus-design`.** Studies churn, so they need
 `.claude/.active-research`; design projects are few and long-lived, so status lives in
 each `README.md` and nowhere else. Only the per-terminal binding gets a file
