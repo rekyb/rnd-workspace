@@ -1,6 +1,6 @@
 ---
 name: design-prototype
-description: Turn a synthesized study (ideally via its SPEC.md) into a clickable, self-contained HTML prototype published as a claude.ai Artifact, generated and audited against the design gates. Gated by the Principal Designer (Mode T).
+description: Turn a design project's PRD.md (or a synthesized study) into a clickable, self-contained HTML prototype published as a claude.ai Artifact, generated and audited against the design gates. Gated by the Principal Designer (Mode T).
 ---
 
 Produce the **clickable prototype** for a synthesized research study: a single
