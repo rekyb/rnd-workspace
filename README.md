@@ -372,6 +372,12 @@ no external hosts, no raw style values outside the token/component files, every
 `tokens.css`), every class used in the markup exists in `components.css`, and a PII lint
 (a lint, not a guarantee — human review is still required).
 
+It governs prototypes authored by `/design-prototype`, which build on `ui-library/` from
+the start and so are gate-clean by construction. The two projects that predate the design
+system are `Design system: independent` and are not expected to pass it — a settled
+terminal state rather than a pending migration, for the reasons in
+[`.claude/references/design-projects.md`](.claude/references/design-projects.md).
+
 ## Tooling notes
 
 - **Pattern reference & default benchmark source:** **Mobbin** via its MCP server

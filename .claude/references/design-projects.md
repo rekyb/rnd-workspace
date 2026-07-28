@@ -29,10 +29,40 @@ created by `/new-design` and carries, in its frontmatter-style header block:
 - `**Informed by:**` — zero or more `research/<study-folder>` paths, comma-separated,
   or the literal `none (assumptions labelled in PRD §2)`.
 - `**Started:**` — `YYYY-MM-DD`.
+- `**Design system:**` — either `ui-library/` (the shared vocabulary, optionally plus this
+  project's `tokens.overlay.css`) or `independent`, followed by the reason. See
+  *Which projects the gate governs* below.
 
 A folder under `design/` with **no `README.md`** is a legacy or scratch folder. It is
 never resolvable as a current project and is reported as `Unregistered` by
 `/research-board`. Never fabricate a status for one — report what the folder shows.
+
+## Which projects the gate governs
+
+`.claude/scripts/check-prototype.ps1` governs **prototypes authored by
+`/design-prototype`**, which build on `ui-library/` from the start and are therefore
+gate-clean by construction. It is run by `/export-prototype` on every export.
+
+**The two projects that predate the design system are `Design system: independent` and stay
+that way.** Settled 2026-07-28, after measuring what migrating `onboarding-solve-edu` would
+actually cost:
+
+| Gate rule | What migrating would require |
+|---|---|
+| 4 — every class exists in `components.css` | **46 of its 49 classes are absent.** Rule 4 has no project-class exemption (unlike rule 3's `--radix-*` escape). |
+| 2 — no raw style values | `styles.css` carries **224 raw px and 22 raw hex** across 1050 lines. |
+| 3 — every `var(--x)` resolves | **10 of its 23 token names do not exist upstream**, and an overlay may only *redefine* a name, never *introduce* one. |
+
+That is a rebuild of a working, tested prototype, not a migration — and it would mean
+replacing `prototype-web.test.ps1`, the regression suite that made the project the safe
+first target in the first place. The alternative considered and rejected was relaxing rules
+2 and 4 to admit project-owned CSS: that would make the gate advisory everywhere, including
+for new work, to accommodate two legacy files.
+
+So the spec's Phase 3 migration bullets are **dropped, not deferred**. `independent` is a
+legitimate terminal state, not a to-do. A project marked `independent` keeps its own token
+file and is not expected to pass the gate; do not "fix" it by re-attempting the migration,
+and do not weaken the gate on its behalf.
 
 ## Why there is no registry
 

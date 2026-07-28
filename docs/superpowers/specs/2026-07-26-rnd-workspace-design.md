@@ -379,6 +379,24 @@ existing projects.
 (redundant with `PRD.md`), untrack `.claude/scripts/__pycache__/*.pyc` (committed
 bytecode), and gitignore `design/*/build/`.
 
+> **SUPERSEDED 2026-07-28 — the migration bullets above were dropped, not deferred.**
+> The rest of Phase 3 shipped (PR #15: the builder, `/export-prototype`, and
+> `/design-prototype` retargeted to a design project). The migration did not, because the
+> two paragraphs above only ever costed *tokens* and missed *classes*: **46 of
+> `onboarding-solve-edu`'s 49 classes are absent from `components.css`**, and gate rule 4
+> has no project-class exemption. Add 224 raw px and 22 raw hex in `styles.css` (rule 2)
+> and 10 token names that do not exist upstream (rule 3, and an overlay may only redefine,
+> never introduce), and migrating is a rebuild of a working, tested prototype rather than a
+> migration. Both existing projects stay `Design system: independent` — a terminal state,
+> not a to-do. The gate governs prototypes authored by the reworked `/design-prototype`,
+> which are gate-clean by construction. Rationale and the rejected alternative:
+> `.claude/references/design-projects.md`, *Which projects the gate governs*.
+>
+> Two factual errors in the bullets above, for the record: `onboarding-solve-edu` has **23**
+> hand-copied tokens, not 14, and `ui-library/tokens.css` defines `--mut` — it is the
+> *project* that renamed it to `--sub`, not the reverse. The two PNGs were already
+> downscaled on 2026-07-27 and are 922 KB / 1.1 MB, not 4.1 MB / 4.7 MB.
+
 ## 6. The rename
 
 Four moves, executed **after** Phase 2 has updated the docs:

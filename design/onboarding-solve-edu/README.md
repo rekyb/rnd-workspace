@@ -3,7 +3,7 @@
 **Status:** Active
 **Started:** 2026-07-21
 **Informed by:** research/2026-07-20-unified-onboarding-synthesis-and-patterns
-**Design system:** independent — 23 tokens hand-copied into `styles.css`; migration to `ui-library/` is pending (spec Phase 3)
+**Design system:** independent — 23 tokens hand-copied into `styles.css`. **Settled 2026-07-28: this project will not migrate to `ui-library/`.** Measured cost of migrating: 46 of its 49 classes are absent from `components.css` (gate rule 4 has no project-class exemption), `styles.css` carries 224 raw px and 22 raw hex values (rule 2), and 10 of its 23 token names do not exist upstream — which an overlay may not introduce. That is a rebuild of a working, tested prototype, not a migration. See `.claude/references/design-projects.md`.
 
 ## Problem
 
@@ -31,3 +31,4 @@ onboarding funnel that serves all three without that cost.
 | 2026-07-23 | `PRD.md` written (Shape-Up, 13 sections + 2 appendices). |
 | 2026-07-27 | `README.md` backfilled to the `design-projects.md` contract; `landing.png` / `register.png` downscaled 2528px → 1080px. |
 | 2026-07-28 | `SPEC.md` deleted — byte-identical to `PRD.md` apart from line endings in the §7.1 Mermaid block. |
+| 2026-07-28 | Stays `Design system: independent` — the spec's Phase 3 migration is dropped, not deferred. Known consequence: `prototype-web.html`'s four external font `<link>` tags mean the committed `standalone.html` would fail `check-prototype.ps1` rule 1, so this prototype is not gate-clean and is not expected to be. |
