@@ -163,11 +163,18 @@ Judge the PRD on, in order:
    This is the one step in the pipeline with no other reviewer.
 2. **Findings coverage — nothing dropped.** §2.1 must carry one row for **every** `F#` of
    **every** study in `Informed by:`. Compare it as a set against each synthesis's `F#`
-   identifiers, **reading both forms the ID takes**: `## F<n> — …` section headings in a
-   benchmark or usability synthesis, and the numbered `**F<n> — …**` design implications
-   under `## Design implications` in a litreview one, whose IDs sit on list items rather
-   than headings. Looking only for headings makes the set empty for a litreview study, so
-   any §2.1 — including an empty one — would pass.
+   identifiers. **You are collecting IDs, not matching one markup shape** — the prefix sits
+   on whatever the item happens to be, and that is **three** things:
+   - `## F<n> — …` section headings, in a benchmark or usability synthesis;
+   - numbered `**F<n> — …**` design implications under `## Design implications`, in a
+     litreview one, whose IDs sit on list items rather than headings;
+   - inline `**F<n> — … — Unsupported:**` entries inside `## Gaps & caveats`, of **any**
+     type — a finding `/review-research` retracted and retired in place.
+
+   Each omission has its own consequence. Matching only headings makes the set empty for a
+   litreview study, so any §2.1 — including an empty one — would pass. Missing the retracted
+   form loses precisely the finding that needs a `Retired upstream` row, which is the
+   silent disappearance that row exists to prevent.
    **Any finding with no row is a `revise`.** Then check the rows are real, not
    theatre:
    - an `Adopted` row must name a slice that actually exists in §8;
