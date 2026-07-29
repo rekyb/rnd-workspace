@@ -51,6 +51,11 @@ accounted for.
   downstream citation. Retiring a finding is legitimate and never fails a gate; only
   silence fails.
 
+`Unsupported` is a **finding-level** marker in the synthesis, not a value in Vocabulary 2
+(which is strictly question-level). When every `F#` answering a question is marked
+`Unsupported`, that question's `Status` in Vocabulary 2 drops to `Unanswered` with the
+retraction as its reason.
+
 ## Vocabulary 1 — `Answerable?` (in `PLAN.md`)
 
 Set at plan time, before any capture is spent.
@@ -95,10 +100,10 @@ Set when a PRD cites a study, one row per `F#` of every study in `Informed by:`.
 | `Deferred` | points at a §Non-Goals entry that carries the reason |
 | `Rejected` | a reason — the finding does not apply here, or we disagree with it |
 | `Contradicted` | a reason — we deliberately do the opposite |
+| `Retired upstream` | names where the synthesis retracted it (e.g. "peer review marked Unsupported, 2026-08-14") |
 
-**Silence is not a disposition** — except for findings marked `Unsupported` in the synthesis,
-which need no row. A disposition row is required for every other active `F#` in the studies
-cited.
+**Silence is not a disposition.** A finding with no row is the failure the whole contract
+exists to catch.
 
 `Contradicted` is deliberately distinct from `Rejected`: rejecting says the finding does not
 bear on this build; contradicting says it does and we are going the other way anyway. The
