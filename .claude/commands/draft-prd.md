@@ -65,8 +65,12 @@ gate fails a PRD that states unevidenced claims as fact.
      the review check identically to one that answered all five, which is precisely the
      gap this reads.
      - **`unverified`** (a study closed before the coverage contract) → offer the user
-       two paths, and do not proceed until one is chosen: **(a) retrofit** — build that
-       study's coverage table now from its `PLAN.md` questions and synthesis sections,
+       two paths, and do not proceed until one is chosen: **(a) retrofit** — build the
+       study's `## Research questions — coverage` table into its `SYNTHESIS.md` (the same
+       section `/synth-findings` would have written), one row per `Q#` from its `PLAN.md`,
+       then write the resulting `- **Coverage:**` verdict line into its `README.md` in the
+       format `/close-research` uses, replacing `unverified` — see
+       `.claude/references/coverage-contract.md` for both vocabularies and the line format —
        roughly 15 minutes; or **(b) demote** — cite it, but every §2 claim resting on it
        is labelled an assumption with a validation path. This is the pay-as-you-go
        retrofit: you pay only for the studies you actually cite.
@@ -120,10 +124,11 @@ gate fails a PRD that states unevidenced claims as fact.
      assumption. This is the section the Principal Designer scrutinizes hardest.
    - **§2.1 Findings coverage** — one row for **every** `F#` of **every** study in
      `Informed by:`, with a disposition of `Adopted` (names a slice in §8), `Deferred`
-     (points at a §14 Non-Goals entry), `Rejected` (reason), or `Contradicted` (reason).
-     Silence is not a disposition. Build this table *before* finalizing §8, not after: a
-     finding you cannot place is telling you something about the slice set, and the
-     cheapest time to hear it is while the slices are still soft.
+     (points at a §14 Non-Goals entry), `Rejected` (reason), `Contradicted` (reason), or
+     `Retired upstream` (names where the synthesis retracted it). Silence is not a
+     disposition. Build this table *before* finalizing §8, not after: a finding you cannot
+     place is telling you something about the slice set, and the cheapest time to hear it
+     is while the slices are still soft.
    - **§6 Appetite** — a time box, not an estimate. State what we are willing to spend, and
      therefore what gets cut if it runs long.
    - **§7 Solution Shape** — carries a **Mermaid** `flowchart` of the end-to-end flow, plus
@@ -246,8 +251,9 @@ disposition. See `.claude/references/coverage-contract.md`.
 | F4 | <study slug> | <short form> | Retired upstream | peer review marked Unsupported, <date> |
 
 `Adopted` must name a slice that exists in §8. `Deferred` must point at a §14 entry that
-carries the reason. `Rejected` says the finding does not bear on this build; `Contradicted`
-says it does and we are going the other way anyway — the second needs the louder reason.
+carries the reason. `Rejected` says the finding does not apply here, or we disagree with
+it; `Contradicted` says it does apply and we are going the other way anyway — the second
+needs the louder reason.
 `Retired upstream` covers a finding the study itself retracted after its `F#` was assigned
 — for example one the peer-review debate marked `Unsupported`. It exists so that
 retirement is declared in the PRD rather than showing up as a missing row, which would be
