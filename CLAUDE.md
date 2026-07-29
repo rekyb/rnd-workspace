@@ -252,6 +252,35 @@ The **research board** (`BOARD.md`, rendered by `/research-board`) is the at-a-g
 index of every study — one or more active, the rest closed/archived. It is derived from
 each study's `README.md` and the active registry, so it never needs manual editing.
 
+### Multi-harness registration
+
+A command has exactly one body — `.claude/commands/<name>.md` — and one registration stub
+per skill-resolving harness — `.agents/skills/<name>/SKILL.md`. The stub carries the
+frontmatter such a harness needs (`name` to invoke, `description` to match intent) and
+points at the body; it never restates it. References and personas are not mirrored at all:
+every harness reads `.claude/references/` and `.claude/personas/` where they are.
+
+**Adding a command means adding its stub.** Write `.claude/commands/<name>.md` with a
+`description:` in its frontmatter, then run:
+
+```bash
+powershell -NoProfile -File .claude/scripts/sync-agent-skills.ps1 -Fix
+```
+
+Without `-Fix` it writes nothing and exits non-zero on a missing stub, a hand-edited stub,
+or a stub whose command is gone. `-Fix` repairs the first two; an orphan is reported for a
+human, because it means a rename or a deletion someone should confirm. The `description`
+has one home — edit it in the command, never in the stub, which `-Fix` overwrites.
+
+This shape exists because the alternative failed. The stubs were once full copies of the
+command bodies, and they drifted twice; when the coverage gates landed in `.claude/` they
+never reached `.agents/` at all. Do not paste a body back into a stub.
+
+`GEMINI.md` is the harness delta for Antigravity/Gemini — how a skill resolves to its
+body, and the one behavioural difference (`/export-prototype --artifact` needs the
+Claude-only Artifact tool). **This file is authoritative for everything else, whichever
+agent is running.**
+
 ### Benchmark analysis lenses (optional)
 
 Retrospective analysis passes over a **benchmark** study's already-captured evidence.

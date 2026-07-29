@@ -1,5 +1,5 @@
 ---
-description: Sync the production design tokens and component CSS into ui-library/, or check for drift.
+description: Sync the production design tokens and component CSS into ui-library/, or check for drift against the upstream source.
 argument-hint: [--check] [--ref <branch|sha>]
 ---
 

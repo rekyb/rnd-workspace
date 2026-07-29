@@ -86,7 +86,7 @@ Each research topic lives in its own dated folder under `research/`:
 rnd-workspace/
 ├── README.md                       # this file
 ├── CLAUDE.md                       # authoritative project brief & working rules
-├── GEMINI.md                       # Antigravity/Gemini entry point (mirrors CLAUDE.md)
+├── GEMINI.md                       # Antigravity/Gemini entry point (harness delta only; CLAUDE.md is authoritative)
 ├── ROADMAP.md                      # workspace roadmap
 ├── BOARD.md                        # R&D board (active + closed studies, design projects), rendered by /research-board
 ├── .claude/
@@ -99,10 +99,12 @@ rnd-workspace/
 │   │                                #   design-prototype / export-prototype)
 │   ├── references/
 │   │   ├── active-research.md      # the registry / per-terminal-focus resolution rule
+│   │   ├── coverage-contract.md    # Q#/F# schemes, the three vocabularies, the Coverage: line
 │   │   ├── design-projects.md      # the design/<project>/ contract & project-resolution rule
 │   │   ├── design-gates.md         # design-gate definitions used by /design-prototype
 │   │   ├── design-system.md        # the ui-library/ sync contract & disclosure boundary
-│   │   └── mobbin-sourcing.md      # Mobbin sourcing standard: C1–C5, folder shapes, IP boundary
+│   │   ├── mobbin-sourcing.md      # Mobbin sourcing standard: C1–C5, folder shapes, IP boundary
+│   │   └── prompt-vocabulary.md    # the house language standard & anti-keyword table
 │   ├── personas/                   # reviewer subagent specs: principal-researcher, principal-designer,
 │   │                                #   research-skeptic, domain-expert, evidence-auditor,
 │   │                                #   product-manager, tech-lead, head-of-product
@@ -112,8 +114,10 @@ rnd-workspace/
 │       ├── md_visualize.ps1        # Mobbin links → local image embeds (gitignored *.visual.md)
 │       ├── sync-tokens.ps1         # refreshes ui-library/ from the upstream repo (+ --check; asks for the URL)
 │       ├── build-prototype.ps1     # inlines a design project's src/ into one self-contained HTML file
-│       └── check-prototype.ps1     # local design gate for a built prototype HTML file
-├── .agents/skills/                 # the same workflow steps registered as skills
+│       ├── check-prototype.ps1     # local design gate for a built prototype HTML file
+│       └── sync-agent-skills.ps1   # verifies/regenerates the .agents/skills/ stubs (+ -Fix)
+├── .agents/skills/                 # one registration stub per command, for skill-resolving
+│                                    #   harnesses; the body stays in .claude/commands/
 ├── ui-library/                     # the shared design system (see below) — synced, read-only
 ├── design/<project>/               # a design project (see The design half): README, PRD.md,
 │                                    #   optional tokens.overlay.css, src/ (authored by
