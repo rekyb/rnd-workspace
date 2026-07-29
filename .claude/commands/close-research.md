@@ -1,5 +1,5 @@
 ---
-description: Close a research study — verify synthesis exists, mark it closed, remove it from the active registry.
+description: Close a research study — verify synthesis exists, extract/merge patterns into PATTERNS.md (type-aware), mark it closed, and remove it from the active registry.
 ---
 
 Close out a research study (one of possibly several active).

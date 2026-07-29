@@ -1,5 +1,5 @@
 ---
-description: Synthesize the active research into SYNTHESIS.md, using the template for its TYPE (add --docx for a Word copy).
+description: Synthesize the active research into SYNTHESIS.md, using the template for its Type (add --docx for a Word copy, --visual for a reading copy with Mobbin images inlined).
 argument-hint: [--docx] [--visual]
 ---
 

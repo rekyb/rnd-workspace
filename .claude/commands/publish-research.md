@@ -1,5 +1,5 @@
 ---
-description: Publish the active research to GitHub — safety-check for PII, commit, and push via the gh CLI.
+description: Publish the active research to GitHub — safety-check for PII across benchmark captures and usability sessions, and confirm litreview corpus/ stays gitignored, then commit and push via the gh CLI.
 argument-hint: [-m "custom commit message"]
 ---
 
