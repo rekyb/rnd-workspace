@@ -20,6 +20,12 @@ Steps:
    branches on it.
 
 2. **Gather the evidence — by type.**
+   - **All types — read `PLAN.md` first.** Its research-question table is the spine of
+     this synthesis: you are writing the answers to those questions, not a tour of
+     whatever the capture happened to show. Note every `Q#` and its `Answerable?` value.
+     If `PLAN.md` has no question table (a study created before the coverage contract),
+     STOP and offer to build one from its prose questions — assigning IDs in the order
+     they appear — before continuing.
    - **Benchmark:** read `README.md`, `sources.md`, and every `platforms/*/notes.md` and
      `platforms/*/flow.md`. Note each platform's **source shape**: a `references.md` means
      Mobbin-sourced (cite by URL, no `flow.gif`); a `screenshots/` folder means
@@ -37,8 +43,34 @@ Steps:
 
 3. **Write `SYNTHESIS.md`** in the research folder, using the template for the type.
 
+   **First, for every type: the coverage table.** Before writing a single finding, write
+   the `## Research questions — coverage` section, placed immediately after the
+   overview/TL;DR and *before* the findings. One row per `Q#` in `PLAN.md` — every one,
+   including the ones the study failed to answer.
+
+   | Q# | Question | Status | Where answered | Confidence |
+   |---|---|---|---|---|
+   | Q1 | <short form> | Answered | F1, F3 | High |
+   | Q2 | <short form> | Partial | F2 — mechanic observed, effect size not | Medium |
+   | Q3 | <short form> | Unanswered | No funnel access; → `## Gaps & caveats` | — |
+
+   `Status` is `Answered` / `Partial` / `Unanswered` / `Withdrawn`, defined in
+   `.claude/references/coverage-contract.md`. An `Answered` row must name at least one
+   `F#`; a `Partial` row must name the `F#` **and** what is missing; an `Unanswered` row
+   must give a reason and a destination.
+
+   **An honest `Unanswered` is a good outcome and costs one line. Omitting the row is the
+   failure.** Do not stretch a finding to cover a question it does not answer — that is
+   the fabrication guardrail applied to coverage.
+
+   **Then give every top-level entry an `F#`**, as a heading prefix
+   (`## F1 — <name>`), numbered in document order. Which entry is top-level depends on the
+   type: benchmark → each feature; usability → each finding; litreview → each numbered
+   design implication. These IDs are what a `PRD.md` later accounts for one by one.
+
    **Benchmark → a list of features.** Lead with a short `## Overview` (goal,
-   platforms studied, headline takeaways), then one `##` section per feature. Every
+   platforms studied, headline takeaways), then the coverage table, then one `## F<n> — <feature name>`
+   section per feature. Every
    feature MUST have these five fields, in this order:
    1. **Feature name**
    2. **Short description** — 1–2 sentences.
@@ -56,8 +88,9 @@ Steps:
 
    **Usability → a list of findings, severity-ranked.** Lead with an `## Overview`
    (goal, method, participant count, headline findings) and a `## Metrics summary`
-   (task success rates, SEQ/SUS, time-on-task — a small table). Then one `##` section
-   per finding, **ordered by severity, highest first.** Every finding MUST have, in
+   (task success rates, SEQ/SUS, time-on-task — a small table), then the coverage table.
+   Then one `## F<n> — <finding name>` section per finding, **ordered by severity, highest
+   first** (so `F1` is the most severe). Every finding MUST have, in
    this order:
    1. **Finding** — the observed problem or insight.
    2. **Evidence** — which sessions/participants, task success/failure counts, and
@@ -71,8 +104,9 @@ Steps:
    `## Theme N — <name>` section per theme. Under each theme, list findings as bullets,
    each with a **confidence** label and its `[S#]` citation(s) traced to `evidence.md`,
    e.g. `- Deferred onboarding lifts activation (confidence: High) [S3][S7]`. After the
-   themes, add a numbered `## Design implications` section (what each theme means for
-   what we build), a `## Refuted / weak claims` section (reproduced from `evidence.md`,
+   themes, add a numbered `## Design implications` section where each implication is
+   prefixed with its ID (`1. **F1 — Architecture:** …`) — the implication, not the theme,
+   is the unit a PRD accounts for — a `## Refuted / weak claims` section (reproduced from `evidence.md`,
    kept out of the findings), a `## Evidence gaps for primary research` section (what the
    literature could not answer and needs a survey/usability study), and a
    `## Sources table (S1..Sn)` mirroring `sources.md`. Every finding MUST trace to a
@@ -133,6 +167,8 @@ Steps:
    entry (note the type, the entry count, and that the Principal Researcher QA pass
    ran with the flagged-item count).
 
-8. **Report** to the user: the type, how many features/findings/themes were synthesized, the
+8. **Report** to the user: the type, the coverage line (how many questions answered /
+   partial / unanswered, naming the unanswered ones), how many features/findings/themes
+   were synthesized, the
    file path(s), the Principal Researcher's readiness verdict, the content items it
    flagged for resolution, and any gaps you noticed (thin evidence, few participants).
