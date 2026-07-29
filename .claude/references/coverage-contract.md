@@ -45,6 +45,12 @@ The type-awareness matters: a litreview's themes are analysis, but its design im
 are what a PRD can actually adopt or defer, so the implication is the unit that must be
 accounted for.
 
+- **Never renumbered. Never reused.** A finding retracted during `/review-research` is
+  marked `Unsupported` and remains in the synthesis with its reason; the ID is retired,
+  not renumbered. Rationale: as with `Q#`, renumbering after peer review breaks every
+  downstream citation. Retiring a finding is legitimate and never fails a gate; only
+  silence fails.
+
 ## Vocabulary 1 — `Answerable?` (in `PLAN.md`)
 
 Set at plan time, before any capture is spent.
@@ -90,8 +96,9 @@ Set when a PRD cites a study, one row per `F#` of every study in `Informed by:`.
 | `Rejected` | a reason — the finding does not apply here, or we disagree with it |
 | `Contradicted` | a reason — we deliberately do the opposite |
 
-**Silence is not a disposition.** A finding with no row is the failure the whole contract
-exists to catch.
+**Silence is not a disposition** — except for findings marked `Unsupported` in the synthesis,
+which need no row. A disposition row is required for every other active `F#` in the studies
+cited.
 
 `Contradicted` is deliberately distinct from `Rejected`: rejecting says the finding does not
 bear on this build; contradicting says it does and we are going the other way anyway. The
