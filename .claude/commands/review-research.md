@@ -22,9 +22,17 @@ invent evidence, metrics, findings, or citations.**
    and tell the user to run `/synth-findings` first — there is nothing to review yet.
 
 2. **Gather the ground truth & note the type.** Read `SYNTHESIS.md` in full, the research
-   `README.md` (for `## Goal` and `Type`), and the type's evidence — benchmark:
+   `README.md` (for `## Goal` and `Type`), **`PLAN.md`**, and the type's evidence — benchmark:
    `platforms/*/notes.md` and `flow.md`; usability: `test-plan.md` + `sessions/*`;
-   litreview: `evidence.md` + `sources.md`. If the user passed a focus in
+   litreview: `evidence.md` + `sources.md`.
+
+   Hand every persona the study's **`PLAN.md`** alongside the synthesis. Without it the
+   panel can only pressure-test the findings that exist; with it, the **Evidence Auditor**
+   can also attack the `## Research questions — coverage` table — an `Answered` row whose
+   cited `F#` does not really answer the question is exactly the kind of over-claim the
+   audit exists to catch, and it is invisible without the plan.
+
+   If the user passed a focus in
    `$ARGUMENTS`, weight the debate toward it but still cover the whole synthesis. If the
    README `## Goal` is vague or missing, STOP and ask the user to state it — the debate is
    only meaningful against an explicit goal.
