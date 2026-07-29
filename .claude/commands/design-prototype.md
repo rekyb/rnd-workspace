@@ -190,7 +190,8 @@ prototype that fails a gate unless the failure is declared.
 12. **Update the log** in `design/<project>/README.md` with a dated status-log row:
     fidelity, screen count, gates passed/failed, and the Mode T verdict.
 
-13. **Report and hand off.** The screen count, the DoD gate table, the local gate result,
+13. **Report and hand off.** The screen count, the slice coverage (how many of the PRD's §8 slices are reachable in
+    this build, naming any left out and why), the DoD gate table, the local gate result,
     the Principal Designer's verdict and what was addressed, and any flagged assumptions.
     Then tell the user the next step is **`/export-prototype --artifact`** to publish.
     This command does not publish — publishing is outward-facing and has one owner.

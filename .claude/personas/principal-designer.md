@@ -228,6 +228,11 @@ Judge the prototype on, in order:
    data value with no basis in the PRD or the studies it cites. This is the same
    non-fabrication guardrail the whole workspace runs on; extrapolation must be a flagged
    assumption, not presented as fact.
+   **Then check the converse — nothing dropped.** Every §8 vertical slice must reach at
+   least one screen that is actually reachable in the authored `src/`, or be explicitly
+   declared outside the run's `--scope`. Forward traceability stops the prototype
+   inventing screens; only this stops it quietly shipping eight of the PRD's ten slices.
+   A slice with no screen and no `--scope` declaration is a `revise`.
 2. **Gate compliance — the declared table is honest.** The Definition-of-Done gate table
    (G1–G8) must match what the source actually does; no silent fails. Flag any gate marked
    pass that the markup contradicts (e.g. a hardcoded colour against G1, a dead-end
