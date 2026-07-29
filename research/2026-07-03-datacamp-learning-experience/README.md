@@ -5,6 +5,7 @@
 - **Started:** 2026-07-03
 - **Closed:** 2026-07-03
 - **Researcher:** Claude (acting Senior UI/UX Designer)
+- **Coverage:** unverified (pre-2026-07-29 study)
 
 ## Goal
 Study how DataCamp designs its learning experience and identify the **three most

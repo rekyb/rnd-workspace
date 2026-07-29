@@ -42,6 +42,12 @@ Steps:
      question (SEQ) and/or SUS, plus the **0–4 severity scale** used to rank issues.
    - **Consent & PII** — session data lives in `sessions/` and is redacted /
      pseudonymized (P01, P02…) before any commit.
+
+   Every task names the `Q#` it serves, and every `Q#` marked `Yes` or `Partial` in
+   `PLAN.md` is served by at least one task. A question no task touches will come back
+   `Unanswered` at synthesis — better to find that now, while the instrument is still
+   editable. See `.claude/references/coverage-contract.md`.
+
    Use the template at the bottom.
 
 4. **Principal Researcher methodology review (quality gate — before fielding).**
@@ -88,9 +94,9 @@ Steps:
 - [ ] Moderated  [ ] Unmoderated  ·  [ ] Remote  [ ] In-person  ·  Think-aloud: <y/n>
 
 ## Task scenarios
-| # | Scenario (non-leading) | Ties to question | Success criterion | Max time |
+| # | Scenario (non-leading) | Serves | Success criterion | Max time |
 |---|---|---|---|---|
-| 1 | <goal + context, no UI hints> | <Q#> | <observable pass condition> | <mm:ss> |
+| 1 | <goal + context, no UI hints> | <Q# from PLAN.md — which research question this task produces evidence for> | <observable pass condition> | <mm:ss> |
 
 ## Moderator script
 1. **Intro + consent** — purpose, recording, no right/wrong answers, participant may stop anytime.

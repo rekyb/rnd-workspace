@@ -43,14 +43,30 @@ Judge it on:
    goal? Is anything in the plan off-goal or missing?
 2. **Coverage** — are these the right platforms and the right flows/screens to
    capture on each? What key flow, state, or comparison is missing?
-3. **Scope discipline** — is anything over-scoped (capturing things the goal
+3. **Answerability** — for each `Q#` in the plan's question table, can the *stated method*
+   actually produce evidence that answers it? Flag every mismatch. The recurring ones:
+   - a causal **why** asked of purely observational capture (screenshots show what a
+     screen does, never why a user left);
+   - live system behaviour asked of Mobbin stills — the C1–C5 triggers in
+     `.claude/references/mobbin-sourcing.md` are the specific case of this general rule;
+   - **our own** product's funnel or drop-off asked of a benchmark of *other* products.
+
+   A mismatch is not a reason to reject the plan. It is a reason to mark the question
+   `Partial` or `No — deferred to <what would answer it>` and either carry it to a future
+   study or drop it. **You may not return *Plan is sound* while an unanswerable question
+   sits marked `Yes` or left blank.** A blank `Answerable?` cell is the likeliest drafting
+   slip and hides exactly the same mismatch as a wrong `Yes`, so treat the two the same.
+   This is the cheapest point in the whole pipeline to catch it: after
+   this, the capture budget is already spent. See
+   `.claude/references/coverage-contract.md`.
+4. **Scope discipline** — is anything over-scoped (capturing things the goal
    does not need) or under-scoped (a claim the plan will not gather evidence
    for)?
-4. **Success criteria** — does the plan say what "done" looks like, concretely
+5. **Success criteria** — does the plan say what "done" looks like, concretely
    enough that you could later tell whether it was met?
-5. **Risks** — paywalls, login/PII exposure, platforms that may block capture,
+6. **Risks** — paywalls, login/PII exposure, platforms that may block capture,
    thin-evidence areas. Are they anticipated?
-6. **Source justification (benchmark only).** Every platform in `## Per-platform capture plan`
+7. **Source justification (benchmark only).** Every platform in `## Per-platform capture plan`
    must declare a **Source**. Mobbin is the default and needs no justification. Any platform
    sourced from **Chrome must name a C1–C5 trigger**
    (`.claude/references/mobbin-sourcing.md`): C1 our own product · C2 no Mobbin coverage,
@@ -77,9 +93,28 @@ low-stakes, plan revisions may be applied directly.
 
 Input: the finished `SYNTHESIS.md`, the research `README.md` (goal/scope), every
 `platforms/*/notes.md` and `platforms/*/flow.md`, and the list of captured
-evidence (screenshots, `flow.gif`, `sources.md`).
+evidence (screenshots, `flow.gif`, `sources.md`), and the study's `PLAN.md` (for
+the research-question table — you cannot check coverage without it).
 
-Do four things, in this order:
+Do five things, in this order — B0 first:
+
+### B0. Check question coverage
+Compare the `## Research questions — coverage` table against `PLAN.md`'s question table
+as a set:
+- every `Q#` in the plan has exactly one row (a **missing row fails readiness** — this is
+  the one coverage failure that blocks);
+- no `Answered` row without at least one `F#`;
+- no `Answered` row whose cited `F#` does not actually address that question — read the
+  finding and check, do not take the row's word for it;
+- no `Status` more generous than the plan's `Answerable?` value without the row saying
+  what changed.
+
+**An honest `Unanswered` row passes.** You are checking that the question was *accounted
+for*, never that the study succeeded. Flag an over-claimed `Answered` as a content problem
+— an inline annotation for the human — exactly as you would a fabricated citation. Never
+change the row's `Status` yourself, silently or otherwise; a `Status` value is substance,
+so this is B3's never-edit-substance rule applied to B0's own output, and the human decides
+whether a flagged `Answered` should be downgraded. See `.claude/references/coverage-contract.md`.
 
 ### B1. Review the synthesis for quality
 For each feature, check:

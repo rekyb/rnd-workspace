@@ -5,6 +5,7 @@
 - **Started:** 2026-07-02
 - **Closed:** 2026-07-02
 - **Researcher:** Senior UX Researcher
+- **Coverage:** unverified (pre-2026-07-29 study)
 
 ## Goal
 Audit three Brilliant features against expert heuristics and surface the build risks

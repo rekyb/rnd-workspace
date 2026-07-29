@@ -5,6 +5,7 @@
 - **Started:** 2026-07-16
 - **Closed:** 2026-07-17
 - **Researcher:** Gemini (acting Senior UI/UX & Academic Researcher)
+- **Coverage:** unverified (pre-2026-07-29 study)
 
 ## Goal
 Gather, synthesize, and evaluate empirical research papers, peer-reviewed articles, and industry reports on three core pillars to ground our Android app growth strategy:

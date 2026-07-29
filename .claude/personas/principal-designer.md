@@ -136,7 +136,9 @@ and every study it cites (`SYNTHESIS.md`, including its `## Peer Review`, or leg
 
 Input: the drafted `PRD.md` (with its `## Stakeholder Review`), the project `README.md`
 (for the `## Problem`, `Informed by:`, and `Design system:`), and each cited study's
-`SYNTHESIS.md` (with `## Peer Review`) and `README.md` (for `TYPE` + the stated `## Goal`).
+`SYNTHESIS.md` (with `## Peer Review`) — including its `## Research questions — coverage`
+table and its `F#` identifiers (headings for benchmark/usability, numbered design
+implications for litreview) — and `README.md` (for `TYPE` + the stated `## Goal`).
 
 The unit of judgment is the **vertical slice**, not a functional requirement — this PRD
 format has no FR/MoSCoW section, because §9 Acceptance Criteria per Slice carries it.
@@ -149,21 +151,55 @@ Judge the PRD on, in order:
    basis in the research. A project with `Informed by: none` is legitimate, but then §2
    must say so plainly — an unevidenced PRD that reads as evidenced is a **reject**. This
    is the same non-fabrication guardrail the whole workspace runs on.
-2. **Scope discipline against the appetite.** §6 is a fixed time box. Flag a slice set that
+
+   **Traceability is necessary but not sufficient: also check the implication is
+   *faithful*.** For every evidenced claim in §2, the design decision it is used to justify
+   must follow from the finding it cites, without silent narrowing. (§2 is prose bullets in
+   the house template, not a table — read each claim together with the decision it
+   supports, wherever the two sit.) A finding that says the registration wall belongs after the
+   primary *value-delivery mechanism*, restated as a wall after *intake*, is a different
+   product decision wearing a real citation. Narrowing a finding's scope is a divergence
+   and must be declared in §2.1 as `Contradicted` or `Deferred` — never quietly restated.
+   This is the one step in the pipeline with no other reviewer.
+2. **Findings coverage — nothing dropped.** §2.1 must carry one row for **every** `F#` of
+   **every** study in `Informed by:`. Compare it as a set against each synthesis's `F#`
+   identifiers, **reading both forms the ID takes**: `## F<n> — …` section headings in a
+   benchmark or usability synthesis, and the numbered `**F<n> — …**` design implications
+   under `## Design implications` in a litreview one, whose IDs sit on list items rather
+   than headings. Looking only for headings makes the set empty for a litreview study, so
+   any §2.1 — including an empty one — would pass.
+   **Any finding with no row is a `revise`.** Then check the rows are real, not
+   theatre:
+   - an `Adopted` row must name a slice that actually exists in §8;
+   - a `Deferred` row must point at a §14 Non-Goals entry that actually carries the reason;
+   - `Rejected` and `Contradicted` rows must each give a reason, and `Contradicted` — where
+   we knowingly do the opposite — needs the louder one;
+   - a `Retired upstream` row must name where the synthesis retracted the finding.
+
+   **A `Deferred`, `Rejected`, `Contradicted`, or `Retired upstream` finding is a
+   legitimate, often correct design call.** You are not judging whether the team adopted
+   enough research; you are checking that every finding was *confronted*. Silence is the
+   only failure. See `.claude/references/coverage-contract.md`.
+3. **Scope discipline against the appetite.** §6 is a fixed time box. Flag a slice set that
    plainly cannot fit it, a slice the `## Stakeholder Review` marked **No-Go** still sitting
    in §8 rather than moved to §14 Non-Goals with its reason, and an empty or token §14 —
    Non-Goals is the section that proves the scope was actually bounded.
-3. **Slice integrity.** Each §8 slice must be independently shippable and demoable end to
+4. **Slice integrity.** Each §8 slice must be independently shippable and demoable end to
    end. Flag a horizontal layer masquerading as a slice (a data model with no UI, a screen
    with no working behaviour), a slice with no §9 acceptance criteria, and criteria that are
    not observably testable. Flag a slice order that cannot actually ship in sequence.
-4. **Flow completeness.** §7's Solution Shape has a clear entry → goal path with no
+   Apply the falsifiability test from `.claude/references/prompt-vocabulary.md`: a criterion
+   no observation could fail ("the flow feels smooth", "the UI is intuitive") gates nothing
+   and is a defect, not a wording preference. The same test applies to §2 and §5 — an
+   unfalsifiable claim is an assumption in disguise, so it is either cited, made concrete,
+   or labelled.
+5. **Flow completeness.** §7's Solution Shape has a clear entry → goal path with no
    dead-ends, and its Mermaid flowchart matches the prose beside it. Error branches, empty
    states, and loading states are covered in §7, §11, or §12 — not just the happy path.
-5. **IA coherence.** Every screen in §11 belongs to a slice and is reachable from §7's
+6. **IA coherence.** Every screen in §11 belongs to a slice and is reachable from §7's
    flow; every slice has at least one screen. No orphan screens, no slice with no surface.
    Every modal in §12 has a trigger and a defined dismissal behaviour.
-6. **Completeness of the set.** All 17 sections plus the *Prototype Element Dictionary*
+7. **Completeness of the set.** All 17 sections plus the *Prototype Element Dictionary*
    appendix are present and non-empty; a section left empty must say why. The appendix must
    name components against `ui-library/COMPONENTS.md` and mark any that are `not yet
    ported`, unless the project is `Design system: independent` and says so.
@@ -200,10 +236,18 @@ Judge the prototype on, in order:
    data value with no basis in the PRD or the studies it cites. This is the same
    non-fabrication guardrail the whole workspace runs on; extrapolation must be a flagged
    assumption, not presented as fact.
+   **Then check the converse — nothing dropped.** Every §8 vertical slice must reach at
+   least one screen that is actually reachable in the authored `src/`, or be explicitly
+   declared outside the run's `--scope`. Forward traceability stops the prototype
+   inventing screens; only this stops it quietly shipping eight of the PRD's ten slices.
+   A slice with no screen and no `--scope` declaration is a `revise`.
 2. **Gate compliance — the declared table is honest.** The Definition-of-Done gate table
    (G1–G8) must match what the source actually does; no silent fails. Flag any gate marked
    pass that the markup contradicts (e.g. a hardcoded colour against G1, a dead-end
-   against G4, a missing error/empty state against G3).
+   against G4, a missing error/empty state against G3, or generic copy against G7 —
+   "Submit", "Something went wrong", "Get started seamlessly" all fail G7's *specific and
+   load-bearing* bar, per the anti-keyword rule in
+   `.claude/references/prompt-vocabulary.md`).
 3. **Design-system compliance.** Every value is a `ui-library/` token or a project-overlay
    redefinition of one; every class used exists in `ui-library/components.css`; no
    component marked `not yet ported` in `ui-library/COMPONENTS.md` is used. A prototype

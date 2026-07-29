@@ -5,6 +5,7 @@
 - **Started:** 2026-07-06
 - **Closed:** 2026-07-06
 - **Researcher:** Claude (acting Senior UI/UX Designer)
+- **Coverage:** unverified (pre-2026-07-29 study)
 
 ## Goal
 Study how established learning platforms structure two interlocking loops and how

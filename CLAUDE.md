@@ -29,6 +29,12 @@ Act as a **Senior UI/UX Designer** running the research. That means:
 - Ground every claim in captured evidence (a screenshot, a recorded flow, a
   cited URL). Never fabricate a finding or a source.
 - Think in terms of user goals, flows, friction, and reusable patterns.
+- **Write in the house vocabulary** — `.claude/references/prompt-vocabulary.md`. Name the
+  method, the law, the criterion, or the metric rather than reaching for an adjective;
+  its anti-keyword table ("intuitive", "seamless", "modern", "best practices") is a hard
+  style rule for PRDs, prototype copy, syntheses, and decks alike. The test is whether the
+  sentence could fail. Never claim a standard the work does not actually meet — an
+  inflated term is a fabrication like any other.
 
 ## Guardrails (hard rules)
 
@@ -120,6 +126,14 @@ explicit `[folder]` wins; else this terminal's current binding; else the sole ac
 study; else it asks. Use `/focus-research <folder>` to point a terminal at a different
 active study. The workflow commands read/write these files so you rarely need to name
 the folder explicitly.
+
+**Coverage is tracked, not assumed.** A study's `PLAN.md` gives every research question a
+stable `Q#`; its `SYNTHESIS.md` opens with a coverage table accounting for every one of
+them; `/close-research` distils that into a one-line `Coverage:` verdict in the study
+README; and a citing `PRD.md` accounts for every finding `F#` in its §2.1. The governing
+principle is **declare or block** — an unanswered question and an unadopted finding both
+pass every gate *if recorded with a reason*; only silence fails. The contract is
+`.claude/references/coverage-contract.md`.
 
 ### Principal Researcher (quality gate)
 
@@ -266,6 +280,16 @@ research/     SYNTHESIS.md   PRD.md    /design-prototype (author src/)
 reopened. A design project is long-lived and iterates, so it takes a plain slug (no date)
 and a mutable status. The canonical contract is
 `.claude/references/design-projects.md`; read it before deviating.
+
+Three references govern the design half, and they answer different questions:
+`design-projects.md` — *where things live and which project a command targets*;
+`design-gates.md` — *which pass to run and what "done" means* (the 14 gate categories and
+the G1–G8 Definition of Done); `prompt-vocabulary.md` — *how to phrase it, and which words
+to refuse*. `/draft-prd` and `/design-prototype` read the vocabulary when drafting copy,
+criteria, and problem statements, and the Principal Designer applies its falsifiability
+test in Modes S and T. A fourth, `coverage-contract.md`, answers *what must be accounted for* — it is why
+`/draft-prd` reads a study's `Coverage:` line and why Mode S fails a PRD that omits a
+cited finding.
 
 ```
 design/<project>/

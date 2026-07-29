@@ -5,6 +5,7 @@
 - **Started:** 2026-07-14
 - **Closed:** 2026-07-17
 - **Researcher:** Claude (acting Senior UI/UX Designer)
+- **Coverage:** unverified (pre-2026-07-29 study)
 
 ## Goal
 Benchmark how existing platforms solve the *pieces* of an AI-literacy upskilling

@@ -34,6 +34,12 @@ The gate definitions this command runs live in `.claude/references/design-gates.
 (the Claude Design Prompt Pack): 14 categories (0–13) and the Definition of Done
 (G1–G8). Read it when running a gate.
 
+Its companion is `.claude/references/prompt-vocabulary.md` — the house language standard.
+The gates say *which pass to run*; the vocabulary says *how to phrase it and what to
+refuse*. Read it before the `copy`, `critique`, `friction`, `states`, and `a11y` passes:
+those are the ones that degrade into generic output when the prompt reaches for
+"intuitive", "clean", or "best practices" instead of a named law, criterion, or metric.
+
 ## Arguments
 
 - **`[project]`** (optional positional) — a design project slug or path, resolved per
@@ -153,6 +159,10 @@ prototype that fails a gate unless the failure is declared.
    on rule 1 (`external host:`), so link out with `href="#"` or a local anchor instead.
    Every screen traces to a screen entry (per step 4) and a §8 slice. All states (§6),
    specific load-bearing copy (§7), no dead-ends.
+   **Copy is held to `.claude/references/prompt-vocabulary.md`'s anti-keyword rule**: every
+   button says what happens, every error gives cause + fix, and no user-facing string
+   leans on an unfalsifiable adjective. A prototype full of "Get started seamlessly" is
+   generic output wearing the design system, and G7 does not pass on it.
    Flag every extrapolation beyond the PRD as an assumption; do not present it as fact.
    Honour `--scope` and `--fidelity` if set.
 
@@ -168,8 +178,13 @@ prototype that fails a gate unless the failure is declared.
 10. **Principal Designer review — Mode T.** Dispatch the Principal Designer as a subagent
     (Agent tool, `general-purpose`) in **Mode T**, handing it
     `.claude/personas/principal-designer.md`, the authored `src/` files, the gate table,
-    the `check-prototype.ps1` result, `PRD.md`, the project `README.md`, and the
-    `SYNTHESIS.md` of each study in `Informed by:`. It returns **ready / revise /
+    the `check-prototype.ps1` result, `PRD.md`, the project `README.md`, the
+    `SYNTHESIS.md` of each study in `Informed by:`, **and this run's `--scope` and
+    `--fidelity` values** (state each explicitly, `none` if unset). Mode T reads both:
+    criterion 1 excuses a §8 slice with no screen only when it is declared outside the
+    run's `--scope`, and criterion 5 judges fidelity honesty against `--fidelity`. Without
+    them a deliberately scoped-down or lo-fi run is judged as if it had silently dropped
+    slices or claimed polish it never promised. It returns **ready / revise /
     reject**. Address its points; re-run if it said *reject*. Relay the verdict.
 
 11. **PII / guardrail gate.** Re-check the source carries zero internal specifics
@@ -180,7 +195,8 @@ prototype that fails a gate unless the failure is declared.
 12. **Update the log** in `design/<project>/README.md` with a dated status-log row:
     fidelity, screen count, gates passed/failed, and the Mode T verdict.
 
-13. **Report and hand off.** The screen count, the DoD gate table, the local gate result,
+13. **Report and hand off.** The screen count, the slice coverage (how many of the PRD's §8 slices are reachable in
+    this build, naming any left out and why), the DoD gate table, the local gate result,
     the Principal Designer's verdict and what was addressed, and any flagged assumptions.
     Then tell the user the next step is **`/export-prototype --artifact`** to publish.
     This command does not publish — publishing is outward-facing and has one owner.

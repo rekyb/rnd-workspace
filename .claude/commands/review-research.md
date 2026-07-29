@@ -22,9 +22,17 @@ invent evidence, metrics, findings, or citations.**
    and tell the user to run `/synth-findings` first — there is nothing to review yet.
 
 2. **Gather the ground truth & note the type.** Read `SYNTHESIS.md` in full, the research
-   `README.md` (for `## Goal` and `Type`), and the type's evidence — benchmark:
+   `README.md` (for `## Goal` and `Type`), **`PLAN.md`**, and the type's evidence — benchmark:
    `platforms/*/notes.md` and `flow.md`; usability: `test-plan.md` + `sessions/*`;
-   litreview: `evidence.md` + `sources.md`. If the user passed a focus in
+   litreview: `evidence.md` + `sources.md`.
+
+   Hand every persona the study's **`PLAN.md`** alongside the synthesis. Without it the
+   panel can only pressure-test the findings that exist; with it, the **Evidence Auditor**
+   can also attack the `## Research questions — coverage` table — an `Answered` row whose
+   cited `F#` does not really answer the question is exactly the kind of over-claim the
+   audit exists to catch, and it is invisible without the plan.
+
+   If the user passed a focus in
    `$ARGUMENTS`, weight the debate toward it but still cover the whole synthesis. If the
    README `## Goal` is vague or missing, STOP and ask the user to state it — the debate is
    only meaningful against an explicit goal.
@@ -70,9 +78,23 @@ invent evidence, metrics, findings, or citations.**
       label (litreview), narrow an over-claim, add a caveat, or add a corroboration TODO.
       The original wording of every changed finding is already preserved verbatim in the
       `### Actions to apply` record, so nothing is lost. Move any **Unsupported** finding
-      into `## Gaps & caveats` as an open question rather than deleting it outright.
+      into `## Gaps & caveats` as an open question rather than deleting it outright. The
+      moved entry **keeps its `F#` prefix** and is marked `Unsupported` — e.g.
+      `**F4 — <name> — Unsupported:** <what the debate could not support>`. An `F#` is
+      retired in place, never renumbered, reused, or erased: a later `PRD.md` must be able
+      to see it and declare it `Retired upstream`, and a finding that vanishes from the
+      `F#` set is indistinguishable from one that was silently dropped. See
+      `.claude/references/coverage-contract.md`.
    c. If the Domain Expert cited external sources, ensure they are recorded in
       `references.md` (create/extend it).
+   d. **Refresh the `## Research questions — coverage` table** for the retractions. Any
+      `Q#` whose cited `F#` was marked `Unsupported` no longer has the answer the table
+      claims: where every `F#` it cited was retracted, drop its `Status` to `Unanswered`,
+      carrying **both** things Vocabulary 2 requires — the retraction as the reason **and**
+      `## Gaps & caveats` as the destination. Where only some were retracted, downgrade to
+      `Partial` and name what is now missing. Do this here: the Principal Researcher's
+      Mode B coverage check runs inside `/synth-findings`, i.e. *before* the debate, so
+      nothing else re-checks the table after a finding is retracted.
 
 7. **Update the log** in the research `README.md` with a dated "peer review recorded" entry
    (verdict counts, actions applied).

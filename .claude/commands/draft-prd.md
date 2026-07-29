@@ -59,6 +59,37 @@ gate fails a PRD that states unevidenced claims as fact.
      run `/review-research` on it first, drop it from `Informed by:`, or cite it with its
      claims explicitly demoted to §2 assumptions. A PRD commits design and engineering
      effort, so what it calls evidence must have been debated.
+     Then read each study's **`Coverage:`** line in its `README.md`. Reviewed tells you the
+     findings were debated; coverage tells you how much of the study's own question set it
+     actually answered — a peer-reviewed study that answered two questions of five passes
+     the review check identically to one that answered all five, which is precisely the
+     gap this reads.
+     - **`unverified`** (a study closed before the coverage contract) → offer the user
+       two paths, and do not proceed until one is chosen: **(a) retrofit** — a legacy study
+       has **neither ID scheme**, so assign both before any table can be filled in:
+       1. **`Q#` into its `PLAN.md`** — its questions are prose with no IDs, so write an ID
+          against each one **in the order they already appear** (the same thing
+          `/synth-findings` offers to do for a plan with no question table).
+       2. **`F#` into its `SYNTHESIS.md`** — give every top-level item an ID in document
+          order, per the contract's type table: benchmark → each feature write-up,
+          usability → each finding, litreview → each numbered design implication.
+          Without these, an `Answered` row has no `F#` to name and the table cannot be
+          valid.
+
+       Only then build the study's `## Research questions — coverage` table into its
+       `SYNTHESIS.md` (the same section `/synth-findings` would have written), one row per
+       `Q#` from its `PLAN.md`, and write the resulting `- **Coverage:**` verdict line into
+       its `README.md` in the format `/close-research` uses, replacing `unverified` — see
+       `.claude/references/coverage-contract.md` for both vocabularies and the line format.
+       The IDs and the table are written back to the study, so this is paid once per study,
+       not once per citing PRD — roughly 15 minutes; or **(b) demote** — cite it, but
+       every §2 claim resting on it
+       is labelled an assumption with a validation path. This is the pay-as-you-go
+       retrofit: you pay only for the studies you actually cite.
+     - A claim tracing to a question marked **`Partial`** or **`Unanswered`** must carry
+       that qualifier in §2, or be labelled an assumption. Do not launder a partial answer
+       into a flat assertion — the same rule that already carries litreview confidence
+       labels through verbatim.
    - **No studies** (`none (assumptions labelled in PRD §2)`) → allowed. §2 must then state
      plainly that the project starts unevidenced and label every claim it rests on as an
      assumption, each with what would validate it. Tell the user this is the path they are
@@ -77,7 +108,9 @@ gate fails a PRD that states unevidenced claims as fact.
      labels** and `[S#]` citations through; do not launder a "low confidence" claim into a
      flat assertion.
    Drop findings the peer review marked **Unsupported** — do not build on what the debate
-   could not support. Note which evidence (screenshots, `flow.gif`, sessions, `evidence.md`)
+   could not support. **Dropped from the solution, not from §2.1:** each retracted finding
+   still needs a `Retired upstream` row naming where the synthesis retracted it, or its
+   absence reads as an omission rather than a declaration. Note which evidence (screenshots, `flow.gif`, sessions, `evidence.md`)
    each finding rests on, so §2 can point at something real.
 
 5. **Read the component vocabulary.** Read `ui-library/COMPONENTS.md` for the class
@@ -90,9 +123,26 @@ gate fails a PRD that states unevidenced claims as fact.
 6. **Draft `PRD.md` WITH the user — do not finalize yet.** Work through the template
    below section by section. Do not draft it in one shot and present a finished document:
    the appetite and the slice boundaries are the decisions worth arguing about, and they
-   are the ones the user must own. Pay particular attention to:
+   are the ones the user must own.
+
+   **Write it in the house vocabulary** — `.claude/references/prompt-vocabulary.md`. A PRD
+   is the document engineering is held to, so its language has to be falsifiable: §3 in
+   job-story form, §5 metrics with a named baseline, §7 in flow-and-state terms, §9 in
+   Given/When/Then. Run the anti-keyword table over the draft before review — "intuitive",
+   "seamless", "modern", "best practices" and their kin either name the concrete mechanism
+   or come out. Only claim a standard the PRD actually meets (cite WCAG success criteria
+   by number, not "accessible").
+
+   Pay particular attention to:
    - **§2 Problem & Evidence** — every claim either cites a study finding or is labelled an
      assumption. This is the section the Principal Designer scrutinizes hardest.
+   - **§2.1 Findings coverage** — one row for **every** `F#` of **every** study in
+     `Informed by:`, with a disposition of `Adopted` (names a slice in §8), `Deferred`
+     (points at a §14 Non-Goals entry), `Rejected` (reason), `Contradicted` (reason), or
+     `Retired upstream` (names where the synthesis retracted it). Silence is not a
+     disposition. Build this table *before* finalizing §8, not after: a finding you cannot
+     place is telling you something about the slice set, and the cheapest time to hear it
+     is while the slices are still soft.
    - **§6 Appetite** — a time box, not an estimate. State what we are willing to spend, and
      therefore what gets cut if it runs long.
    - **§7 Solution Shape** — carries a **Mermaid** `flowchart` of the end-to-end flow, plus
@@ -101,6 +151,9 @@ gate fails a PRD that states unevidenced claims as fact.
      A slice that cannot be demoed on its own is a layer, not a slice; re-cut it.
    - **§9 Acceptance Criteria per Slice** — testable Given/When/Then or an observable
      checklist per slice. This is what replaced FR/MoSCoW, so it has to carry that weight.
+     Apply the falsifiability test: if no observation could fail the criterion, it is not
+     a criterion. "Then the flow feels smooth" gates nothing; "then the next screen paints
+     within 400ms (Doherty threshold)" does.
    - **§14 Non-Goals** and **§15 Rabbit Holes** — the scope-defending sections. An empty
      Non-Goals list almost always means the scope has not actually been bounded.
 
@@ -166,7 +219,9 @@ gate fails a PRD that states unevidenced claims as fact.
     count, appetite, and the Principal Designer Mode S verdict. If `Informed by:` changed
     during step 3, update the header too.
 
-13. **Report** to the user: the PRD path, the slice count and appetite, the stakeholder
+13. **Report** to the user: the PRD path, the slice count and appetite, the
+    findings-coverage summary (how many findings adopted / deferred / rejected /
+    contradicted / retired upstream, naming the contradicted ones), the stakeholder
     consolidated verdict, the Principal Designer's verdict and what was addressed, any
     assumptions flagged for validation, any component flagged `not yet ported`, and any PII
     items caught. Name the natural next step — `/design-prototype` to make it clickable.
@@ -196,6 +251,29 @@ The problem in the user's terms, then the evidence for it. Every claim is one of
 - **Assumption** — say so explicitly, and state what would validate it.
 If the project cites no study, say that plainly here and label the whole section's claims
 as assumptions with their validation paths.
+
+### 2.1 Findings coverage
+
+Every finding of every cited study, accounted for. One row per `F#`; silence is not a
+disposition. See `.claude/references/coverage-contract.md`.
+
+| F# | Study | Finding | Disposition | Where / why |
+|---|---|---|---|---|
+| F1 | <study slug> | <short form> | Adopted | Slice 3 |
+| F2 | <study slug> | <short form> | Deferred | §14 Non-Goals — <reason> |
+| F3 | <study slug> | <short form> | Contradicted | Slice 5 does the opposite — <reason> |
+| F4 | <study slug> | <short form> | Retired upstream | peer review marked Unsupported, <date> |
+
+`Adopted` must name a slice that exists in §8. `Deferred` must point at a §14 entry that
+carries the reason. `Rejected` says the finding does not apply here, or we disagree with
+it; `Contradicted` says it does apply and we are going the other way anyway — the second
+needs the louder reason.
+`Retired upstream` covers a finding the study itself retracted after its `F#` was assigned
+— for example one the peer-review debate marked `Unsupported`. It exists so that
+retirement is declared in the PRD rather than showing up as a missing row, which would be
+indistinguishable from an omission.
+
+If the project cites no study, say so here in one line rather than deleting the section.
 
 ## 3. Primary Job to be Done
 One job, in Shape-Up/JTBD form: when <situation>, I want to <motivation>, so I can

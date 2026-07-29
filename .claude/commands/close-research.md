@@ -15,6 +15,13 @@ Steps:
    If it does NOT, warn the user and ask whether to run `/synth-findings` first or
    close anyway. Only proceed on their confirmation.
 
+   Then confirm `SYNTHESIS.md` carries a `## Research questions — coverage` section with a
+   row for every `Q#` in `PLAN.md`. **If it is missing, STOP** and tell the user to re-run
+   `/synth-findings` — closing a study without it produces exactly the silent gap the
+   coverage contract exists to prevent. If the study predates the contract and its
+   `PLAN.md` has no question table, say so and close it as `unverified` (below) rather
+   than inventing questions after the fact.
+
 3. **Update the pattern library (Principal Designer).** Dispatch the Principal
    Designer as a subagent (Agent tool, `general-purpose`) in **Mode P**, handing it
    `.claude/personas/principal-designer.md`, the closing study's `SYNTHESIS.md` and
@@ -42,6 +49,25 @@ Steps:
    `**Closed:** <date from `date +%F`>` line, and append a dated "research closed"
    entry to the Log.
 
+   Also write the study's **coverage verdict** into the README header, derived from the
+   synthesis coverage table. `/new-research` already seeded a `- **Coverage:**` placeholder
+   directly under `- **Researcher:**`, so this **replaces that placeholder in place** —
+   never add a second `Coverage:` line (if the placeholder is missing, insert it there):
+
+   ```
+   - **Coverage:** Q1,Q2,Q4 answered · Q3 partial · Q5 unanswered (deferred to primary research)
+   ```
+
+   For a study that predates the coverage contract, write exactly:
+
+   ```
+   - **Coverage:** unverified (pre-2026-07-29 study)
+   ```
+
+   This one line is what `/draft-prd` reads to decide whether the study may be cited as
+   settled evidence — the design half must never have to parse a synthesis to find out.
+   See `.claude/references/coverage-contract.md`.
+
 5. **Update the registry & bindings.** Remove the closed study's line from
    `.claude/.active-research`, leaving every other active study's line intact. Delete
    this terminal's binding if it pointed at the closed study, and prune any file in
@@ -57,4 +83,4 @@ Steps:
 7. **Report** a short closeout summary: research topic and type, what was studied
    (platforms benchmarked / participants tested), number of features or findings
    synthesized, the patterns contributed to `research/PATTERNS.md`, and the location
-   of `SYNTHESIS.md` (+ `.docx` if present).
+   of `SYNTHESIS.md` (+ `.docx` if present), and the coverage verdict line as written.
