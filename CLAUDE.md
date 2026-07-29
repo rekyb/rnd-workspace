@@ -127,6 +127,14 @@ study; else it asks. Use `/focus-research <folder>` to point a terminal at a dif
 active study. The workflow commands read/write these files so you rarely need to name
 the folder explicitly.
 
+**Coverage is tracked, not assumed.** A study's `PLAN.md` gives every research question a
+stable `Q#`; its `SYNTHESIS.md` opens with a coverage table accounting for every one of
+them; `/close-research` distils that into a one-line `Coverage:` verdict in the study
+README; and a citing `PRD.md` accounts for every finding `F#` in its §2.1. The governing
+principle is **declare or block** — an unanswered question and an unadopted finding both
+pass every gate *if recorded with a reason*; only silence fails. The contract is
+`.claude/references/coverage-contract.md`.
+
 ### Principal Researcher (quality gate)
 
 A senior review persona (`.claude/personas/principal-researcher.md`), dispatched
@@ -279,7 +287,9 @@ Three references govern the design half, and they answer different questions:
 the G1–G8 Definition of Done); `prompt-vocabulary.md` — *how to phrase it, and which words
 to refuse*. `/draft-prd` and `/design-prototype` read the vocabulary when drafting copy,
 criteria, and problem statements, and the Principal Designer applies its falsifiability
-test in Modes S and T.
+test in Modes S and T. A fourth, `coverage-contract.md`, answers *what must be accounted for* — it is why
+`/draft-prd` reads a study's `Coverage:` line and why Mode S fails a PRD that omits a
+cited finding.
 
 ```
 design/<project>/

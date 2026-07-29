@@ -148,7 +148,7 @@ that is accepted.
 | F7 | unified-onboarding | Hard 15+ age gate | Contradicted | Slice 5 uses policy config; SEA minimums vary |
 ```
 
-Disposition vocabulary — four values, and **silence is not one of them**:
+Disposition vocabulary — five values, and **silence is not one of them**:
 
 | Disposition | Requires |
 |---|---|
@@ -156,8 +156,16 @@ Disposition vocabulary — four values, and **silence is not one of them**:
 | `Deferred` | points at a §Non-Goals entry carrying the reason |
 | `Rejected` | a reason (the finding does not apply here, or we disagree) |
 | `Contradicted` | a reason (we deliberately do the opposite) |
+| `Retired upstream` | names where the synthesis retracted it |
 
 Every `F#` of every study named in `Informed by:` gets a row.
+
+> **Note (added after implementation review):** the fifth value, `Retired upstream`, was
+> not in this design's original four-value vocabulary. It was added to
+> `.claude/references/coverage-contract.md` during implementation after human review, to
+> cover a finding a later peer-review or synthesis pass retracts after a PRD already cited
+> it. This section is reconciled to match the shipped contract; the rest of this spec was
+> not rewritten.
 
 ### 4.4 Study README — the portable coverage verdict
 
