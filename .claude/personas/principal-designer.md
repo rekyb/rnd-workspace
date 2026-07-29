@@ -137,7 +137,8 @@ and every study it cites (`SYNTHESIS.md`, including its `## Peer Review`, or leg
 Input: the drafted `PRD.md` (with its `## Stakeholder Review`), the project `README.md`
 (for the `## Problem`, `Informed by:`, and `Design system:`), and each cited study's
 `SYNTHESIS.md` (with `## Peer Review`) — including its `## Research questions — coverage`
-table and its `F#` headings — and `README.md` (for `TYPE` + the stated `## Goal`).
+table and its `F#` identifiers (headings for benchmark/usability, numbered design
+implications for litreview) — and `README.md` (for `TYPE` + the stated `## Goal`).
 
 The unit of judgment is the **vertical slice**, not a functional requirement — this PRD
 format has no FR/MoSCoW section, because §9 Acceptance Criteria per Slice carries it.
@@ -152,15 +153,22 @@ Judge the PRD on, in order:
    is the same non-fabrication guardrail the whole workspace runs on.
 
    **Traceability is necessary but not sufficient: also check the implication is
-   *faithful*.** §2's "Product implication" column must follow from the finding it cites,
-   without silent narrowing. A finding that says the registration wall belongs after the
+   *faithful*.** For every evidenced claim in §2, the design decision it is used to justify
+   must follow from the finding it cites, without silent narrowing. (§2 is prose bullets in
+   the house template, not a table — read each claim together with the decision it
+   supports, wherever the two sit.) A finding that says the registration wall belongs after the
    primary *value-delivery mechanism*, restated as a wall after *intake*, is a different
    product decision wearing a real citation. Narrowing a finding's scope is a divergence
    and must be declared in §2.1 as `Contradicted` or `Deferred` — never quietly restated.
    This is the one step in the pipeline with no other reviewer.
 2. **Findings coverage — nothing dropped.** §2.1 must carry one row for **every** `F#` of
    **every** study in `Informed by:`. Compare it as a set against each synthesis's `F#`
-   headings; **any finding with no row is a `revise`.** Then check the rows are real, not
+   identifiers, **reading both forms the ID takes**: `## F<n> — …` section headings in a
+   benchmark or usability synthesis, and the numbered `**F<n> — …**` design implications
+   under `## Design implications` in a litreview one, whose IDs sit on list items rather
+   than headings. Looking only for headings makes the set empty for a litreview study, so
+   any §2.1 — including an empty one — would pass.
+   **Any finding with no row is a `revise`.** Then check the rows are real, not
    theatre:
    - an `Adopted` row must name a slice that actually exists in §8;
    - a `Deferred` row must point at a §14 Non-Goals entry that actually carries the reason;

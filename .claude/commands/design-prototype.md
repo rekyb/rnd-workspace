@@ -178,8 +178,13 @@ prototype that fails a gate unless the failure is declared.
 10. **Principal Designer review — Mode T.** Dispatch the Principal Designer as a subagent
     (Agent tool, `general-purpose`) in **Mode T**, handing it
     `.claude/personas/principal-designer.md`, the authored `src/` files, the gate table,
-    the `check-prototype.ps1` result, `PRD.md`, the project `README.md`, and the
-    `SYNTHESIS.md` of each study in `Informed by:`. It returns **ready / revise /
+    the `check-prototype.ps1` result, `PRD.md`, the project `README.md`, the
+    `SYNTHESIS.md` of each study in `Informed by:`, **and this run's `--scope` and
+    `--fidelity` values** (state each explicitly, `none` if unset). Mode T reads both:
+    criterion 1 excuses a §8 slice with no screen only when it is declared outside the
+    run's `--scope`, and criterion 5 judges fidelity honesty against `--fidelity`. Without
+    them a deliberately scoped-down or lo-fi run is judged as if it had silently dropped
+    slices or claimed polish it never promised. It returns **ready / revise /
     reject**. Address its points; re-run if it said *reject*. Relay the verdict.
 
 11. **PII / guardrail gate.** Re-check the source carries zero internal specifics

@@ -49,8 +49,10 @@ Steps:
    `**Closed:** <date from `date +%F`>` line, and append a dated "research closed"
    entry to the Log.
 
-   Also write the study's **coverage verdict** into the README header, directly under
-   `- **Researcher:**`, derived from the synthesis coverage table:
+   Also write the study's **coverage verdict** into the README header, derived from the
+   synthesis coverage table. `/new-research` already seeded a `- **Coverage:**` placeholder
+   directly under `- **Researcher:**`, so this **replaces that placeholder in place** —
+   never add a second `Coverage:` line (if the placeholder is missing, insert it there):
 
    ```
    - **Coverage:** Q1,Q2,Q4 answered · Q3 partial · Q5 unanswered (deferred to primary research)

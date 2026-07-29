@@ -53,8 +53,10 @@ Judge it on:
 
    A mismatch is not a reason to reject the plan. It is a reason to mark the question
    `Partial` or `No — deferred to <what would answer it>` and either carry it to a future
-   study or drop it. **You may not return *approve* while an unanswerable question sits
-   marked `Yes`.** This is the cheapest point in the whole pipeline to catch it: after
+   study or drop it. **You may not return *Plan is sound* while an unanswerable question
+   sits marked `Yes` or left blank.** A blank `Answerable?` cell is the likeliest drafting
+   slip and hides exactly the same mismatch as a wrong `Yes`, so treat the two the same.
+   This is the cheapest point in the whole pipeline to catch it: after
    this, the capture budget is already spent. See
    `.claude/references/coverage-contract.md`.
 4. **Scope discipline** — is anything over-scoped (capturing things the goal

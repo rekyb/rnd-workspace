@@ -65,13 +65,25 @@ gate fails a PRD that states unevidenced claims as fact.
      the review check identically to one that answered all five, which is precisely the
      gap this reads.
      - **`unverified`** (a study closed before the coverage contract) → offer the user
-       two paths, and do not proceed until one is chosen: **(a) retrofit** — build the
-       study's `## Research questions — coverage` table into its `SYNTHESIS.md` (the same
-       section `/synth-findings` would have written), one row per `Q#` from its `PLAN.md`,
-       then write the resulting `- **Coverage:**` verdict line into its `README.md` in the
-       format `/close-research` uses, replacing `unverified` — see
-       `.claude/references/coverage-contract.md` for both vocabularies and the line format —
-       roughly 15 minutes; or **(b) demote** — cite it, but every §2 claim resting on it
+       two paths, and do not proceed until one is chosen: **(a) retrofit** — a legacy study
+       has **neither ID scheme**, so assign both before any table can be filled in:
+       1. **`Q#` into its `PLAN.md`** — its questions are prose with no IDs, so write an ID
+          against each one **in the order they already appear** (the same thing
+          `/synth-findings` offers to do for a plan with no question table).
+       2. **`F#` into its `SYNTHESIS.md`** — give every top-level item an ID in document
+          order, per the contract's type table: benchmark → each feature write-up,
+          usability → each finding, litreview → each numbered design implication.
+          Without these, an `Answered` row has no `F#` to name and the table cannot be
+          valid.
+
+       Only then build the study's `## Research questions — coverage` table into its
+       `SYNTHESIS.md` (the same section `/synth-findings` would have written), one row per
+       `Q#` from its `PLAN.md`, and write the resulting `- **Coverage:**` verdict line into
+       its `README.md` in the format `/close-research` uses, replacing `unverified` — see
+       `.claude/references/coverage-contract.md` for both vocabularies and the line format.
+       The IDs and the table are written back to the study, so this is paid once per study,
+       not once per citing PRD — roughly 15 minutes; or **(b) demote** — cite it, but
+       every §2 claim resting on it
        is labelled an assumption with a validation path. This is the pay-as-you-go
        retrofit: you pay only for the studies you actually cite.
      - A claim tracing to a question marked **`Partial`** or **`Unanswered`** must carry
@@ -96,7 +108,9 @@ gate fails a PRD that states unevidenced claims as fact.
      labels** and `[S#]` citations through; do not launder a "low confidence" claim into a
      flat assertion.
    Drop findings the peer review marked **Unsupported** — do not build on what the debate
-   could not support. Note which evidence (screenshots, `flow.gif`, sessions, `evidence.md`)
+   could not support. **Dropped from the solution, not from §2.1:** each retracted finding
+   still needs a `Retired upstream` row naming where the synthesis retracted it, or its
+   absence reads as an omission rather than a declaration. Note which evidence (screenshots, `flow.gif`, sessions, `evidence.md`)
    each finding rests on, so §2 can point at something real.
 
 5. **Read the component vocabulary.** Read `ui-library/COMPONENTS.md` for the class

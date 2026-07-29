@@ -100,12 +100,13 @@ Steps:
    4. **Recommendation** — the concrete design change it implies.
    Then add a `## What worked` section (positive findings worth preserving).
 
-   **Litreview → themes → design implications.** Lead with a `## TL;DR`, then one
+   **Litreview → themes → design implications.** Lead with a `## TL;DR`, then the coverage
+   table, then one
    `## Theme N — <name>` section per theme. Under each theme, list findings as bullets,
    each with a **confidence** label and its `[S#]` citation(s) traced to `evidence.md`,
    e.g. `- Deferred onboarding lifts activation (confidence: High) [S3][S7]`. After the
    themes, add a numbered `## Design implications` section where each implication is
-   prefixed with its ID (`1. **F1 — Architecture:** …`) — the implication, not the theme,
+   prefixed with its ID (`1. **F<n> — <implication name>:** …`) — the implication, not the theme,
    is the unit a PRD accounts for — a `## Refuted / weak claims` section (reproduced from `evidence.md`,
    kept out of the findings), a `## Evidence gaps for primary research` section (what the
    literature could not answer and needs a survey/usability study), and a
