@@ -21,7 +21,14 @@ onboarding funnel that serves all three without that cost.
   source. Predates the `src/` convention in `.claude/references/design-projects.md`.
 - `build-standalone.ps1` — inlines the above into `standalone.html` (gitignored,
   ~3 MB), base64-encoding `img/` and failing loudly on a missing asset.
-- `prototype-web.test.ps1` — the prototype's regression suite.
+- `prototype-web.test.ps1` — the flat reference prototype's regression suite (12 groups).
+- `src/` — the current build: `onboarding.html` + `home.html` + `main.js` + `home.js` + `data.js`
+  + `styles.css` + `img/`, following the `src/` convention in
+  `.claude/references/design-projects.md`.
+- `src/src-prototype.test.ps1` — the `src/` build's regression suite (38 checks, 8 groups). It
+  exists because the flat prototype rendered a 1-day streak, 150 points, a 40% bar and
+  "Welcome back!" to a seconds-old account and **no test asserted against any of it**. These
+  checks make those unable to return quietly.
 
 ## Status log
 
