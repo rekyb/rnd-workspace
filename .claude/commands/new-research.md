@@ -148,6 +148,7 @@ fields TBD only where genuinely unknown):
 - **Type:** <benchmark | usability | litreview>
 - **Started:** <YYYY-MM-DD>
 - **Researcher:** Claude (acting Senior UI/UX Designer)
+- **Coverage:** <written by /close-research from the synthesis coverage table>
 
 ## Goal
 <the confirmed goal from step 3 — what we want to learn and why. For benchmark,
