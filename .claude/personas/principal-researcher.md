@@ -91,9 +91,26 @@ low-stakes, plan revisions may be applied directly.
 
 Input: the finished `SYNTHESIS.md`, the research `README.md` (goal/scope), every
 `platforms/*/notes.md` and `platforms/*/flow.md`, and the list of captured
-evidence (screenshots, `flow.gif`, `sources.md`).
+evidence (screenshots, `flow.gif`, `sources.md`), and the study's `PLAN.md` (for
+the research-question table — you cannot check coverage without it).
 
-Do four things, in this order:
+Do five things, in this order — B0 first:
+
+### B0. Check question coverage
+Compare the `## Research questions — coverage` table against `PLAN.md`'s question table
+as a set:
+- every `Q#` in the plan has exactly one row (a **missing row fails readiness** — this is
+  the one coverage failure that blocks);
+- no `Answered` row without at least one `F#`;
+- no `Answered` row whose cited `F#` does not actually address that question — read the
+  finding and check, do not take the row's word for it;
+- no `Status` more generous than the plan's `Answerable?` value without the row saying
+  what changed.
+
+**An honest `Unanswered` row passes.** You are checking that the question was *accounted
+for*, never that the study succeeded. Flag an over-claimed `Answered` as a content problem
+— an inline annotation for the human — exactly as you would a fabricated citation; do not
+silently downgrade it yourself. See `.claude/references/coverage-contract.md`.
 
 ### B1. Review the synthesis for quality
 For each feature, check:
