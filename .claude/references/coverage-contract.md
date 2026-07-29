@@ -39,18 +39,29 @@ depends on the study type:
 | `usability` | each finding |
 | `litreview` | each numbered **design implication** (themes keep their own numbering) |
 
-Implemented as an **ID prefix on the top-level item itself**, which takes two forms because
-the item does:
+Implemented as an **ID prefix on the item itself**. The markup carrying that prefix takes
+three forms, because the item varies by type and because a finding can move:
 
 - `benchmark` and `usability` → a **section heading** prefix:
   `## F1 — Value-before-signup (deferred registration)`.
 - `litreview` → a **numbered list item** prefix inside `## Design implications`:
   `1. **F1 — Architecture:** …`. The implications are a numbered list, not sections, so
   there is no `F#` heading anywhere in a litreview synthesis.
+- **any type, once retracted** → an **inline bold** prefix inside `## Gaps & caveats`:
+  `**F4 — <name> — Unsupported:** …`, written by `/review-research` step 6b. A heading
+  cannot be used here whatever the study type: `## Gaps & caveats` is itself an `##`, so
+  an `## F4` under it would parse as its *sibling* and carry the retracted finding out of
+  the section it was moved into.
 
-Anything that compares `F#` as a set — Mode S's §2.1 check above all — must read **both**
-forms. Looking only for headings silently yields an empty set for a litreview study, which
-would let any coverage table pass.
+**The comparison is over IDs, not over markup.** Anything that compares `F#` as a set —
+Mode S's §2.1 check above all — collects every `F#` the synthesis defines, in whichever of
+these forms happens to carry it. Implementing that as a search for one shape is the failure
+this list exists to prevent: matching only headings yields an empty set for a litreview
+study, and matching only headings and list items drops every retracted finding, which is
+exactly the finding a `Retired upstream` row has to account for.
+
+Adding a fourth form means updating this list **and** every `F#` forms row of *Where these
+vocabularies and forms are restated*.
 
 The type-awareness matters: a litreview's themes are analysis, but its design implications
 are what a PRD can actually adopt or defer, so the implication is the unit that must be
@@ -174,19 +185,20 @@ Studies nobody cites cost nothing. A study whose retrofit reveals it answered on
 out of five has just told you something worth knowing, and *that* is when redoing it is an
 informed decision rather than a guess.
 
-## Where these vocabularies are restated
+## Where these vocabularies and forms are restated
 
-The three vocabularies above are **deliberately duplicated** into the commands and personas
-that apply them. Prompts have no include mechanism, and a bare cross-reference is often not
+The three vocabularies above, and the `F#` form list, are **deliberately duplicated** into
+the commands and personas that apply them. Prompts have no include mechanism, and a bare cross-reference is often not
 traversed by the agent reading it — a failure that is silent, because the agent proceeds
 with a plausible invented vocabulary instead of stopping. Restating the values at the point
 of use is the cheaper failure mode.
 
 The cost is that this file is no longer the only place a change lands. **This is the
-checklist**: change a value, add a disposition, or reword a requirement here, and walk every
-row below. Anything not listed here is a passing mention, not a restatement.
+checklist**: change a value, add a disposition, add an `F#` form, or reword a requirement
+here, and walk every row below. Anything not listed here is a passing mention, not a
+restatement.
 
-| Vocabulary | File | Where |
+| What | File | Where |
 |---|---|---|
 | 1 — `Answerable?` | `.claude/personas/principal-researcher.md` | Mode A criterion 3 — the mismatch list and the "not `Plan is sound` while a question sits marked `Yes` or left blank" rule |
 | 1 | `.claude/commands/new-research.md` | Step 7's "honest `Answerable?` value" note, and the `Answerable by this study?` column in all **three** `PLAN.md` templates (benchmark, usability, litreview) |
@@ -199,6 +211,13 @@ row below. Anything not listed here is a passing mention, not a restatement.
 | 2 | `.claude/commands/close-research.md` | Step 4 — the `Coverage:` line, derived from the table's statuses |
 | 3 — `Disposition` | `.claude/commands/draft-prd.md` | Step 6's §2.1 bullet (all five values), the `PRD.md` template's §2.1 table **and** the prose under it, and step 13's report line (adopted / deferred / rejected / contradicted / retired upstream) |
 | 3 | `.claude/personas/principal-designer.md` | Mode S criterion 2 — the per-value row checks and the "a `Deferred`, `Rejected`, `Contradicted`, or `Retired upstream` finding is legitimate" statement |
+| `F#` forms | `.claude/personas/principal-designer.md` | Mode S criterion 2 — the three-form list the set comparison reads, and the consequence of missing each |
+| `F#` forms | `.claude/commands/review-research.md` | Step 6b — the inline-bold retracted form, and why it is not a heading |
+
+The `F#` form rows are here because their absence already cost us once. `/review-research`
+introduced the retracted inline-bold form while Mode S still enumerated two, and nothing
+pointed from one to the other; the gap shipped and was caught only on a later read. A form
+list restated in two files is a restatement like any other.
 
 The `Q#` / `F#` ID rules are likewise restated in `new-research.md` (the never-renumbered
 note under the question table), `synth-findings.md` (step 3's `F#` assignment by type),

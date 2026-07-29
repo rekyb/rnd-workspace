@@ -79,8 +79,13 @@ invent evidence, metrics, findings, or citations.**
       The original wording of every changed finding is already preserved verbatim in the
       `### Actions to apply` record, so nothing is lost. Move any **Unsupported** finding
       into `## Gaps & caveats` as an open question rather than deleting it outright. The
-      moved entry **keeps its `F#` prefix** and is marked `Unsupported` — e.g.
-      `**F4 — <name> — Unsupported:** <what the debate could not support>`. An `F#` is
+      moved entry **keeps its `F#` prefix** and is marked `Unsupported`, in the inline-bold
+      form the contract defines for a retracted finding — **not** as a heading, whatever the
+      study type, since `## Gaps & caveats` is itself an `##` and an `## F4` under it would
+      parse as its sibling and carry the finding back out of the section:
+      `**F4 — <name> — Unsupported:** <what the debate could not support>`. This is the third
+      form an `F#` takes, and Mode S is taught to read it; if you ever change it, change it
+      in the contract and in Mode S together. An `F#` is
       retired in place, never renumbered, reused, or erased: a later `PRD.md` must be able
       to see it and declare it `Retired upstream`, and a finding that vanishes from the
       `F#` set is indistinguishable from one that was silently dropped. See
