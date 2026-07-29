@@ -9,14 +9,17 @@ and close and projects are created. The source of truth is each study's own
 `README.md` (`Status`, `Started`, `Informed by`, `Design system`). The design half has
 no registry by design — see `.claude/references/design-projects.md`.
 
-_Last updated: 2026-07-27_
+_Last updated: 2026-07-29_
 
 ## Active
 
 The currently active studies (several may run in parallel — one line per study in
 `.claude/.active-research`; each terminal focuses on one via `/focus-research`).
 
-_No active research. Start one with `/new-research <topic>`._
+| Research | Type | Started | Status |
+|---|---|---|---|
+| [Post-Signup Handoff to the First-Run Learning Home](research/2026-07-28-post-signup-handoff-first-run-home/) | benchmark | 2026-07-28 | Active — peer review recorded; next step `/close-research` |
+| [Learning Home Layout & Information Architecture](research/2026-07-29-learning-home-layout-and-ia/) | benchmark | 2026-07-29 | Active — plan revised after Principal Researcher review, awaiting approval |
 
 ## Closed &amp; archived
 
@@ -43,5 +46,6 @@ own `README.md`; start one with `/new-design <name>`.
 
 | Project | Status | Started | Informed by | Design system | PRD | Prototype |
 |---|---|---|---|---|---|---|
-| [Learner Acquisition &amp; Onboarding](design/onboarding-solve-edu/) | Active | 2026-07-21 | [unified-onboarding-synthesis-and-patterns](research/2026-07-20-unified-onboarding-synthesis-and-patterns/) | independent _(migration to `ui-library/` pending)_ | ✓ | ✓ |
+| [Learner Acquisition &amp; Onboarding](design/onboarding-solve-edu/) | Active | 2026-07-21 | [unified-onboarding-synthesis-and-patterns](research/2026-07-20-unified-onboarding-synthesis-and-patterns/) | independent _(settled 2026-07-28; will not migrate)_ | ✓ | ✓ |
+| [First-Run Learning Home](design/first-run-learning-home/) | Active | 2026-07-29 | [post-signup-handoff](research/2026-07-28-post-signup-handoff-first-run-home/), [unified-onboarding-synthesis-and-patterns](research/2026-07-20-unified-onboarding-synthesis-and-patterns/) | ui-library/ | — | — |
 | [AI-Literacy App](design/ai-literacy-app/) | Active | 2026-07-17 | [ai-literacy-upskilling](research/2026-07-14-ai-literacy-upskilling-indonesian-teachers/), [onboarding-activation](research/2026-07-13-onboarding-activation-education-apps/), [teacher-onboarding-literature](research/2026-07-16-indonesian-teacher-onboarding-literature/), [certificate-vs-badge](research/2026-07-17-certificate-vs-badge-gamification/) | independent _(different brand)_ | — | ✓ |

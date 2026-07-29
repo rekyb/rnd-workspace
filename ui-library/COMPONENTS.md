@@ -45,7 +45,7 @@ chase when building or auditing a prototype.
 | Breadcrumb | `.breadcrumb-list` > `.breadcrumb-item`, `.breadcrumb-link`, `.breadcrumb-current`, `.breadcrumb-sep` | none | CSS-only |
 | Button | `.btn` + `pri` \| `ghost` \| `dark` \| `subtle` + `block` | none | CSS-only |
 | Card | `.card` | none | CSS-only |
-| Checkbox | `.checkbox-field` > `.checkbox-root[data-state]`, `.checkbox-indicator`, `.checkbox-label` | — | not yet ported |
+| Checkbox | `.checkbox-field` > `.checkbox-root[data-state]`, `.checkbox-indicator`, `.checkbox-label` | `RndUI.initCheckbox` | ported |
 | Chip | `.chip` + `.y` \| `.g` \| `.n` \| `.p` \| `.b` | none | CSS-only |
 | Command | `.command` > `.command-input-row`, `.command-input-icon`, `.command-input`, `.command-list`, `.command-item` + `command-item-active` \| `command-item-disabled`, `.command-item-group`, `.command-item-label`, `.command-empty` | — | not yet ported |
 | Dialog | `.dialog-overlay`, `.dialog-panel`, `.dialog-x` | `RndUI.initDialog` | ported |
@@ -60,12 +60,12 @@ chase when building or auditing a prototype.
 | LoadingState | `.loading-state` > `.loading-state-title`, `.loading-state-line` | none | CSS-only |
 | Menu | `.menu-content` > `.menu-item[data-highlighted]`, `.menu-item[data-disabled]` | — | not yet ported |
 | Pagination | `.pagination` > `.pagination-btn`, `.pagination-on`, `.pagination-gap` | — | not yet ported |
-| PasswordInput | `.input` (no dedicated classes; adds a visibility-toggle affordance over Input) | — | not yet ported |
+| PasswordInput | `.input` (no dedicated classes; a visibility toggle carrying `data-password-toggle="<input id>"`) | `RndUI.initPasswordInput` | ported |
 | Popover | `.popover-content`, `.popover-arrow` | — | not yet ported |
 | Progress | `.progress[data-state=indeterminate]` > `.progress-fill` | — | not yet ported |
-| RadioGroup | `.radio-group` + `radio-group-row` > `.radio-field`, `.radio-item[data-state]`, `.radio-indicator`, `.radio-label` | — | not yet ported |
+| RadioGroup | `.radio-group` + `radio-group-row` > `.radio-field`, `.radio-item[data-state]`, `.radio-indicator`, `.radio-label` | `RndUI.initRadioGroup` | ported |
 | Row | `.row` | none | CSS-only |
-| Select | `.select-trigger`, `.select-icon`, `.select-content`, `.select-viewport`, `.select-item[data-state\|data-highlighted\|data-disabled]`, `.select-check` | — | not yet ported |
+| Select | `.select-trigger`, `.select-icon`, `.select-content`, `.select-viewport`, `.select-item[data-state\|data-highlighted\|data-disabled]`, `.select-check` | `RndUI.initSelect` | ported |
 | Sidebar | `.sidebar` > `.sidebar-section`, `.sidebar-section-label`, `.sidebar-section-summary`, `.sidebar-section-chevron`, `.sidebar-links`, `.sidebar-link`, `.sidebar-link-active`, `.sidebar-link-icon`, `.sidebar-link-label`, `.sidebar-link-trail` | none | CSS-only |
 | Slider | `.slider-root` > `.slider-track`, `.slider-range`, `.slider-thumb` | — | not yet ported |
 | Spinner | `.spinner` + `spinner-sm` \| `spinner-md` \| `spinner-lg` | none | CSS-only |
@@ -84,10 +84,20 @@ chase when building or auditing a prototype.
 
 - **CSS-only (19):** Alert, Badge, Breadcrumb, Button, Card, Chip, EmptyState, ErrorState,
   Field, Hero, List, LoadingState, Row, Sidebar, Spinner, Stat, StrengthMeter, Text, Textarea.
-- **ported (4):** Accordion, Dialog, Tabs, Toast - implemented in `ui-library/behaviors.js`.
-- **not yet ported (19):** AlertDialog, Avatar, Checkbox, Command, DobPicker, Drawer, Input,
-  Menu, Pagination, PasswordInput, Popover, Progress, RadioGroup, Select, Slider, Switch,
-  Table, ThemeToggle, Tooltip.
+- **ported (8):** Accordion, Dialog, Tabs, Toast, Checkbox, PasswordInput, RadioGroup, Select
+  - implemented in `ui-library/behaviors.js`. The last four were ported on **2026-07-29**, on
+  demand, because the onboarding funnel prototype in `design/first-run-learning-home` needed
+  them and `/design-prototype` stops rather than improvising a lookalike. Each was written
+  against the class contract in its row above, not against a redesign of it.
+- **not yet ported (15):** AlertDialog, Avatar, Command, DobPicker, Drawer, Input, Menu,
+  Pagination, Popover, Progress, Slider, Switch, Table, ThemeToggle, Tooltip.
+
+**On Input.** It stays listed as `not yet ported`, and that is accurate rather than an
+oversight: its contract is `.input` plus an `.input.err` error modifier, with no `data-state`
+and no interactive behaviour of its own. A native `<input class="input">` satisfies the
+contract without JavaScript, and a consumer toggling `.err` from its own validation is using
+the contract rather than improvising a substitute. Nothing needs porting until Input grows
+stateful behaviour upstream.
 
 19 + 4 + 19 = 42, the full component set mirrored from the upstream
 `apps/web/components/ui/` folder (44 files on disk: these 42 `.tsx` components plus two
