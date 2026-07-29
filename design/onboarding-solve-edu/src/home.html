@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solve Education! - Learning Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Global Header -->
+  <header id="global-header" class="app-header">
+    <a href="onboarding.html" class="logo" id="logo-link">
+      <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="Solve Education!" style="height: 48px; width: auto; vertical-align: middle;">
+    </a>
+  </header>
+
+  <div class="app-container">
+
+    <!-- ===================================================================
+         LOADING — the labelled handoff.
+         The shell is the destination: the learner is already home, and only
+         the content region is pending. No separate interstitial screen.
+         Delayed 400ms before showing, held a minimum of 500ms once shown, so
+         it can never flash.
+         =================================================================== -->
+    <div id="home_loading" class="card home-card active">
+      <aside class="home-sidebar">
+        <div style="font-weight: 800; font-size: 20px; color: var(--purple); margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="" style="height: 24px;">
+        </div>
+        <div class="home-nav-item active"><span class="material-symbols-rounded">home</span> Home</div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">school</span> Courses</div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">emoji_events</span> Achievements</div>
+        <div style="flex: 1;"></div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">settings</span> Settings</div>
+      </aside>
+      <div class="home-main" role="status" aria-live="polite">
+        <h1 class="title" style="margin-bottom: 4px;" id="loading_greeting">Setting up your account</h1>
+        <p class="subtitle">Preparing your first course</p>
+        <div class="home-skel home-skel-title"></div>
+        <div class="home-skel home-skel-line"></div>
+        <div class="home-skel home-skel-line"></div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         LEARNING HOME
+         One screen, two data states. At first run every counter reads zero
+         with its condition in the same slot; after the first skill the same
+         slots carry real values. Identical markup either way.
+         =================================================================== -->
+    <div id="learning_home" class="card home-card">
+      <aside class="home-sidebar">
+        <div style="font-weight: 800; font-size: 20px; color: var(--purple); margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="" style="height: 24px;">
+        </div>
+        <div class="home-nav-item active"><span class="material-symbols-rounded">home</span> Home</div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">school</span> Courses</div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">emoji_events</span> Achievements</div>
+        <div style="flex: 1;"></div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">settings</span> Settings</div>
+      </aside>
+
+      <div class="home-main">
+        <!-- Greeting. True on first run: a new account is never greeted as a
+             returning one. No streak pill, no points pill: those are non-goals,
+             and a locked leaderboard was held rather than adopted. -->
+        <div style="margin-bottom: 32px;">
+          <h1 id="home_greeting" class="title" style="margin-bottom: 4px;"></h1>
+          <p id="home_sub" class="subtitle" style="margin-bottom: 0;"></p>
+        </div>
+
+        <!-- UP NEXT: the one primary action, resolved from the stored course id -->
+        <div id="home_up_next" style="background: var(--purple); border-radius: 20px; padding: 24px; color: #fff; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(142,39,155,0.2);">
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8;">Up Next</div>
+          <div id="home_course_title" style="font-size: 24px; font-weight: 700; margin: 8px 0 4px;"></div>
+          <div id="home_course_unit" style="font-size: 14px; opacity: 0.85; margin-bottom: 16px;"></div>
+
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.2); border-radius: 99px; overflow: hidden;">
+              <div id="home_course_fill" style="width: 0%; height: 100%; background: var(--pri); transition: width 0.5s var(--easing-spring);"></div>
+            </div>
+            <div id="home_course_count" style="font-size: 13px; font-weight: 600; white-space: nowrap;"></div>
+          </div>
+          <!-- The countable condition, in the same slot as the zero. This is the
+               line that makes a zero actionable rather than merely honest. -->
+          <div id="home_course_condition" style="font-size: 13px; opacity: 0.85; margin-top: 10px;"></div>
+        </div>
+
+        <!-- UNMAPPED GOAL: substitute nothing -->
+        <div id="home_unmapped" style="display: none; background: white; border: 1px solid var(--hair); border-radius: 20px; padding: 32px; margin-bottom: 24px; text-align: center;">
+          <span class="material-symbols-rounded" style="font-size: 40px; color: var(--sub);">help</span>
+          <div style="font-size: 18px; font-weight: 800; color: var(--ink); margin: 8px 0;">We could not match your goal to a course yet</div>
+          <p style="color: var(--sub); font-size: 14px; margin-bottom: 20px;">
+            Your goal was saved, but no course is mapped to it. Nothing has been picked for you,
+            because a course you did not choose is not a starting point.
+          </p>
+          <button class="btn btn-primary" id="unmapped_choose_btn">Choose a starting point</button>
+        </div>
+
+        <!-- PROGRAM TASKS: from the enrolment, never hard-coded -->
+        <div id="home_program_tasks" style="display: none; background: white; border: 1px solid var(--hair); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+          <div style="font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 4px;"><span id="home_program_name"></span> tasks</div>
+          <p id="home_program_count" style="color: var(--sub); font-size: 14px; margin-bottom: 4px;"></p>
+          <p id="home_program_condition" style="color: var(--sub); font-size: 13px; margin-bottom: 20px;"></p>
+          <div id="home_task_list" style="display: flex; flex-direction: column; gap: 16px;"></div>
+        </div>
+
+        <button class="btn btn-primary" style="font-size: 18px;" id="start-lesson-btn"></button>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         FIRST LEARNING ACTION
+         The stub the primary action routes into. It exists so the action has
+         somewhere real to go, and so finishing it can change the home.
+         =================================================================== -->
+    <div id="skill_screen" class="card home-card">
+      <aside class="home-sidebar">
+        <div style="font-weight: 800; font-size: 20px; color: var(--purple); margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="" style="height: 24px;">
+        </div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">home</span> Home</div>
+        <div class="home-nav-item active"><span class="material-symbols-rounded">school</span> Courses</div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">emoji_events</span> Achievements</div>
+        <div style="flex: 1;"></div>
+        <div class="home-nav-item"><span class="material-symbols-rounded">settings</span> Settings</div>
+      </aside>
+      <div class="home-main">
+        <div style="margin-bottom: 24px;">
+          <p class="subtitle" id="skill_course" style="margin-bottom: 4px;"></p>
+          <h1 class="title" id="skill_title" style="margin-bottom: 0;"></h1>
+        </div>
+        <div style="background: white; border: 1px solid var(--hair); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+          <p style="color: var(--sub); font-size: 15px; margin: 0;">
+            Lesson content is out of scope for this prototype. What matters here is that the
+            primary action resolved to a real destination, and that finishing it changes the
+            home you came from.
+          </p>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button class="btn btn-primary" id="skill_done_btn">Mark this skill complete</button>
+          <button class="btn btn-secondary" id="skill_back_btn">Back without finishing</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="data.js"></script>
+  <script src="home.js"></script>
+</body>
+</html>
