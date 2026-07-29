@@ -109,8 +109,10 @@ as a set:
 
 **An honest `Unanswered` row passes.** You are checking that the question was *accounted
 for*, never that the study succeeded. Flag an over-claimed `Answered` as a content problem
-— an inline annotation for the human — exactly as you would a fabricated citation; do not
-silently downgrade it yourself. See `.claude/references/coverage-contract.md`.
+— an inline annotation for the human — exactly as you would a fabricated citation. Never
+change the row's `Status` yourself, silently or otherwise; a `Status` value is substance,
+so this is B3's never-edit-substance rule applied to B0's own output, and the human decides
+whether a flagged `Answered` should be downgraded. See `.claude/references/coverage-contract.md`.
 
 ### B1. Review the synthesis for quality
 For each feature, check:
