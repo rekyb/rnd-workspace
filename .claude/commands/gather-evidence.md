@@ -39,8 +39,12 @@ Steps:
 
 6. **Write `evidence.md`.** Header `# Evidence base — <topic>`. Two parts:
    - `## Verified claims` — each confirmed claim as a bullet with a **confidence**
-     label (High/Med/Low) and its `[S#]` source ID(s), e.g.
-     `- Deferred onboarding lifts D1 activation (confidence: High) [S3][S7]`.
+     label (High/Med/Low) and its `[S#]` source ID(s). Each verified claim carries
+     the `Q#` it addresses alongside its `[S#]` source IDs, e.g.
+     `- [Q2] Deferred registration lifts activation (confidence: High) [S3][S7]`. A
+     research question that ends with no claim against it is a real finding — it
+     becomes an `Unanswered` row at synthesis, not a silence. See
+     `.claude/references/coverage-contract.md`.
    - `## Refuted / weak claims` — claims the harness could not confirm or that failed
      verification, kept here so they **never leak into findings**. Note why (refuted,
      single weak source, contradicted).
