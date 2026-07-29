@@ -207,7 +207,7 @@ gate fails a PRD that states unevidenced claims as fact.
 
 13. **Report** to the user: the PRD path, the slice count and appetite, the
     findings-coverage summary (how many findings adopted / deferred / rejected /
-    contradicted, naming the contradicted ones), the stakeholder
+    contradicted / retired upstream, naming the contradicted ones), the stakeholder
     consolidated verdict, the Principal Designer's verdict and what was addressed, any
     assumptions flagged for validation, any component flagged `not yet ported`, and any PII
     items caught. Name the natural next step — `/design-prototype` to make it clickable.
