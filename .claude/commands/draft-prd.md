@@ -90,7 +90,17 @@ gate fails a PRD that states unevidenced claims as fact.
 6. **Draft `PRD.md` WITH the user — do not finalize yet.** Work through the template
    below section by section. Do not draft it in one shot and present a finished document:
    the appetite and the slice boundaries are the decisions worth arguing about, and they
-   are the ones the user must own. Pay particular attention to:
+   are the ones the user must own.
+
+   **Write it in the house vocabulary** — `.claude/references/prompt-vocabulary.md`. A PRD
+   is the document engineering is held to, so its language has to be falsifiable: §3 in
+   job-story form, §5 metrics with a named baseline, §7 in flow-and-state terms, §9 in
+   Given/When/Then. Run the anti-keyword table over the draft before review — "intuitive",
+   "seamless", "modern", "best practices" and their kin either name the concrete mechanism
+   or come out. Only claim a standard the PRD actually meets (cite WCAG success criteria
+   by number, not "accessible").
+
+   Pay particular attention to:
    - **§2 Problem & Evidence** — every claim either cites a study finding or is labelled an
      assumption. This is the section the Principal Designer scrutinizes hardest.
    - **§6 Appetite** — a time box, not an estimate. State what we are willing to spend, and
@@ -101,6 +111,9 @@ gate fails a PRD that states unevidenced claims as fact.
      A slice that cannot be demoed on its own is a layer, not a slice; re-cut it.
    - **§9 Acceptance Criteria per Slice** — testable Given/When/Then or an observable
      checklist per slice. This is what replaced FR/MoSCoW, so it has to carry that weight.
+     Apply the falsifiability test: if no observation could fail the criterion, it is not
+     a criterion. "Then the flow feels smooth" gates nothing; "then the next screen paints
+     within 400ms (Doherty threshold)" does.
    - **§14 Non-Goals** and **§15 Rabbit Holes** — the scope-defending sections. An empty
      Non-Goals list almost always means the scope has not actually been bounded.
 

@@ -29,6 +29,12 @@ Act as a **Senior UI/UX Designer** running the research. That means:
 - Ground every claim in captured evidence (a screenshot, a recorded flow, a
   cited URL). Never fabricate a finding or a source.
 - Think in terms of user goals, flows, friction, and reusable patterns.
+- **Write in the house vocabulary** — `.claude/references/prompt-vocabulary.md`. Name the
+  method, the law, the criterion, or the metric rather than reaching for an adjective;
+  its anti-keyword table ("intuitive", "seamless", "modern", "best practices") is a hard
+  style rule for PRDs, prototype copy, syntheses, and decks alike. The test is whether the
+  sentence could fail. Never claim a standard the work does not actually meet — an
+  inflated term is a fabrication like any other.
 
 ## Guardrails (hard rules)
 
@@ -266,6 +272,14 @@ research/     SYNTHESIS.md   PRD.md    /design-prototype (author src/)
 reopened. A design project is long-lived and iterates, so it takes a plain slug (no date)
 and a mutable status. The canonical contract is
 `.claude/references/design-projects.md`; read it before deviating.
+
+Three references govern the design half, and they answer different questions:
+`design-projects.md` — *where things live and which project a command targets*;
+`design-gates.md` — *which pass to run and what "done" means* (the 14 gate categories and
+the G1–G8 Definition of Done); `prompt-vocabulary.md` — *how to phrase it, and which words
+to refuse*. `/draft-prd` and `/design-prototype` read the vocabulary when drafting copy,
+criteria, and problem statements, and the Principal Designer applies its falsifiability
+test in Modes S and T.
 
 ```
 design/<project>/

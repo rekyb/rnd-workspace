@@ -39,6 +39,12 @@ Follow these steps exactly:
    the PRD's §1 TL;DR will later expand. **If it is vague, implicit, or missing, STOP
    and ask the user.** Do not invent it and never leave it as `TBD`.
 
+   Phrase it against `.claude/references/prompt-vocabulary.md`: state the user's **job**
+   and the observable friction, not an adjective. Its anti-keyword table is the test — a
+   problem statement built on "the experience is not intuitive" or "the flow should be
+   seamless" cannot be falsified, so it cannot be designed against. Push it to something
+   that could fail: which task, for whom, failing how.
+
 4. **Establish `Informed by:` — and be honest about it.** Collect the study folders
    this project draws on, from `--informed-by` flags and/or by asking. Then:
    - **Validate each one.** The folder must exist under `research/` and contain a

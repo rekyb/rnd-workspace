@@ -34,6 +34,12 @@ The gate definitions this command runs live in `.claude/references/design-gates.
 (the Claude Design Prompt Pack): 14 categories (0–13) and the Definition of Done
 (G1–G8). Read it when running a gate.
 
+Its companion is `.claude/references/prompt-vocabulary.md` — the house language standard.
+The gates say *which pass to run*; the vocabulary says *how to phrase it and what to
+refuse*. Read it before the `copy`, `critique`, `friction`, `states`, and `a11y` passes:
+those are the ones that degrade into generic output when the prompt reaches for
+"intuitive", "clean", or "best practices" instead of a named law, criterion, or metric.
+
 ## Arguments
 
 - **`[project]`** (optional positional) — a design project slug or path, resolved per
@@ -153,6 +159,10 @@ prototype that fails a gate unless the failure is declared.
    on rule 1 (`external host:`), so link out with `href="#"` or a local anchor instead.
    Every screen traces to a screen entry (per step 4) and a §8 slice. All states (§6),
    specific load-bearing copy (§7), no dead-ends.
+   **Copy is held to `.claude/references/prompt-vocabulary.md`'s anti-keyword rule**: every
+   button says what happens, every error gives cause + fix, and no user-facing string
+   leans on an unfalsifiable adjective. A prototype full of "Get started seamlessly" is
+   generic output wearing the design system, and G7 does not pass on it.
    Flag every extrapolation beyond the PRD as an assumption; do not present it as fact.
    Honour `--scope` and `--fidelity` if set.
 

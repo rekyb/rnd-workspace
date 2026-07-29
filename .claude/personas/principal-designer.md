@@ -157,6 +157,11 @@ Judge the PRD on, in order:
    end. Flag a horizontal layer masquerading as a slice (a data model with no UI, a screen
    with no working behaviour), a slice with no §9 acceptance criteria, and criteria that are
    not observably testable. Flag a slice order that cannot actually ship in sequence.
+   Apply the falsifiability test from `.claude/references/prompt-vocabulary.md`: a criterion
+   no observation could fail ("the flow feels smooth", "the UI is intuitive") gates nothing
+   and is a defect, not a wording preference. The same test applies to §2 and §5 — an
+   unfalsifiable claim is an assumption in disguise, so it is either cited, made concrete,
+   or labelled.
 4. **Flow completeness.** §7's Solution Shape has a clear entry → goal path with no
    dead-ends, and its Mermaid flowchart matches the prose beside it. Error branches, empty
    states, and loading states are covered in §7, §11, or §12 — not just the happy path.
@@ -203,7 +208,10 @@ Judge the prototype on, in order:
 2. **Gate compliance — the declared table is honest.** The Definition-of-Done gate table
    (G1–G8) must match what the source actually does; no silent fails. Flag any gate marked
    pass that the markup contradicts (e.g. a hardcoded colour against G1, a dead-end
-   against G4, a missing error/empty state against G3).
+   against G4, a missing error/empty state against G3, or generic copy against G7 —
+   "Submit", "Something went wrong", "Get started seamlessly" all fail G7's *specific and
+   load-bearing* bar, per the anti-keyword rule in
+   `.claude/references/prompt-vocabulary.md`).
 3. **Design-system compliance.** Every value is a `ui-library/` token or a project-overlay
    redefinition of one; every class used exists in `ui-library/components.css`; no
    component marked `not yet ported` in `ui-library/COMPONENTS.md` is used. A prototype
