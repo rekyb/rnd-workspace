@@ -126,6 +126,12 @@ Follow these steps exactly:
      harness over the approved plan and writes the verified `evidence.md` +
      `sources.md`. **Do not** start gathering evidence here.
 
+   **Give every research question an ID and an honest `Answerable?` value.** A question
+   this study's method cannot answer is not a defect in the question — it is a fact worth
+   knowing *before* capture is spent. Mark it `No — deferred to <what would answer it>`
+   and either carry it or drop it. The Principal Researcher will not approve a plan with
+   an unmarked unanswerable question. See `.claude/references/coverage-contract.md`.
+
 8. **Confirm** to the user: folder created, the type, the confirmed goal, the
    approved plan, and the correct next step for the type (capture via Claude-in-Chrome
    for benchmark; `/plan-usability` for usability).
@@ -170,8 +176,14 @@ platforms are not named yet):
 - **Type:** benchmark
 - **Goal it serves:** <one line — the confirmed goal from the README>
 
-## Key research questions
-- <question 1 derived from the goal>
+## Research questions
+
+Each question gets a stable ID. IDs are never renumbered and never reused — a dropped
+question becomes a `Withdrawn` row. See `.claude/references/coverage-contract.md`.
+
+| ID | Question | Method that will answer it | Answerable by this study? |
+|---|---|---|---|
+| Q1 | <question derived from the goal> | <e.g. Mobbin capture across 4 platforms> | Yes |
 
 ## Per-platform capture plan
 ### <platform 1>
@@ -198,8 +210,15 @@ PLAN.md template — **usability**:
 - **Goal it serves:** <one line — the confirmed goal from the README>
 
 ## Objectives & research questions
+
 - <what decision this test informs>
-- <question 1 the test must answer>
+
+Each question gets a stable ID, carried through to `test-plan.md` tasks and the synthesis
+coverage table. See `.claude/references/coverage-contract.md`.
+
+| ID | Question | Method that will answer it | Answerable by this study? |
+|---|---|---|---|
+| Q1 | <question the test must answer> | <e.g. moderated task 2, think-aloud> | Yes |
 
 ## Product / flow under test
 - <the specific product and flow participants will attempt>
@@ -226,8 +245,14 @@ PLAN.md template — **litreview**:
 - **Type:** litreview
 - **Goal it serves:** <one line — the confirmed goal from the README>
 
-## Key research questions
-- <question 1 derived from the goal — answerable from literature/reports>
+## Research questions
+
+Each question gets a stable ID, carried into `evidence.md` claims and the synthesis
+coverage table. See `.claude/references/coverage-contract.md`.
+
+| ID | Question | Method that will answer it | Answerable by this study? |
+|---|---|---|---|
+| Q1 | <question derived from the goal> | <e.g. deep-research over corpus + search angle 2> | Yes |
 
 ## Provided corpus
 - <document the user supplied, dropped in corpus/ — or "none yet; all sources to be found">
