@@ -5,6 +5,7 @@
 - **Started:** 2026-07-09
 - **Closed:** 2026-07-09
 - **Researcher:** Codex acting as Senior UI/UX Researcher
+- **Coverage:** unverified (pre-2026-07-29 study)
 
 ## Goal
 Synthesize the existing benchmark findings and artifacts for Brilliant, DataCamp, Busuu, and Khan Academy into a decision-ready research synthesis for solve.education. The synthesis should identify which world-class learning UX patterns can strengthen solve.education's learn-to-hire loop, what evidence supports them, what risks or anti-patterns to avoid, and what should be validated before product or engineering investment. This is input to a build decision, not a new capture study.

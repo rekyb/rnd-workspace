@@ -5,6 +5,7 @@
 - **Started:** 2026-07-20
 - **Closed:** 2026-07-24
 - **Researcher:** Gemini (acting Senior UI/UX Designer)
+- **Coverage:** unverified (pre-2026-07-29 study)
 
 ## Goal
 Establish the onboarding strategy and reusable UX patterns for solve.education by reviewing education app benchmarks, target-audience literature, and youth onboarding strategies.

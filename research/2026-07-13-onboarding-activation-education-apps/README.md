@@ -5,6 +5,7 @@
 - **Started:** 2026-07-13
 - **Closed:** 2026-07-13
 - **Researcher:** Claude (acting Senior UI/UX Designer)
+- **Coverage:** unverified (pre-2026-07-29 study)
 
 ## Goal
 Benchmark how best-in-class education apps design their **onboarding-to-activation**
