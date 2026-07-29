@@ -5,9 +5,18 @@
 - **Goal it serves:** Establish the onboarding strategy and reusable UX patterns for solve.education by reviewing education app benchmarks and target-audience literature.
 
 ## Key research questions
-- What are the universal onboarding principles that apply across the target audiences (youth, teachers) and industry benchmarks?
-- Where do the findings diverge based on the specific audience or context?
-- What is the recommended list of proven, reusable UX patterns for onboarding?
+
+| Q# | Question | Answerable? |
+|---|---|---|
+| Q1 | What are the universal onboarding principles that apply across the target audiences (youth, teachers) and industry benchmarks? | `Yes` |
+| Q2 | Where do the findings diverge based on the specific audience or context? | `Yes` |
+| Q3 | What is the recommended list of proven, reusable UX patterns for onboarding? | `Yes` |
+
+> **Q# IDs and the `Answerable?` column added 2026-07-29** as a coverage-contract retrofit; this
+> study was planned and closed before that vocabulary existed. IDs are assigned in the order the
+> questions already appeared, and all three were planned as answerable from the provided corpus.
+> Q2 came back `Partial` at synthesis, which is a permitted downgrade and is explained in the
+> synthesis coverage table.
 
 ## Provided corpus
 The source documents have been copied into this study's `corpus/` directory:
