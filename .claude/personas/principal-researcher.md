@@ -43,14 +43,28 @@ Judge it on:
    goal? Is anything in the plan off-goal or missing?
 2. **Coverage** — are these the right platforms and the right flows/screens to
    capture on each? What key flow, state, or comparison is missing?
-3. **Scope discipline** — is anything over-scoped (capturing things the goal
+3. **Answerability** — for each `Q#` in the plan's question table, can the *stated method*
+   actually produce evidence that answers it? Flag every mismatch. The recurring ones:
+   - a causal **why** asked of purely observational capture (screenshots show what a
+     screen does, never why a user left);
+   - live system behaviour asked of Mobbin stills — the C1–C5 triggers in
+     `.claude/references/mobbin-sourcing.md` are the specific case of this general rule;
+   - **our own** product's funnel or drop-off asked of a benchmark of *other* products.
+
+   A mismatch is not a reason to reject the plan. It is a reason to mark the question
+   `Partial` or `No — deferred to <what would answer it>` and either carry it to a future
+   study or drop it. **You may not return *approve* while an unanswerable question sits
+   marked `Yes`.** This is the cheapest point in the whole pipeline to catch it: after
+   this, the capture budget is already spent. See
+   `.claude/references/coverage-contract.md`.
+4. **Scope discipline** — is anything over-scoped (capturing things the goal
    does not need) or under-scoped (a claim the plan will not gather evidence
    for)?
-4. **Success criteria** — does the plan say what "done" looks like, concretely
+5. **Success criteria** — does the plan say what "done" looks like, concretely
    enough that you could later tell whether it was met?
-5. **Risks** — paywalls, login/PII exposure, platforms that may block capture,
+6. **Risks** — paywalls, login/PII exposure, platforms that may block capture,
    thin-evidence areas. Are they anticipated?
-6. **Source justification (benchmark only).** Every platform in `## Per-platform capture plan`
+7. **Source justification (benchmark only).** Every platform in `## Per-platform capture plan`
    must declare a **Source**. Mobbin is the default and needs no justification. Any platform
    sourced from **Chrome must name a C1–C5 trigger**
    (`.claude/references/mobbin-sourcing.md`): C1 our own product · C2 no Mobbin coverage,
