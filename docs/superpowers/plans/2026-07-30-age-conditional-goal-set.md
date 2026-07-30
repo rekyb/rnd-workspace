@@ -1017,29 +1017,42 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 After the existing `### Where this PRD departs from its own cited research` block and before `### 2.1 Findings coverage`, add:
 
 ```markdown
-### The teen goal taxonomy is an assumption, not a finding
+### The age-conditional goal set is an assumption, not a finding
 
-**Claim:** a 13-to-17 learner is better served by three broad categories (English &
-Communication, Math & Science, Life skills) than by the six work-oriented goals offered to
-adults.
+**Two claims, both unevidenced.** (i) The goal options a learner is offered should depend on
+the age band they declared. (ii) For a 13-to-17 learner those options should be three broad
+categories: English & Communication, Math & Science, Life skills, rather than the six
+work-oriented goals offered to adults.
 
-**No study in `Informed by:` proposes these three categories.** They are a Program
-Operations and curriculum input, recorded here as an assumption with a validation path, in
-the same register as layout F7 and F9 (adopted as labelled hypotheses) and the Slice 5
-gender step.
+**No study in `Informed by:` proposes either claim.** They are a Program Operations and
+curriculum input, recorded here as assumptions with a validation path, in the register this
+PRD already uses for the Slice 5 gender step: the one intake field with no research behind
+it.
 
-**A same-shape precedent exists and is deliberately not promoted to evidence.** The
-2026-07-28 study observed Khan Academy conditioning its content set on a declared grade
-band (*Grade 9* returning *Pre-algebra, Algebra 1, High school geometry*), and describes its
-Primary / Secondary / University options as "age bands under a different label". That
-sighting sits in the study's gaps-and-caveats section, not in a finding, so it supports the
-*mechanism* of conditioning on a band and says nothing about *these three categories*.
-§2.1 gains no row: no new finding is adopted.
+**What the cited research does support, and it is a finding rather than a caveat.** The
+2026-07-28 study's **F6** records Khan Academy asking an age-band proxy question with its
+payoff stated on the modal itself, *"What grade are you in? / We'll gather the right lessons
+for you"*, and reads that screen's Primary / Secondary / University options as "age bands
+under a different label". That supports one thing: asking a band question, and telling the
+learner the answer will shape what they get. Slice 5 rests on it.
+
+**What the cited research does not support: the conditioning itself.** No finding in any
+cited study observed a platform varying its offered option set by declared band. The single
+place that study mentions a band-to-content branch is in `## Gaps & caveats`, which records
+"Intake branches are mine on both Chrome platforms" and gives Khan Academy's as *Grade 9 →
+Pre-algebra, Algebra 1, High school geometry*. Those three courses were the researcher's own
+selections, not system output, and the same caveat states that "findings about *which*
+content was recommended do not generalise". Reading that walk as observed system behaviour
+would be an overstated first-party claim, so it is not read that way here. §2.1 gains no
+row, because no new finding is adopted.
 
 **Validation path:** the `goal_selected` distribution read by age band, which Slice 6's
-analytics criterion now carries. If 13-to-17 selection concentrates on one category or
-spreads evenly with no signal, the taxonomy is wrong and this is what shows it. Owner:
-Program Operations, jointly with whoever owns the §15 goal-to-course decision.
+analytics criterion now carries. Two outcomes would falsify claim (ii): 13-to-17 selection
+concentrating on a single category, or spreading evenly across all three with no signal.
+**The pass condition is deliberately not stated here.** It needs a share threshold and a
+minimum 13-to-17 sample, and a number invented in this paragraph to look decisive would be
+the fabrication this whole section exists to avoid, so it is an owned §15 decision instead.
+Owner: Program Operations, jointly with whoever owns the §15 goal-to-course decision.
 ```
 
 - [ ] **Step 2: Rewrite Slice 6 (`:762`)**
