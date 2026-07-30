@@ -9,7 +9,7 @@ and close and projects are created. The source of truth is each study's own
 `README.md` (`Status`, `Started`, `Informed by`, `Design system`). The design half has
 no registry by design — see `.claude/references/design-projects.md`.
 
-_Last updated: 2026-07-29_
+_Last updated: 2026-07-30_
 
 ## Active
 
@@ -19,7 +19,6 @@ The currently active studies (several may run in parallel — one line per study
 | Research | Type | Started | Status |
 |---|---|---|---|
 | [Post-Signup Handoff to the First-Run Learning Home](research/2026-07-28-post-signup-handoff-first-run-home/) | benchmark | 2026-07-28 | Active — peer review recorded; next step `/close-research` |
-| [Learning Home Layout & Information Architecture](research/2026-07-29-learning-home-layout-and-ia/) | benchmark | 2026-07-29 | Active — plan revised after Principal Researcher review, awaiting approval |
 
 ## Closed &amp; archived
 
@@ -27,6 +26,7 @@ Past studies, most recent first.
 
 | Research | Type | Started | Closed | Status |
 |---|---|---|---|---|
+| [Learning Home Layout & Information Architecture](research/2026-07-29-learning-home-layout-and-ia/) | benchmark | 2026-07-29 | 2026-07-30 | Closed — Q1,Q5 answered · Q2,Q3,Q4 partial · Q6 withdrawn |
 | [Onboarding Strategy & Patterns](research/2026-07-20-unified-onboarding-synthesis-and-patterns/) | litreview | 2026-07-20 | 2026-07-24 | Closed |
 | [Meaningful Youth Onboarding & the Aha Moment (solve.education)](research/2026-07-17-youth-onboarding-aha-moment/) | benchmark | 2026-07-17 | 2026-07-18 | Closed |
 | [Certificate of Completion vs Badges as Gamification for Teacher EdTech (Indonesia)](research/2026-07-17-certificate-vs-badge-gamification/) | benchmark _(literature review + light platform benchmark)_ | 2026-07-17 | 2026-07-17 | Closed |
