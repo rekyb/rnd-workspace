@@ -20,22 +20,25 @@
   var SKELETON_MIN_MS = 500;   // once shown, hold it this long so it cannot flash
   var FAKE_LATENCY_MS = 1100;  // stands in for the finalization call
 
-  /* Program tasks come from the enrolment payload, not from the markup. */
-  var PROGRAM_TASKS = [
-    { id: 't1', title: 'Complete your registration', done: true },
-    { id: 't2', title: 'Start your first course' },
-    { id: 't3', title: 'Finish three skills' },
-    { id: 't4', title: 'Complete your program' }
-  ];
-
   var state = null;
+  var skeletonShownAt = null;
 
   function $(id) { return document.getElementById(id); }
   function setText(id, v) { var el = $(id); if (el) el.textContent = v; }
+  /* Visibility is a class, not an inline style. An inline display value cannot
+     be reached by a media query, which is what stopped the narrow layout from
+     being expressible at all before Cycle 3. */
+  function show(id, on) { var el = $(id); if (el) el.classList.toggle('is-hidden', !on); }
 
   function load() {
     var raw = null;
     try { raw = sessionStorage.getItem('se_handoff'); } catch (e) {}
+    if (raw) {
+      /* A malformed payload is a finalization failure, not a crash. Parsing it
+         unguarded threw inside boot() and left the learner on the skeleton for
+         ever, which is the permanent-skeleton case Slice 12 forbids. */
+      try { return JSON.parse(raw); } catch (e) { return null; }
+    }
     if (!raw) {
       /* Opened directly, without walking the funnel. Say so rather than
          inventing a learner. */
@@ -46,14 +49,28 @@
         initialCourseId: null,
         courseTitle: null,
         skillTotal: null,
+        firstSkillTitle: null,
+        firstSkillMinutes: null,
         programName: null,
         skillsDone: 0,
         tasksDone: 0,
         firstActionAt: null,
-        standalone: true
+        standalone: true,
+        programTasks: null,
+        taskTotal: null
       };
     }
-    return JSON.parse(raw);
+  }
+
+  /* The recoverable failure state. The shell stays, the skeleton stops, and the
+     learner is told the cause and offered a retry (Slice 12, error state). */
+  function renderError(message) {
+    show('home_skeleton', false);
+    if (message) setText('home_error_body', message);
+    show('home_error', true);
+    setText('loading_greeting', 'Something went wrong');
+    setText('loading_sub', '');
+    showScreen('home_loading');
   }
 
   function save() {
@@ -77,6 +94,21 @@
     return left + ' ' + (left === 1 ? one : many) + ' to go';
   }
 
+  /* ---- the primary action's label ----
+     Names one specific, time-bounded item rather than offering a course
+     (PRD Slice 13, from layout F6). An absent duration and a null duration are
+     treated identically and the cost is omitted: a replayed handoff written
+     before the field existed has no key at all, and a client that
+     distinguished the two would show a cost line to some learners and not
+     others on the same code path. A guessed estimate is the fabrication class
+     this build exists to remove. */
+  function actionLabel(first, item, minutes) {
+    var verb = first ? 'Start' : 'Continue';
+    if (!item) return verb + ' ' + state.courseTitle;
+    var hasCost = typeof minutes === 'number' && minutes > 0;
+    return verb + ': ' + item + (hasCost ? ' · ' + minutes + ' min' : '');
+  }
+
   function renderHome() {
     var first = state.firstActionAt === null;
     var isProgram = state.entryPath === 'program';
@@ -93,9 +125,11 @@
         : 'Picking up where you stopped.'));
 
     /* Up Next, or the unmapped empty state. Never both, never a substitute. */
-    $('home_up_next').style.display = mapped ? 'block' : 'none';
-    $('home_unmapped').style.display = mapped ? 'none' : 'block';
-    $('start-lesson-btn').style.display = mapped ? 'inline-flex' : 'none';
+    show('home_up_next', mapped);
+    show('home_unmapped', !mapped);
+    /* Gated on the same boolean as the panels above, so the mapped action and
+       the unmapped recovery can never both be filled controls on one screen. */
+    show('start-lesson-btn', mapped);
 
     if (mapped) {
       var done = state.skillsDone;
@@ -105,30 +139,50 @@
       setText('home_course_count', done + ' of ' + total + ' skills');
       setText('home_course_condition', conditionFor(done, total, 'skill', 'skills'));
       $('home_course_fill').style.width = Math.round((done / total) * 100) + '%';
-      setText('start-lesson-btn', (first ? 'Start ' : 'Continue ') + state.courseTitle);
+      setText('start-lesson-btn',
+        actionLabel(first, state.firstSkillTitle, state.firstSkillMinutes));
     }
 
     /* Program tasks */
     var tasks = $('home_program_tasks');
-    tasks.style.display = isProgram ? 'block' : 'none';
+    show('home_program_tasks', isProgram);
+
+    /* The dominant object depends on the entry path (PRD 11.1). A program
+       learner's assigned work outranks a goal-derived suggestion, so the task
+       panel moves above Up Next; an organic learner has no assigned work and
+       Up Next stays first. Moving the node keeps one markup order that the
+       data reorders, rather than two branches that can drift apart. */
+    var main = tasks.parentNode;
     if (isProgram) {
-      var tDone = state.tasksDone + 1; // registration is complete on arrival
-      var tTotal = PROGRAM_TASKS.length;
+      main.insertBefore(tasks, $('home_up_next'));
+    } else {
+      main.insertBefore($('home_up_next'), tasks);
+    }
+
+    if (isProgram) {
+      /* The task list and its denominator arrive on the handoff, written at
+         finalization from the enrolment. They were previously a constant in
+         this file, which made the denominator a client-side literal and
+         pre-checked the first row — structurally the same defect as the
+         fabricated progress Cycle 2 removed, however defensible the content. */
+      var taskRows = state.programTasks || [];
+      var tDone = taskRows.filter(function (t, i) { return t.done || i <= state.tasksDone - 1; }).length;
+      var tTotal = state.taskTotal || taskRows.length;
       setText('home_program_name', state.programName);
       setText('home_program_count', tDone + ' of ' + tTotal + ' tasks');
       setText('home_program_condition', conditionFor(tDone, tTotal, 'task', 'tasks'));
 
       var list = $('home_task_list');
       list.textContent = '';
-      PROGRAM_TASKS.forEach(function (task, i) {
-        var complete = task.done || i <= state.tasksDone;
+      taskRows.forEach(function (task, i) {
+        var complete = task.done || i <= state.tasksDone - 1;
         var row = document.createElement('label');
-        row.style.cssText = 'display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 500;';
+        row.className = 'home-task-row';
         var box = document.createElement('input');
         box.type = 'checkbox';
         box.disabled = true;
         box.checked = complete;
-        box.style.cssText = 'width: 20px; height: 20px; accent-color: var(--green);';
+        box.className = 'home-task-box';
         row.appendChild(box);
         row.appendChild(document.createTextNode(' ' + task.title));
         list.appendChild(row);
@@ -139,14 +193,20 @@
   }
 
   function openSkill() {
-    setText('skill_course', state.courseTitle);
-    setText('skill_title', 'Skill ' + (state.skillsDone + 1) + ' of ' + state.skillTotal);
+    setText('skill_course', state.courseTitle + ' · skill ' + (state.skillsDone + 1) + ' of ' + state.skillTotal);
+    /* The destination names the same item the action named. Only the first
+       skill has a title in the handoff, so later ones fall back to their
+       position rather than borrowing a name that is not theirs. */
+    setText('skill_title', (state.skillsDone === 0 && state.firstSkillTitle)
+      ? state.firstSkillTitle
+      : 'Skill ' + (state.skillsDone + 1));
     showScreen('skill_screen');
   }
 
   function completeSkill() {
     if (state.skillsDone < state.skillTotal) state.skillsDone += 1;
-    if (state.entryPath === 'program' && state.tasksDone < PROGRAM_TASKS.length - 1) {
+    var tTotal = state.taskTotal || (state.programTasks ? state.programTasks.length : 0);
+    if (state.entryPath === 'program' && state.tasksDone < tTotal) {
       state.tasksDone += 1;
     }
     /* This is what stops every learner being "first run" forever, and what makes
@@ -156,26 +216,86 @@
     renderHome();
   }
 
+  /* ---- the labelled wait, with both numbers actually applied ----
+     Slice 12's two-number rule. The skeleton is revealed only if the wait
+     outlasts SKELETON_DELAY_MS, and once revealed it is held SKELETON_MIN_MS
+     from the moment it appeared. The earlier version shipped the skeleton
+     visible and computed its reveal time in advance, so the delay suppressed
+     nothing and the hold always resolved to zero: the constants were declared
+     and neither was in force. */
+  function finalize(latencyMs, shouldFail) {
+    var revealTimer = setTimeout(function () {
+      skeletonShownAt = Date.now();
+      show('home_skeleton', true);
+    }, SKELETON_DELAY_MS);
+
+    setTimeout(function () {
+      clearTimeout(revealTimer);
+      var hold = skeletonShownAt === null
+        ? 0
+        : Math.max(0, skeletonShownAt + SKELETON_MIN_MS - Date.now());
+      setTimeout(function () {
+        if (shouldFail) {
+          renderError('The connection dropped before your profile was saved. Nothing was lost.');
+          return;
+        }
+        show('home_skeleton', false);
+        renderHome();
+      }, hold);
+    }, latencyMs);
+  }
+
   function boot() {
     state = load();
-    setText('loading_greeting', 'Setting things up, ' + state.displayName);
 
+    /* Prototype controls, read from the query string: `?fail=1` exercises the
+       recoverable failure state and `?latency=200` a wait short enough that the
+       skeleton must never appear. Both are real code paths rather than debug
+       switches that bypass the render. */
+    var params = new URLSearchParams(window.location.search);
+    var shouldFail = params.get('fail') === '1' || state === null;
+    var latency = parseInt(params.get('latency'), 10);
+    if (isNaN(latency)) latency = FAKE_LATENCY_MS;
+
+    if (state === null) {
+      /* A payload that will not parse is a failed finalization, not a crash. */
+      renderError('Your setup data could not be read. Nothing was lost, and you can start again.');
+      wire();
+      return;
+    }
+
+    setText('loading_greeting', 'Setting things up, ' + state.displayName);
+    wire();
+
+    /* A learner returning to an account that already has history skips the
+       labelled wait: there is nothing to prepare. */
+    if (state.firstActionAt !== null && !shouldFail) { renderHome(); return; }
+
+    finalize(latency, shouldFail);
+  }
+
+  function wire() {
     $('start-lesson-btn').addEventListener('click', openSkill);
     $('skill_done_btn').addEventListener('click', completeSkill);
     $('skill_back_btn').addEventListener('click', renderHome);
     $('unmapped_choose_btn').addEventListener('click', function () {
       window.location.href = 'onboarding.html';
     });
+    $('home_retry_btn').addEventListener('click', function () {
+      window.location.href = window.location.pathname;
+    });
 
-    /* A learner returning to an account that already has history skips the
-       labelled wait: there is nothing to prepare. */
-    if (state.firstActionAt !== null) { renderHome(); return; }
-
-    var shownAt = Date.now() + SKELETON_DELAY_MS;
-    setTimeout(function () {
-      var hold = Math.max(0, shownAt + SKELETON_MIN_MS - Date.now());
-      setTimeout(renderHome, hold);
-    }, FAKE_LATENCY_MS);
+    /* Every destination is focusable, so every destination answers. A control
+       that takes focus and does nothing is a dead end; these say why they do
+       nothing instead of swallowing the click. */
+    var note = $('home_nav_note');
+    document.querySelectorAll('.home-nav-item[data-stub]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (!note) return;
+        setText('home_nav_note', b.getAttribute('data-stub') + ' is out of scope for this prototype.');
+        show('home_nav_note', true);
+      });
+    });
   }
 
   if (document.readyState === 'loading') {

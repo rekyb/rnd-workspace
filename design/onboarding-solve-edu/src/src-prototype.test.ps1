@@ -41,6 +41,37 @@ function Check([bool]$Condition, [string]$Message) {
 
 function Show-Group([string]$Name) { Write-Host "-- $Name" }
 
+# ---------------------------------------------------------------- 0
+Show-Group 'The scripts actually parse'
+
+# This group exists because a 2026-07-30 edit closed an array with a brace,
+# main.js failed to parse, every handler failed to bind, and "Get started" did
+# nothing — while all 80 text-pattern checks stayed green. A suite that reads
+# source as text cannot tell working code from a syntax error. If Node is
+# absent the checks are skipped loudly rather than silently passing, because a
+# skipped check that reports success is the failure mode this whole file is
+# written against.
+$node = Get-Command node -ErrorAction SilentlyContinue
+if ($node) {
+  # $ErrorActionPreference is 'Stop' for this file, and a native command that
+  # writes to stderr becomes a terminating error under it — so the first failing
+  # parse aborted the run instead of reporting a failed check. Relaxed around
+  # the node calls only, with every stream discarded, so the exit code is the
+  # signal. A check that crashes the suite is not a check that reports.
+  $prevEAP = $ErrorActionPreference
+  $ErrorActionPreference = 'Continue'
+  foreach ($f in 'main.js', 'home.js', 'data.js') {
+    $path = Join-Path $PSScriptRoot $f
+    & node --check $path *> $null
+    Check ($LASTEXITCODE -eq 0) "$f does not parse. Nothing in it runs, so every control on the page is inert"
+  }
+  $ErrorActionPreference = $prevEAP
+} else {
+  Write-Host '   SKIPPED - node not on PATH, so the scripts were not parsed'
+  $script:Failures.Add('node is unavailable, so the parse checks did not run. Treat this suite as incomplete') | Out-Null
+  $script:Checks++
+}
+
 # ---------------------------------------------------------------- 1
 Show-Group 'No fabricated progress reaches the learner'
 
@@ -138,10 +169,152 @@ Check ($all -notmatch $emailPattern) `
   'an address that is neither a placeholder nor the published org contact appears in the source'
 Check ($homeRendered -notmatch '(?i)(funder|grant number)') 'internal specifics appear in home.html'
 
+# ---------------------------------------------------------------- 9
+Show-Group 'The navigation says where the learner is, to everyone'
+
+# Layout F2: every benchmarked platform marks the current destination; ours
+# marked it visually and told assistive technology nothing. The visible half
+# already shipped, so what these guard is the half that was missing.
+Check ($homeRendered -match '<nav[\s>]') `
+  'home.html has no nav landmark. Destinations in a bare aside are not a navigation'
+Check ($homeRendered -match 'aria-current="page"') `
+  'home.html marks no current destination programmatically (layout F2, WCAG 2.2 SC 2.4.8 techniques G128/ARIA26)'
+Check (([regex]::Matches($homeRendered, 'aria-current="page"')).Count -eq 3) `
+  'not every view marks its current destination. All three carry the same navigation, so all three must mark it'
+Check ($homeRendered -notmatch '<div class="home-nav-item') `
+  'a destination is still a non-semantic div. It must be operable by keyboard, not merely clickable'
+# Count icon spans whose own tag lacks aria-hidden, not every icon span.
+$bareIcons = ([regex]::Matches($homeRendered, '<span[^>]*material-symbols-rounded(?![^>]*aria-hidden)[^>]*>')).Count
+Check ($bareIcons -eq 0) `
+  "$bareIcons icon spans carry no aria-hidden. Without it a destination is announced as 'emoji_events Achievements'"
+
+# ---------------------------------------------------------------- 10
+Show-Group 'Fill is spent once, so it still ranks something'
+
+# Layout F4: fill is a ranking signal only while exactly one control owns it.
+# The Up Next card was a filled purple block directly above a filled purple
+# button, which is the two-signal defect the benchmark measured on our own home.
+Check ($homeRendered -notmatch 'background:\s*var\(--purple\)') `
+  'a content block is filled with the primary colour again. Only the primary action may carry fill (layout F4)'
+Check ($styles -match '\.up-next-eyebrow') 'styles.css has no Up Next surface treatment'
+# The invariant is per data state, not per file: the Learning Home carries two
+# filled buttons in markup (the mapped action and the unmapped recovery) and
+# home.js gates them on the same boolean with opposite senses, so exactly one
+# is ever reachable. Counting the whole file would also sweep in the skill
+# screen, which is a different surface.
+$homeSection = ''
+if ($homeRendered -match '(?s)id="learning_home"(.*?)id="skill_screen"') { $homeSection = $Matches[1] }
+Check ($homeSection.Length -gt 0) 'could not isolate the learning_home markup'
+$primaryButtons = ([regex]::Matches($homeSection, 'class="btn btn-primary')).Count
+Check ($primaryButtons -eq 2) `
+  "the Learning Home carries $primaryButtons filled buttons in markup; expected the mapped action plus the unmapped recovery"
+Check ($homeCode -match "show\('home_unmapped', !mapped\)" -and $homeCode -match "show\('start-lesson-btn', mapped\)") `
+  'the mapped action and the unmapped recovery are not gated on the same boolean, so both could render at once'
+# Measured at 360px: .btn sets display: inline-flex, which outranks [hidden] and
+# an unweighted class, so the "hidden" primary action stayed on screen beside
+# the unmapped recovery and the surface carried two filled controls.
+Check ($styles -match '(?s)\.is-hidden,\s*\[hidden\]\s*\{\s*display:\s*none\s*!important') `
+  'hiding is not enforced against .btn display, so a hidden control can still render'
+Check ($homeCode -notmatch "\.hidden = ") `
+  'home.js hides a control with the hidden property alone, which a display rule overrides'
+
+# ---------------------------------------------------------------- 11
+Show-Group 'The narrow layout is a specified state, not an afterthought'
+
+# Slice 14. Measured 2026-07-30: before this cycle no media query in the file
+# touched the Learning Home shell, so a 360px viewport rendered a 240px rail
+# against what was left. A criterion that only meets cases which cannot fail it
+# gates nothing, so these assert the rules exist.
+# Matched on the declaration itself, not on "a 767px query appears somewhere and
+# .home-card appears somewhere later" — a lazy cross-file match passed this even
+# with the narrow block deleted, which is the false-pass this suite exists to
+# prevent. The base rule is flex-direction: row; only the narrow one is column.
+Check ($styles -match '\.home-card\s*\{[^}]*flex-direction:\s*column') `
+  'styles.css has no narrow-width rule stacking the Learning Home shell'
+Check ($styles -match '\.home-nav\s*\{[^}]*flex-direction:\s*row') `
+  'the destination row never becomes horizontal, so the rail still eats the width at 360px'
+Check ($styles -match '\.home-sidebar\s*\{[^}]*flex-shrink:\s*0') `
+  'the rail can compress below its declared width, so the wide layout degrades into a squeeze'
+Check ($styles -match '100dvh') `
+  'no dynamic viewport unit. A fixed vh strands controls under Android browser chrome and the keyboard'
+Check ($styles -notmatch 'transform:\s*translateY\(0\)\s*scale\(1\)') `
+  'the entry animation still ends on a computed transform, which makes every card a containing block for position: fixed'
+Check ($styles -match '(?s)\.modal-overlay\s*\{[^}]*overflow-y:\s*auto') `
+  'a modal taller than the viewport is clipped with no scroll path, which puts its primary action out of reach'
+Check ($homeCode -notmatch "style\.cssText") `
+  'home.js writes inline styles at runtime. A media query cannot reach one, which is what blocked the narrow layout'
+
+# ---------------------------------------------------------------- 12
+Show-Group 'The first action names one thing and does not invent its cost'
+
+# Layout F6, adopted on its narrow half: name the specific item and bound it.
+# The duration is nullable, and an unknown duration is omitted rather than
+# guessed. That is the unmapped-goal rule applied to time instead of content.
+Check ($mainCode -match 'firstSkillMinutes') `
+  'main.js does not carry a duration for the first item, so the action cannot bound its cost'
+Check ($mainCode -match 'firstSkillMinutes:\s*null') `
+  'every course has a duration, so the omit-rather-than-default path is unreachable through real data'
+Check ($homeCode -match 'function actionLabel') 'home.js has no action-label builder'
+Check ($homeCode -match "typeof minutes === 'number'") `
+  'home.js does not test the duration before stating it. An absent key and a null must behave identically'
+Check ($homeCode -notmatch "minutes \|\| \d") `
+  'home.js defaults a missing duration. A guessed estimate is the fabrication class this build removes'
+
+# ---------------------------------------------------------------- 13
+Show-Group 'The gender opt-out is a first-class option'
+
+# A shipped Slice 5 criterion requires it to be styled at the same weight as
+# the other options. It was outside the grid at a lighter weight, smaller size
+# and muted colour, at every width.
+Check ($onboarding -match '(?s)<div class="gender-grid">.*?gender-btn-prefer.*?</div>') `
+  'the opt-out sits outside the option grid, which stacks it last as an afterthought'
+Check ($styles -notmatch '(?s)\.gender-card-optout\s*\{[^}]*font:\s*400') `
+  'the opt-out is still set at a lighter weight than the options it sits beside'
+
+# ---------------------------------------------------------------- 14
+Show-Group 'The wait, the failure, and the dead ends are all real'
+
+# Each of these was found by the Principal Designer Mode T review on 2026-07-30
+# against a build whose suite was green. Group 6 asserted the two skeleton
+# constants existed and neither was in force; nothing asserted an error state
+# at all. Constants are not behaviour, and a criterion nothing tests is a
+# criterion nothing gates.
+Check ($homeHtml -match 'id="home_skeleton" class="is-hidden"') `
+  'the skeleton ships visible, so the 400ms delay suppresses nothing and cannot prevent a flash'
+Check ($homeCode -match 'skeletonShownAt = Date\.now\(\)') `
+  'the reveal time is not recorded at reveal, so the 500ms hold is computed from a time the skeleton was never shown'
+Check ($homeCode -match 'skeletonShownAt === null') `
+  'a wait shorter than the delay still pays the hold, which is the flash the two-number rule exists to prevent'
+Check ($homeHtml -match 'id="home_error"') `
+  'home.html has no error state. Slice 12 requires a recoverable failure on this surface, not a permanent skeleton'
+Check ($homeRendered -match 'role="alert"') `
+  'the failure is not announced. A learner using assistive technology is left on a skeleton with no message'
+Check ($homeHtml -match 'id="home_retry_btn"') 'the error state offers no recovery action'
+Check ($homeCode -match 'function renderError') 'home.js has no error branch, so the error markup is unreachable'
+Check ($homeCode -match '(?s)try \{ return JSON\.parse\(raw\); \} catch') `
+  'the handoff is parsed unguarded. A malformed payload throws in boot() and strands the learner on the skeleton'
+Check ($homeCode -notmatch 'var PROGRAM_TASKS') `
+  'the task list is a constant in the view again. Its denominator must arrive on the handoff, not be declared by the screen'
+Check ($mainCode -match 'programTasks:') `
+  'main.js does not write the assigned-task payload at finalization'
+Check ($mainCode -match 'taskTotal:') `
+  'main.js does not write the task denominator, so the home would have to invent one'
+Check ($homeRendered -match 'class="home-brand" role="banner"') `
+  'the brand carries no banner role, so it is product-owned chrome above the learner next action in document order'
+Check ($styles -match '(?s)@media[^{]*767px[^@]*\.home-brand\s*\{\s*display:\s*none') `
+  'the brand is not relocated at narrow width, so it reflows above the learner next action'
+Check ($homeRendered -notmatch '<aside class="home-sidebar">') `
+  'primary navigation sits inside a complementary landmark'
+$stubs = ([regex]::Matches($homeRendered, 'data-stub=')).Count
+Check ($stubs -eq 9) `
+  "$stubs destinations declare an out-of-scope response; expected 9 (three per view). A focusable control that answers nothing is a dead end"
+Check ($homeCode -match 'is out of scope for this prototype') `
+  'the out-of-scope destinations swallow the click instead of saying why nothing happened'
+
 # ---------------------------------------------------------------- report
 Write-Host ''
 if ($script:Failures.Count -eq 0) {
-  Write-Host "src-prototype.test.ps1 PASSED - $($script:Checks) checks, 8 groups"
+  Write-Host "src-prototype.test.ps1 PASSED - $($script:Checks) checks, 15 groups"
   exit 0
 }
 Write-Host "src-prototype.test.ps1 FAILED - $($script:Failures.Count) of $($script:Checks) checks"

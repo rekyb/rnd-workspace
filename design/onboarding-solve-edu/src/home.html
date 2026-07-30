@@ -12,9 +12,22 @@
 </head>
 <body>
 
-  <!-- No global header on the home. The sidebar already carries the brand and
-       the navigation, so a top bar would repeat both and push the first action
-       further down the fold. -->
+  <!-- No global header on the home. The shell already carries the brand and the
+       navigation, so a top bar would repeat both and push the first action
+       further down.
+
+       CYCLE 3 (narrow width). Three things changed here, each traceable:
+        - The navigation is a real <nav> landmark of <button> elements, and the
+          current destination carries aria-current="page". PRD Slice 14, from
+          layout F2: every benchmarked platform marks where the learner is; our
+          own home marked it visually and told assistive technology nothing.
+        - Every icon is aria-hidden. Without it the accessible name of a
+          destination is "emoji_events Achievements", and the visible label
+          renders as that literal text until the icon font loads.
+        - The content column is authored in classes, not inline styles. That is
+          not tidying: a media query cannot reach an inline style, so this was
+          the precondition for the surface working at 360px at all.
+       =================================================================== -->
 
   <div class="app-container">
 
@@ -26,22 +39,40 @@
          it can never flash.
          =================================================================== -->
     <div id="home_loading" class="card home-card active">
-      <aside class="home-sidebar">
-        <div style="font-weight: 800; font-size: 20px; color: var(--purple); margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
-          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="" style="height: 24px;">
+      <div class="home-sidebar">
+        <div class="home-brand" role="banner">
+          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="Solve Education!" class="home-brand-logo">
         </div>
-        <div class="home-nav-item active"><span class="material-symbols-rounded">home</span> Home</div>
-        <div class="home-nav-item"><span class="material-symbols-rounded">school</span> Courses</div>
-        <div class="home-nav-item"><span class="material-symbols-rounded">emoji_events</span> Achievements</div>
-        <div style="flex: 1;"></div>
-        <div class="home-nav-item"><span class="material-symbols-rounded">settings</span> Settings</div>
-      </aside>
-      <div class="home-main" role="status" aria-live="polite">
-        <h1 class="title" style="margin-bottom: 4px;" id="loading_greeting">Setting up your account</h1>
-        <p class="subtitle">Preparing your first course</p>
-        <div class="home-skel home-skel-title"></div>
-        <div class="home-skel home-skel-line"></div>
-        <div class="home-skel home-skel-line"></div>
+        <nav class="home-nav" aria-label="Main">
+          <button type="button" class="home-nav-item active" aria-current="page"><span class="material-symbols-rounded" aria-hidden="true">home</span> Home</button>
+          <button type="button" class="home-nav-item" data-stub="Courses"><span class="material-symbols-rounded" aria-hidden="true">school</span> Courses</button>
+          <button type="button" class="home-nav-item" data-stub="Achievements"><span class="material-symbols-rounded" aria-hidden="true">emoji_events</span> Achievements</button>
+          <span class="home-nav-spacer"></span>
+          <button type="button" class="home-nav-item" data-stub="Settings"><span class="material-symbols-rounded" aria-hidden="true">settings</span> Settings</button>
+        </nav>
+      </div>
+      <div class="home-main">
+        <div role="status" aria-live="polite">
+          <h1 class="title home-loading-title" id="loading_greeting">Setting up your account</h1>
+          <p class="subtitle" id="loading_sub">Preparing your first course</p>
+        </div>
+        <!-- The skeleton starts hidden and home.js reveals it only if the wait
+             outlasts 400ms, then holds it 500ms from the moment it was actually
+             revealed. Shipping it visible made the delay suppress nothing. -->
+        <div id="home_skeleton" class="is-hidden">
+          <div class="home-skel home-skel-title"></div>
+          <div class="home-skel home-skel-line"></div>
+          <div class="home-skel home-skel-line"></div>
+        </div>
+        <!-- Finalization failure is recoverable on this surface. The shell stays,
+             the skeleton stops, and the learner is told the cause and given a
+             retry rather than being left on a skeleton that never resolves. -->
+        <section id="home_error" class="home-panel home-empty is-hidden" role="alert" aria-labelledby="home_error_title">
+          <span class="material-symbols-rounded home-empty-icon" aria-hidden="true">cloud_off</span>
+          <h2 class="home-empty-title" id="home_error_title">We could not finish setting up your account</h2>
+          <p class="home-empty-body" id="home_error_body">The connection dropped before your profile was saved. Nothing was lost.</p>
+          <button class="btn btn-primary" id="home_retry_btn">Try again</button>
+        </section>
       </div>
     </div>
 
@@ -50,65 +81,96 @@
          One screen, two data states. At first run every counter reads zero
          with its condition in the same slot; after the first skill the same
          slots carry real values. Identical markup either way.
+
+         Cycle 3 block order (layout F3, stated ordinally): the learner's own
+         content comes first and nothing product-owned precedes their next
+         action. The brand carries an explicit banner role, which is the
+         exemption Slice 12's criterion names, and the narrow layout removes it
+         from the flow entirely — the "Relocated" disposition §11.1 assigns it.
+         An earlier version of this comment claimed the shell had a banner
+         region when the markup had none; the role is now real rather than
+         asserted, and the shell is a div because primary navigation must not
+         sit inside a complementary landmark.
          =================================================================== -->
     <div id="learning_home" class="card home-card">
-      <aside class="home-sidebar">
-        <div style="font-weight: 800; font-size: 20px; color: var(--purple); margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
-          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="" style="height: 24px;">
+      <div class="home-sidebar">
+        <div class="home-brand" role="banner">
+          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="Solve Education!" class="home-brand-logo">
         </div>
-        <div class="home-nav-item active"><span class="material-symbols-rounded">home</span> Home</div>
-        <div class="home-nav-item"><span class="material-symbols-rounded">school</span> Courses</div>
-        <div class="home-nav-item"><span class="material-symbols-rounded">emoji_events</span> Achievements</div>
-        <div style="flex: 1;"></div>
-        <div class="home-nav-item"><span class="material-symbols-rounded">settings</span> Settings</div>
-      </aside>
+        <nav class="home-nav" aria-label="Main">
+          <button type="button" class="home-nav-item active" aria-current="page"><span class="material-symbols-rounded" aria-hidden="true">home</span> Home</button>
+          <button type="button" class="home-nav-item" data-stub="Courses"><span class="material-symbols-rounded" aria-hidden="true">school</span> Courses</button>
+          <button type="button" class="home-nav-item" data-stub="Achievements"><span class="material-symbols-rounded" aria-hidden="true">emoji_events</span> Achievements</button>
+          <span class="home-nav-spacer"></span>
+          <button type="button" class="home-nav-item" data-stub="Settings"><span class="material-symbols-rounded" aria-hidden="true">settings</span> Settings</button>
+        </nav>
+      </div>
 
       <div class="home-main">
+        <!-- Where an out-of-scope destination reports itself. A control that is
+             focusable and silent is a dead end; this one says why. -->
+        <p id="home_nav_note" class="home-nav-note is-hidden" role="status" aria-live="polite"></p>
         <!-- Greeting. True on first run: a new account is never greeted as a
              returning one. No streak pill, no points pill: those are non-goals,
              and a locked leaderboard was held rather than adopted. -->
-        <div style="margin-bottom: 32px;">
-          <h1 id="home_greeting" class="title" style="margin-bottom: 4px;"></h1>
-          <p id="home_sub" class="subtitle" style="margin-bottom: 0;"></p>
+        <div class="home-greet">
+          <h1 id="home_greeting" class="title home-greet-title"></h1>
+          <p id="home_sub" class="subtitle home-greet-sub"></p>
         </div>
 
-        <!-- UP NEXT: the one primary action, resolved from the stored course id -->
-        <div id="home_up_next" style="background: var(--purple); border-radius: 20px; padding: 24px; color: #fff; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(142,39,155,0.2);">
-          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8;">Up Next</div>
-          <div id="home_course_title" style="font-size: 24px; font-weight: 700; margin: 8px 0 4px;"></div>
-          <div id="home_course_unit" style="font-size: 14px; opacity: 0.85; margin-bottom: 16px;"></div>
+        <!-- PROGRAM TASKS: from the enrolment, never hard-coded.
+             For a program learner this is the dominant object and Up Next is
+             sub-levelled below it (PRD 11.1). A learner sent here by a
+             facilitator has assigned work; a goal-derived suggestion does not
+             outrank it. home.js moves this node, so the order is data-driven
+             rather than two markup branches that can drift apart. -->
+        <section id="home_program_tasks" class="home-panel is-hidden" aria-labelledby="home_program_heading">
+          <h2 class="home-panel-title" id="home_program_heading"><span id="home_program_name"></span> tasks</h2>
+          <p id="home_program_count" class="home-panel-count"></p>
+          <p id="home_program_condition" class="home-panel-condition"></p>
+          <div id="home_task_list" class="home-task-list"></div>
+        </section>
 
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.2); border-radius: 99px; overflow: hidden;">
-              <div id="home_course_fill" style="width: 0%; height: 100%; background: var(--pri); transition: width 0.5s var(--easing-spring);"></div>
+        <!-- UP NEXT: the one primary action, resolved from the stored course id.
+
+             CYCLE 3: this card used to be a filled purple block sitting directly
+             above a filled purple button. Fill is a ranking signal only while
+             exactly one control owns it (layout F4) — a second filled element
+             turns a parallel visual search into a serial one, so the signal
+             stops ranking anything. The card is now a surface; the button below
+             is the only filled control on the screen. -->
+        <section id="home_up_next" class="home-panel up-next" aria-labelledby="home_up_next_heading">
+          <p class="up-next-eyebrow" id="home_up_next_heading">Up Next</p>
+          <h2 id="home_course_title" class="up-next-title"></h2>
+          <p id="home_course_unit" class="up-next-unit"></p>
+
+          <div class="up-next-progress">
+            <div class="up-next-track">
+              <div id="home_course_fill" class="up-next-fill"></div>
             </div>
-            <div id="home_course_count" style="font-size: 13px; font-weight: 600; white-space: nowrap;"></div>
+            <p id="home_course_count" class="up-next-count"></p>
           </div>
           <!-- The countable condition, in the same slot as the zero. This is the
                line that makes a zero actionable rather than merely honest. -->
-          <div id="home_course_condition" style="font-size: 13px; opacity: 0.85; margin-top: 10px;"></div>
-        </div>
+          <p id="home_course_condition" class="up-next-condition"></p>
+        </section>
 
-        <!-- UNMAPPED GOAL: substitute nothing -->
-        <div id="home_unmapped" style="display: none; background: white; border: 1px solid var(--hair); border-radius: 20px; padding: 32px; margin-bottom: 24px; text-align: center;">
-          <span class="material-symbols-rounded" style="font-size: 40px; color: var(--sub);">help</span>
-          <div style="font-size: 18px; font-weight: 800; color: var(--ink); margin: 8px 0;">We could not match your goal to a course yet</div>
-          <p style="color: var(--sub); font-size: 14px; margin-bottom: 20px;">
+        <!-- UNMAPPED GOAL: substitute nothing.
+             In this data state this panel is the dominant object, at the same
+             weight as the card it replaces. An empty state demoted at narrow
+             width would reintroduce the silent substitution from the other
+             side. -->
+        <section id="home_unmapped" class="home-panel home-empty is-hidden" aria-labelledby="home_unmapped_heading">
+          <span class="material-symbols-rounded home-empty-icon" aria-hidden="true">help</span>
+          <h2 class="home-empty-title" id="home_unmapped_heading">We could not match your goal to a course yet</h2>
+          <p class="home-empty-body">
             Your goal was saved, but no course is mapped to it. Nothing has been picked for you,
             because a course you did not choose is not a starting point.
           </p>
           <button class="btn btn-primary" id="unmapped_choose_btn">Choose a starting point</button>
-        </div>
+        </section>
 
-        <!-- PROGRAM TASKS: from the enrolment, never hard-coded -->
-        <div id="home_program_tasks" style="display: none; background: white; border: 1px solid var(--hair); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
-          <div style="font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 4px;"><span id="home_program_name"></span> tasks</div>
-          <p id="home_program_count" style="color: var(--sub); font-size: 14px; margin-bottom: 4px;"></p>
-          <p id="home_program_condition" style="color: var(--sub); font-size: 13px; margin-bottom: 20px;"></p>
-          <div id="home_task_list" style="display: flex; flex-direction: column; gap: 16px;"></div>
-        </div>
-
-        <button class="btn btn-primary" style="font-size: 18px;" id="start-lesson-btn"></button>
+        <button class="btn btn-primary home-primary-action" id="start-lesson-btn"></button>
       </div>
     </div>
 
@@ -116,31 +178,38 @@
          FIRST LEARNING ACTION
          The stub the primary action routes into. It exists so the action has
          somewhere real to go, and so finishing it can change the home.
+
+         Not production scope — the lesson player is a PRD non-goal — but it
+         carries the same navigation as the other two views, so the landmark
+         and aria-current work covers all three rather than leaving one
+         inconsistent in the demo the prototype exists to serve.
          =================================================================== -->
     <div id="skill_screen" class="card home-card">
-      <aside class="home-sidebar">
-        <div style="font-weight: 800; font-size: 20px; color: var(--purple); margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
-          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="" style="height: 24px;">
+      <div class="home-sidebar">
+        <div class="home-brand" role="banner">
+          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="Solve Education!" class="home-brand-logo">
         </div>
-        <div class="home-nav-item"><span class="material-symbols-rounded">home</span> Home</div>
-        <div class="home-nav-item active"><span class="material-symbols-rounded">school</span> Courses</div>
-        <div class="home-nav-item"><span class="material-symbols-rounded">emoji_events</span> Achievements</div>
-        <div style="flex: 1;"></div>
-        <div class="home-nav-item"><span class="material-symbols-rounded">settings</span> Settings</div>
-      </aside>
+        <nav class="home-nav" aria-label="Main">
+          <button type="button" class="home-nav-item" data-stub="Home"><span class="material-symbols-rounded" aria-hidden="true">home</span> Home</button>
+          <button type="button" class="home-nav-item active" aria-current="page"><span class="material-symbols-rounded" aria-hidden="true">school</span> Courses</button>
+          <button type="button" class="home-nav-item" data-stub="Achievements"><span class="material-symbols-rounded" aria-hidden="true">emoji_events</span> Achievements</button>
+          <span class="home-nav-spacer"></span>
+          <button type="button" class="home-nav-item" data-stub="Settings"><span class="material-symbols-rounded" aria-hidden="true">settings</span> Settings</button>
+        </nav>
+      </div>
       <div class="home-main">
-        <div style="margin-bottom: 24px;">
-          <p class="subtitle" id="skill_course" style="margin-bottom: 4px;"></p>
-          <h1 class="title" id="skill_title" style="margin-bottom: 0;"></h1>
+        <div class="home-greet">
+          <p class="subtitle home-greet-sub" id="skill_course"></p>
+          <h1 class="title home-greet-title" id="skill_title"></h1>
         </div>
-        <div style="background: white; border: 1px solid var(--hair); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
-          <p style="color: var(--sub); font-size: 15px; margin: 0;">
+        <section class="home-panel">
+          <p class="home-panel-body">
             Lesson content is out of scope for this prototype. What matters here is that the
             primary action resolved to a real destination, and that finishing it changes the
             home you came from.
           </p>
-        </div>
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        </section>
+        <div class="home-action-row">
           <button class="btn btn-primary" id="skill_done_btn">Mark this skill complete</button>
           <button class="btn btn-secondary" id="skill_back_btn">Back without finishing</button>
         </div>

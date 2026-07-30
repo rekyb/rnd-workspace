@@ -705,15 +705,32 @@ const progressMap = {
      resolved and STORED now rather than recomputed at render time, so
      changing the course map later cannot silently change this learner's
      first action (PRD Slice 13). */
+  /* firstSkill and firstSkillMinutes are what let the primary action name one
+     specific, time-bounded thing instead of offering a course (PRD Slice 13,
+     from layout F6). firstSkillMinutes is deliberately nullable, and
+     'communication' carries null: a duration the content service does not have
+     is omitted, never rounded or defaulted. That is the same rule as an
+     unmapped goal, applied to time instead of to content, and it is reachable
+     here through a real data path rather than a debug switch. */
   const COURSE_MAP = {
-    'data':          { id: 'data-1',    title: 'Data and Analysis Foundations',  skills: 5 },
-    'customer':      { id: 'cust-1',    title: 'Customer Service Essentials',    skills: 4 },
-    'project':       { id: 'proj-1',    title: 'Project Management Basics',      skills: 6 },
-    'marketing':     { id: 'mkt-1',     title: 'Digital Marketing Fundamentals', skills: 5 },
-    'communication': { id: 'comm-1',    title: 'Workplace Communication',        skills: 4 }
+    'data':          { id: 'data-1',    title: 'Data and Analysis Foundations',  skills: 5, firstSkill: 'Read a bar chart',            firstSkillMinutes: 8 },
+    'customer':      { id: 'cust-1',    title: 'Customer Service Essentials',    skills: 4, firstSkill: 'Handle an angry customer',    firstSkillMinutes: 10 },
+    'project':       { id: 'proj-1',    title: 'Project Management Basics',      skills: 6, firstSkill: 'Write a task brief',          firstSkillMinutes: 7 },
+    'marketing':     { id: 'mkt-1',     title: 'Digital Marketing Fundamentals', skills: 5, firstSkill: 'Choose an audience',          firstSkillMinutes: 9 },
+    'communication': { id: 'comm-1',    title: 'Workplace Communication',        skills: 4, firstSkill: 'Ask a clarifying question',   firstSkillMinutes: null }
     /* 'language' is deliberately absent: it is the unmapped case, and the home
        must show an empty state rather than substitute a default course. */
   };
+
+  /* The enrolment's assigned tasks. Stands in for the program service payload,
+     and is written onto the handoff at finalization so the Learning Home reads
+     a denominator it was given rather than one it declared. */
+  const PROGRAM_TASKS = [
+    { id: 't1', title: 'Complete your registration', done: true },
+    { id: 't2', title: 'Start your first course' },
+    { id: 't3', title: 'Finish three skills' },
+    { id: 't4', title: 'Complete your program' }
+  ];
 
   function finishOnboarding() {
     const name = (document.getElementById('name_input')?.value || '').trim() || 'Learner';
@@ -729,7 +746,17 @@ const progressMap = {
       initialCourseId: mapped ? mapped.id : null,
       courseTitle: mapped ? mapped.title : null,
       skillTotal: mapped ? mapped.skills : null,
+      /* The specific first item and its cost. Null minutes means the estimate
+         is unknown; the home omits the line rather than inventing one. */
+      firstSkillTitle: mapped ? mapped.firstSkill : null,
+      firstSkillMinutes: mapped ? mapped.firstSkillMinutes : null,
       programName: isProgram ? 'Digital Heroes' : null,
+      /* The assigned-task payload and its denominator are written here, from
+         the enrolment, exactly as initialCourseId is. They used to be a
+         constant inside the Learning Home view, which made the denominator a
+         client-side literal that Slice 12's zero-state criterion forbids. */
+      programTasks: isProgram ? PROGRAM_TASKS.slice() : null,
+      taskTotal: isProgram ? PROGRAM_TASKS.length : null,
       skillsDone: 0,
       tasksDone: 0,
       firstActionAt: null

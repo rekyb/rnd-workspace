@@ -37,7 +37,12 @@ body {
   background-color: var(--bg);
   color: var(--ink);
   line-height: 1.5;
+  /* Fixed vh strands controls under Android's on-screen keyboard and its
+     collapsing URL chrome; dvh tracks the viewport that is actually visible.
+     Declared twice so a browser without dvh keeps the old behaviour rather
+     than losing the rule. PRD 16.1. */
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -93,6 +98,46 @@ input {
   align-items: center;
 }
 
+/* Was an inline width: 210px, which no media query could reach. */
+.lang-select-control {
+  width: 210px;
+  justify-content: space-between;
+  white-space: nowrap;
+}
+
+/* The header held 40px of side padding, a 210px language control, and a
+   non-shrinking button cluster, so at 360px it extended to 426px and took the
+   whole page into horizontal scroll with it. Measured 2026-07-30.
+   Narrow-width conformance pass. */
+@media (max-width: 767px) {
+  .app-header {
+    padding: 12px 12px;
+    gap: 8px;
+  }
+  .app-header > * { min-width: 0; }
+  .logo { font-size: 20px; }
+  .logo img { max-width: 120px; height: auto; }
+  .lang-select-control {
+    width: auto;
+    max-width: 132px;
+    gap: 4px;
+    padding: 8px 10px;
+  }
+  /* The flag is decorative next to the language name; dropping it at narrow
+     width buys the label the room to stay readable. */
+  .lang-select-control .flag-icon { display: none; }
+  .lang-select-control #selected-lang {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #header-signin-btn,
+  #header-signup-btn {
+    padding: 10px 14px !important;
+    flex-shrink: 0;
+  }
+}
+
 .main-container {
   flex: 1;
   display: flex;
@@ -107,6 +152,7 @@ input {
   width: 100%;
   max-width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   padding: calc(64px + 40px) 24px calc(80px + 40px) 24px;
   position: relative;
   overflow: hidden;
@@ -133,9 +179,16 @@ input {
   animation: springSlideUpIn 0.5s var(--easing-spring) forwards;
 }
 
+/* The final keyframe resolves to `none`, not to an identity transform.
+   With `forwards` an identity transform is still a *computed* transform, and a
+   transformed ancestor becomes the containing block for any position: fixed
+   descendant — which silently disqualified two of the three navigation
+   treatments Cycle 3 could have used. `none` ends the animation in the same
+   place visually and leaves no containing block behind. PRD 6.2, shell
+   prerequisite. */
 @keyframes springSlideUpIn {
   0% { opacity: 0; transform: translateY(40px) scale(0.95); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 1; transform: none; }
 }
 
 .card-flex.active {
@@ -441,6 +494,11 @@ body.is-onboarding .card {
   font-size: 15px;
   margin-top: 16px;
   font-weight: 600;
+  /* A 15px text button is an 18px tap target, below WCAG 2.2 SC 2.5.8's 24 by
+     24 CSS px minimum (Level AA). The padding lifts it over the floor without
+     changing the type or the spacing around it. Measured at 360px, 2026-07-30. */
+  display: inline-block;
+  padding: 6px 8px;
 }
 
 .btn-text:hover {
@@ -466,6 +524,35 @@ body.is-onboarding .card {
   color: var(--ink);
   box-shadow: inset 0 3px 6px rgba(0,0,0,0.06);
   transition: transform 0.3s var(--easing-spring), box-shadow 0.3s var(--easing-spring), border-color 0.2s;
+}
+
+/* Six segments at 56px with 12px gaps need 396px. A 360px viewport leaves a
+   280px content box once the modal's 40px padding is taken, so the row
+   overflowed by ~116px. The remedy is ordered (PRD 9, narrow-width
+   conformance pass): reduce the modal padding first, then the segment and gap,
+   and wrap only if neither reaches the target-size floor. Padding 20px gives
+   320px; six 44px segments with 8px gaps need 304px and fit. 44 by 68 CSS px
+   clears SC 2.5.8's 24 by 24 minimum by a wide margin, so shrinking breaches
+   nothing — and keeping one row preserves the gestalt of a single
+   six-character code, which wrapping to two rows of three would break. */
+/* Step 2 of the remedy. The segments share the available width instead of
+   holding a fixed one, so the row fits at 360px and at 320px without a magic
+   number per breakpoint — six fixed 44px segments still needed 288px in a
+   273px box, and the next fixed value would have failed at 320px instead.
+   max-width keeps them from stretching on a wide phone. At 320px each segment
+   still measures roughly 38 by 68 CSS px, comfortably above SC 2.5.8's 24 by
+   24 floor, so shrinking stays inside the criterion rather than breaching it,
+   and the row is never wrapped to two rows of three. */
+@media (max-width: 767px) {
+  .code-input-group { gap: 6px; }
+  .code-digit {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 56px;
+    height: 68px;
+    font-size: 24px;
+  }
 }
 .code-digit:focus {
   border-color: var(--purple);
@@ -621,10 +708,15 @@ body.is-onboarding .card {
   width: 100%;
 }
 
+/* The opt-out is a first-class option, not an escape hatch. It previously sat
+   outside the grid as a following sibling at 400/16px in the muted colour,
+   against its siblings' 700/18px in the ink colour — de-emphasised and stacked
+   last at every width, which contradicts the shipped Slice 5 criterion that it
+   be "styled at the same weight as the other options". It now inherits
+   .gender-card unchanged and spans the grid, so it is the same weight, size,
+   and colour as Female and Male. */
 .gender-card.gender-card-optout {
-  margin-top: 24px;
-  font: 400 16px/1.4 var(--font-head);
-  color: var(--sub);
+  grid-column: 1 / -1;
 }
 
 .gender-card:focus-visible {
@@ -662,13 +754,22 @@ body.is-onboarding .card {
 }
 
 /* Modal / Popup */
+/* Height, not width, is what breaks a modal on a phone. Centring a modal
+   taller than the viewport clips both ends with no way to scroll to either,
+   which is how the program-code modal put its own primary action out of reach
+   once the on-screen keyboard took half the screen. Anchoring to the top and
+   letting the overlay scroll fixes all four modals with one rule.
+   PRD 12, narrow-width behaviour. */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   z-index: 2000;
   opacity: 0;
   pointer-events: none;
@@ -689,12 +790,26 @@ body.is-onboarding .card {
   padding: 40px;
   width: 100%;
   max-width: 480px;
+  margin: auto;
   transform: translateY(20px);
   transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
   position: relative;
 }
 .modal-overlay.show .modal-content {
   transform: translateY(0);
+}
+
+/* Step 1 of the code-input remedy, and it must sit *after* .modal-content or
+   the later 40px declaration wins on equal specificity — which is exactly what
+   happened when this rule was first written up beside .code-digit. Measured at
+   360px: 40px of padding left too narrow a content box for six segments; 20px
+   gives the row room without touching the segment's target size. */
+@media (max-width: 767px) {
+  .modal-content {
+    padding: 20px;
+    border-radius: 20px;
+  }
+  .modal-close { top: 12px; right: 12px; }
 }
 .modal-close {
   position: absolute;
@@ -894,11 +1009,40 @@ body.is-onboarding .card {
   object-fit: cover;
   border-radius: 2px;
 }
+.site-footer {
+  background: #3e1144;
+  color: #fff;
+  padding: 80px 12% 40px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.site-footer-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 48px;
+}
+/* Four fixed columns plus 12% side padding overflowed a 360px viewport and
+   took the page with it. The columns collapse rather than the content
+   shrinking, so the long postal addresses stay readable. */
+@media (max-width: 900px) {
+  .site-footer-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+}
+@media (max-width: 767px) {
+  .site-footer { padding: 48px 20px 32px; }
+  .site-footer-grid { grid-template-columns: 1fr; gap: 28px; }
+}
+
 .footer-link {
   color: #fff;
   text-decoration: none;
   opacity: 0.8;
   transition: opacity 0.2s, text-decoration 0.2s;
+  /* A 14px link in a list is a ~19px tap target; the padding brings the row to
+     the SC 2.5.8 floor without changing the visual rhythm. */
+  display: inline-block;
+  padding: 3px 0;
 }
 .footer-link:hover {
   text-decoration: underline;
@@ -924,6 +1068,12 @@ body.is-onboarding .card {
   animation: springStampIn 0.5s var(--easing-spring) 0.3s forwards;
 }
 
+/* ---- Learning Home shell ---------------------------------------------
+   The one surface in this prototype with a two-column layout, and therefore
+   the only one that needed a structural decision at narrow width rather than
+   a reflow. The rail is per-view chrome the layout does not depend on, which
+   is what makes the narrow treatment a substitution instead of a rebuild
+   (PRD 7.5, from layout F8's shell-versus-per-view split). */
 .home-card {
   max-width: 1000px !important;
   padding: 0 !important;
@@ -932,24 +1082,57 @@ body.is-onboarding .card {
   align-items: stretch;
   background: #f8f9fa;
   border: 1px solid var(--hair);
+  /* The shared .card sets overflow: hidden, which clips a sticky or fixed
+     descendant. The Learning Home is the surface that may need one, so the
+     clip is lifted here rather than globally. */
+  overflow: visible;
 }
 .home-sidebar {
   width: 240px;
+  /* Without this the rail is a flex item that compresses toward its
+     min-content width instead of holding 240px, so the wide layout degrades
+     into a squeeze rather than a clean split. */
+  flex-shrink: 0;
   background: white;
   border-right: 1px solid var(--hair);
   padding: 32px 24px;
   display: flex;
   flex-direction: column;
+  gap: 24px;
+}
+.home-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.home-brand-logo {
+  height: 24px;
+  width: auto;
+}
+.home-nav {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
+  flex: 1;
+}
+.home-nav-spacer {
+  flex: 1;
 }
 .home-nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
+  /* 24px of text plus 24px of padding clears WCAG 2.2 SC 2.5.8 Target Size
+     (Minimum, AA) of 24 by 24 CSS px with room to spare, at every width. */
+  min-height: 48px;
   border-radius: 12px;
   color: var(--sub);
+  font-family: var(--font-head);
+  font-size: 16px;
   font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
@@ -961,12 +1144,208 @@ body.is-onboarding .card {
   background: var(--bg);
   color: var(--ink);
 }
+.home-nav-item:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  outline-offset: 2px;
+}
 .home-main {
   flex: 1;
+  min-width: 0;
   padding: 40px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+/* ---- Learning Home content ---------------------------------------------
+   Authored as classes rather than inline styles. A media query cannot reach
+   an inline style, so this extraction was the precondition for the surface
+   working at 360px at all, not housekeeping. PRD Slice 14. */
+.home-loading-title { margin-bottom: 4px; }
+.home-greet { display: flex; flex-direction: column; gap: 4px; }
+.home-greet-title { margin-bottom: 0; }
+.home-greet-sub { margin-bottom: 0; }
+
+.home-panel {
+  background: var(--surf);
+  border: 1px solid var(--hair);
+  border-radius: 20px;
+  padding: 24px;
+}
+/* One hiding mechanism for the whole surface. `!important` is load-bearing
+   here rather than lazy: .btn sets display: inline-flex, which outranks both
+   the [hidden] user-agent rule and an unweighted class, so a "hidden" primary
+   action stayed on screen next to the unmapped recovery button and the
+   surface rendered two filled controls. Measured at 360px, 2026-07-30. */
+.is-hidden,
+[hidden] { display: none !important; }
+.home-panel-title {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.home-panel-count { color: var(--sub); font-size: 14px; margin-bottom: 4px; }
+.home-panel-condition { color: var(--sub); font-size: 13px; margin-bottom: 20px; }
+.home-panel-body { color: var(--sub); font-size: 15px; }
+.home-task-list { display: flex; flex-direction: column; gap: 16px; }
+.home-task-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 500;
+}
+.home-task-box {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  accent-color: var(--green);
+}
+
+/* Up Next is a surface, not a filled block. Fill ranks an action only while
+   exactly one control owns it, so the filled primary button below is the only
+   filled element on this screen (PRD Slice 14, from layout F4). */
+.up-next-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--purple);
+  margin-bottom: 8px;
+}
+.up-next-title {
+  font-family: var(--font-head);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.up-next-unit { font-size: 14px; color: var(--sub); margin-bottom: 16px; }
+.up-next-progress { display: flex; align-items: center; gap: 12px; }
+.up-next-track {
+  flex: 1;
+  height: 6px;
+  background: var(--hair);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.up-next-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--purple);
+  transition: width 0.5s var(--easing-spring);
+}
+.up-next-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.up-next-condition { font-size: 13px; color: var(--sub); margin-top: 10px; }
+
+.home-empty { text-align: center; padding: 32px; }
+.home-empty-icon { font-size: 40px; color: var(--sub); }
+.home-empty-title {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 8px 0;
+}
+.home-empty-body { color: var(--sub); font-size: 14px; margin-bottom: 20px; }
+
+.home-primary-action { font-size: 18px; }
+.home-action-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.home-nav-note {
+  font-size: 13px;
+  color: var(--sub);
+  background: var(--bg);
+  border: 1px solid var(--hair);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+/* ---- Learning Home at narrow width -------------------------------------
+   PRD Slice 14. The rail leaves the horizontal axis and becomes a scrolling
+   destination row directly beneath the brand, in normal flow: every
+   destination stays visible and labelled, nothing is traded for an icon, and
+   no fixed bottom bar competes with Android's collapsing URL chrome for
+   vertical space. The mechanism is the one PRD 15 names as the default; the
+   structure it implements is what the benchmark supports. */
+@media (max-width: 767px) {
+  .home-card {
+    flex-direction: column;
+    max-width: 100% !important;
+    border-left: none;
+    border-right: none;
+  }
+  .home-sidebar {
+    width: 100%;
+    flex-shrink: 1;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--hair);
+  }
+  /* Icon above label, each destination sharing the width equally.
+     Measured 2026-07-30: with the icon beside the label the four destinations
+     need 548px and a 360px viewport hid Settings behind a horizontal scroll.
+     A destination the learner has to discover by scrolling is not "visible and
+     labelled", so the row was restacked rather than left scrolling. This is
+     also the arrangement three of the four benchmarked phone homes use, and it
+     is why they fit five labels where a horizontal list fits three.
+     Labels are kept, not traded for icons: an unlabelled glyph assumes an icon
+     vocabulary a first-time learner does not have. */
+  .home-nav {
+    flex-direction: row;
+    flex: 0 0 auto;
+    gap: 4px;
+  }
+  .home-nav-spacer { display: none; }
+  .home-nav-item {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 8px 2px;
+    /* 11px is the phone tab-label size the benchmarked homes use, and it is
+       what lets the longest English label sit on one line in a quarter of a
+       360px viewport. Measured: at 12px "Achievements" broke mid-word to
+       "Achieveme / nts", which is worse than either wrapping at a space or
+       shortening the label. */
+    font-size: 11px;
+    line-height: 1.25;
+    text-align: center;
+    /* Wraps at a space if it must, and truncates never: a destination the
+       learner cannot read is not a labelled destination. break-word breaks
+       inside a word only when the word cannot fit at all, unlike `anywhere`,
+       which breaks eagerly. Bahasa runs materially longer than English, so
+       the approved set is measured here before the count is fixed
+       (PRD 6.2 entry condition 4). */
+    white-space: normal;
+    overflow-wrap: break-word;
+    hyphens: none;
+  }
+  /* The brand's stated §11.1 disposition is Relocated. At narrow width it
+     leaves the flow entirely rather than being reflowed above the learner's
+     next action, which would satisfy the disposition table and fail Slice 12's
+     ordinal block-order criterion on the same build. */
+  .home-brand { display: none; }
+  .home-main {
+    padding: 24px 16px 32px;
+    gap: 20px;
+  }
+  .home-panel { padding: 20px; border-radius: 16px; }
+  .home-empty { padding: 24px 20px; }
+  .up-next-title { font-size: 20px; }
+  .home-primary-action { width: 100%; font-size: 17px; }
+  .home-action-row { flex-direction: column; align-items: stretch; }
 }
 
 #onboarding-back-btn:hover {

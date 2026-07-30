@@ -19,7 +19,7 @@
     </a>
     <div style="display: flex; align-items: center; gap: 16px;">
       <div class="custom-select">
-        <div class="select-selected" id="lang-select-selected" style="width: 210px; justify-content: space-between; white-space: nowrap;">
+        <div class="select-selected lang-select-control" id="lang-select-selected">
           <div style="display: flex; align-items: center; gap: 8px;">
             <img id="selected-flag" class="flag-icon" src="https://flagcdn.com/w20/us.png" alt="English" onerror="this.style.visibility='hidden'">
             <span id="selected-lang">English</span>
@@ -190,8 +190,11 @@
           transform: translateY(-2px);
         }
       </style>
-      <footer style="background: #3e1144; color: #fff; padding: 80px 12% 40px; font-size: 14px; line-height: 1.6;">
-        <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 48px;">
+      <!-- Classes, not inline styles: a media query cannot reach an inline
+           grid-template-columns, and the fixed four-column footer was taking
+           the whole page into horizontal scroll at 360px. -->
+      <footer class="site-footer">
+        <div class="site-footer-grid">
           
           <!-- Address -->
           <div>
@@ -375,11 +378,16 @@
         </div>
 
         <div id="gender_options" role="group" aria-labelledby="gender_gate_title" style="width: 100%; margin-top: 40px;">
+          <!-- All three options sit in the same grid at the same weight. The
+               opt-out spans the row rather than sitting outside the grid in a
+               lighter, smaller, muted style: Slice 5 requires it to be "styled
+               at the same weight as the other options", and choosing it
+               satisfies the step. -->
           <div class="gender-grid">
             <button type="button" class="option-card gender-card" id="gender-btn-female" aria-pressed="false">Female</button>
             <button type="button" class="option-card gender-card" id="gender-btn-male" aria-pressed="false">Male</button>
+            <button type="button" class="option-card gender-card gender-card-optout" id="gender-btn-prefer" aria-pressed="false">Prefer not to say</button>
           </div>
-          <button type="button" class="option-card gender-card gender-card-optout" id="gender-btn-prefer" aria-pressed="false">Prefer not to say</button>
         </div>
       </div>
     </div>
