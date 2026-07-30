@@ -148,8 +148,25 @@ reads "What do you want to get better at?", so neither changes. The placeholder 
 The grid keeps its column rules: `.goal-grid` stays `repeat(3, minmax(0, 1fr))`
 (`src/styles.css:628`), so three cards render as a single full row and six render as two,
 and the existing 768px (2-col) and 420px (1-col) queries apply to the teen set without
-modification. Its `gap` is the one edit, 16px → 24px, to match the age gate now that both
-render the same card.
+modification. Two properties change: `gap` 16px → 24px, and the width cap.
+
+**The width cap is not cosmetic.** `styles.css:169` sets
+`.card:not(.landing-card):not(.home-card) > * { max-width: 520px }`, and `#goal_grid` is a
+direct child of `#goal_intake`, so the goal grid renders at **520px** — three columns of
+roughly 162px. The age gate escapes that cap with `max-width: 900px !important` inline on
+its wrapper, which is why its cards have room for a 48px icon and a 20px/800 title. Putting
+the larger card into a 520px grid would cramp it, so the width travels with the card.
+
+A `.card-wide` class carries it, applied to the age wrapper, the goal heading wrapper, and
+`#goal_grid`:
+
+```css
+.card:not(.landing-card):not(.home-card) > .card-wide { max-width: 900px; }
+```
+
+The selector repeats the `:not()` chain deliberately. At `(0,4,0)` it outranks the `(0,3,0)`
+cap on line 169; a bare `.card-wide` at `(0,1,0)` would lose, which is what the existing
+`!important` was compensating for. No `!important` is needed and none is added.
 
 ### Shared card component
 
