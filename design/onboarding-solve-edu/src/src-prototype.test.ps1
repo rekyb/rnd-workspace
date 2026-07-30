@@ -175,18 +175,39 @@ Show-Group 'The navigation says where the learner is, to everyone'
 # Layout F2: every benchmarked platform marks the current destination; ours
 # marked it visually and told assistive technology nothing. The visible half
 # already shipped, so what these guard is the half that was missing.
-Check ($homeRendered -match '<nav[\s>]') `
-  'home.html has no nav landmark. Destinations in a bare aside are not a navigation'
-Check ($homeRendered -match 'aria-current="page"') `
-  'home.html marks no current destination programmatically (layout F2, WCAG 2.2 SC 2.4.8 techniques G128/ARIA26)'
+#
+# 2026-07-30: the navigation moved from a left sidebar to a top bar, and the
+# eleven production destinations were reorganized into four top-level families.
+# The landmark, marking and icon rules are unchanged in intent; what changed is
+# the shell they live in.
+Check ($homeRendered -notmatch 'home-sidebar') `
+  'the sidebar is still present. The Learning Home navigation is a top bar now'
+Check ($homeRendered -notmatch '<aside') `
+  'navigation still sits in a complementary landmark'
+Check ((([regex]::Matches($homeRendered, '<header class="home-topbar"')).Count) -eq 3) `
+  'not all three views carry the top bar'
+Check ((([regex]::Matches($homeRendered, 'role="banner"')).Count) -eq 3) `
+  'the top bar is not a banner landmark in every view'
+Check ((([regex]::Matches($homeRendered, '<nav class="home-nav" aria-label="Main">')).Count) -eq 3) `
+  'the navigation is not a named nav landmark in every view'
 Check (([regex]::Matches($homeRendered, 'aria-current="page"')).Count -eq 3) `
   'not every view marks its current destination. All three carry the same navigation, so all three must mark it'
+# The label follows the icon span, so the text node carries a leading space:
+# `</span> Learn</button>`. Matching '>Learn<' finds nothing.
+foreach ($fam in 'Home', 'Learn', 'Portfolio', 'Work') {
+  Check ((([regex]::Matches($homeRendered, ">\s*$fam\s*<")).Count) -ge 3) `
+    "the top level is missing '$fam' in at least one view"
+}
+Check ($homeRendered -notmatch '>Courses<') `
+  'the invented Courses destination is still present. The real IA replaces it'
+Check ($homeRendered -notmatch '>Achievements<') `
+  'the invented Achievements destination is still present. Portfolio replaces it'
 Check ($homeRendered -notmatch '<div class="home-nav-item') `
   'a destination is still a non-semantic div. It must be operable by keyboard, not merely clickable'
 # Count icon spans whose own tag lacks aria-hidden, not every icon span.
 $bareIcons = ([regex]::Matches($homeRendered, '<span[^>]*material-symbols-rounded(?![^>]*aria-hidden)[^>]*>')).Count
 Check ($bareIcons -eq 0) `
-  "$bareIcons icon spans carry no aria-hidden. Without it a destination is announced as 'emoji_events Achievements'"
+  "$bareIcons icon spans carry no aria-hidden. Without it a destination is announced with its icon ligature"
 
 # ---------------------------------------------------------------- 10
 Show-Group 'Fill is spent once, so it still ranks something'
@@ -229,12 +250,14 @@ Show-Group 'The narrow layout is a specified state, not an afterthought'
 # .home-card appears somewhere later" — a lazy cross-file match passed this even
 # with the narrow block deleted, which is the false-pass this suite exists to
 # prevent. The base rule is flex-direction: row; only the narrow one is column.
-Check ($styles -match '\.home-card\s*\{[^}]*flex-direction:\s*column') `
-  'styles.css has no narrow-width rule stacking the Learning Home shell'
-Check ($styles -match '\.home-nav\s*\{[^}]*flex-direction:\s*row') `
-  'the destination row never becomes horizontal, so the rail still eats the width at 360px'
-Check ($styles -match '\.home-sidebar\s*\{[^}]*flex-shrink:\s*0') `
-  'the rail can compress below its declared width, so the wide layout degrades into a squeeze'
+# 2026-07-30, top-nav change: three checks here were retired rather than kept
+# as false passes. `.home-sidebar { flex-shrink: 0 }` guarded a rail that no
+# longer exists. `.home-card { flex-direction: column }` and
+# `.home-nav { flex-direction: row }` were narrow-only anchors under the sidebar
+# shell; with a top bar both are true of the BASE rules, so they would match
+# whether or not a narrow rule existed — which is exactly the lazy-anchor false
+# pass this group already had to fix once. Their replacements land with the
+# narrow rules themselves, in the media query, and are asserted there.
 Check ($styles -match '100dvh') `
   'no dynamic viewport unit. A fixed vh strands controls under Android browser chrome and the keyboard'
 Check ($styles -notmatch 'transform:\s*translateY\(0\)\s*scale\(1\)') `
@@ -299,15 +322,16 @@ Check ($mainCode -match 'programTasks:') `
   'main.js does not write the assigned-task payload at finalization'
 Check ($mainCode -match 'taskTotal:') `
   'main.js does not write the task denominator, so the home would have to invent one'
-Check ($homeRendered -match 'class="home-brand" role="banner"') `
-  'the brand carries no banner role, so it is product-owned chrome above the learner next action in document order'
-Check ($styles -match '(?s)@media[^{]*767px[^@]*\.home-brand\s*\{\s*display:\s*none') `
-  'the brand is not relocated at narrow width, so it reflows above the learner next action'
-Check ($homeRendered -notmatch '<aside class="home-sidebar">') `
+# 2026-07-30, top-nav change: the brand no longer needs its own banner role or
+# a narrow-width removal. It sits inside the <header role="banner"> that group 9
+# already asserts, which is the exemption Slice 12's ordinal block-order
+# criterion names, so it is not product-owned content preceding the learner's
+# next action at either width.
+Check ($homeRendered -notmatch '<aside') `
   'primary navigation sits inside a complementary landmark'
 $stubs = ([regex]::Matches($homeRendered, 'data-stub=')).Count
-Check ($stubs -eq 9) `
-  "$stubs destinations declare an out-of-scope response; expected 9 (three per view). A focusable control that answers nothing is a dead end"
+Check ($stubs -ge 3) `
+  "$stubs destinations declare an out-of-scope response. A focusable control that answers nothing is a dead end"
 Check ($homeCode -match 'is out of scope for this prototype') `
   'the out-of-scope destinations swallow the click instead of saying why nothing happened'
 

@@ -1163,10 +1163,14 @@ body.is-onboarding .card {
    a reflow. The rail is per-view chrome the layout does not depend on, which
    is what makes the narrow treatment a substitution instead of a rebuild
    (PRD 7.5, from layout F8's shell-versus-per-view split). */
+/* 2026-07-30: the rail became a top bar, and the eleven production
+   destinations were reorganized into four top-level families. A top bar cannot
+   keep all eleven visible the way a sidebar could, so seven move one level into
+   their family panel. That trade is recorded in the spec, not hidden here. */
 .home-card {
   max-width: 1000px !important;
   padding: 0 !important;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
   background: #f8f9fa;
@@ -1176,23 +1180,19 @@ body.is-onboarding .card {
      clip is lifted here rather than globally. */
   overflow: visible;
 }
-.home-sidebar {
-  width: 240px;
-  /* Without this the rail is a flex item that compresses toward its
-     min-content width instead of holding 240px, so the wide layout degrades
-     into a squeeze rather than a clean split. */
-  flex-shrink: 0;
-  background: white;
-  border-right: 1px solid var(--hair);
-  padding: 32px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.home-brand {
+.home-topbar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 12px 24px;
+  background: white;
+  border-bottom: 1px solid var(--hair);
+}
+.home-topbar-brand {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 .home-brand-logo {
   height: 24px;
@@ -1200,25 +1200,28 @@ body.is-onboarding .card {
 }
 .home-nav {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  gap: 4px;
   flex: 1;
 }
-.home-nav-spacer {
-  flex: 1;
+.home-topbar-utils {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 .home-nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  /* 24px of text plus 24px of padding clears WCAG 2.2 SC 2.5.8 Target Size
-     (Minimum, AA) of 24 by 24 CSS px with room to spare, at every width. */
-  min-height: 48px;
+  gap: 8px;
+  padding: 10px 14px;
+  /* Clears WCAG 2.2 SC 2.5.8 Target Size (Minimum, AA) of 24 by 24 CSS px with
+     room to spare, at every width. */
+  min-height: 44px;
   border-radius: 12px;
   color: var(--sub);
   font-family: var(--font-head);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   text-align: left;
   white-space: nowrap;
@@ -1371,31 +1374,31 @@ body.is-onboarding .card {
     border-left: none;
     border-right: none;
   }
-  .home-sidebar {
-    width: 100%;
-    flex-shrink: 1;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    padding: 16px;
-    border-right: none;
-    border-bottom: 1px solid var(--hair);
+  /* The top bar wraps to two rows: brand and utilities above, the four
+     destinations below at full width. Nothing is hidden and nothing scrolls
+     sideways. */
+  .home-topbar {
+    gap: 8px;
+    padding: 10px 12px;
   }
+  .home-topbar-brand { order: 1; }
+  .home-topbar-utils { order: 2; margin-left: auto; }
   /* Icon above label, each destination sharing the width equally.
      Measured 2026-07-30: with the icon beside the label the four destinations
-     need 548px and a 360px viewport hid Settings behind a horizontal scroll.
-     A destination the learner has to discover by scrolling is not "visible and
-     labelled", so the row was restacked rather than left scrolling. This is
-     also the arrangement three of the four benchmarked phone homes use, and it
-     is why they fit five labels where a horizontal list fits three.
+     need 548px and a 360px viewport hid the last one behind a horizontal
+     scroll. A destination the learner has to discover by scrolling is not
+     "visible and labelled", so the row was restacked rather than left
+     scrolling. This is also the arrangement three of the four benchmarked
+     phone homes use, and it is why they fit five labels where a horizontal
+     list fits three.
      Labels are kept, not traded for icons: an unlabelled glyph assumes an icon
      vocabulary a first-time learner does not have. */
   .home-nav {
-    flex-direction: row;
-    flex: 0 0 auto;
+    order: 3;
+    flex-basis: 100%;
+    flex: 0 0 100%;
     gap: 4px;
   }
-  .home-nav-spacer { display: none; }
   .home-nav-item {
     flex: 1 1 0;
     min-width: 0;
@@ -1421,11 +1424,11 @@ body.is-onboarding .card {
     overflow-wrap: break-word;
     hyphens: none;
   }
-  /* The brand's stated §11.1 disposition is Relocated. At narrow width it
-     leaves the flow entirely rather than being reflowed above the learner's
-     next action, which would satisfy the disposition table and fail Slice 12's
-     ordinal block-order criterion on the same build. */
-  .home-brand { display: none; }
+  /* The brand stays visible in the top bar rather than being hidden. It sits
+     inside the banner landmark, which is the exemption Slice 12's ordinal
+     block-order criterion names, so it is not product-owned content preceding
+     the learner's next action. Under the old sidebar it had to be removed at
+     narrow width; a banner does not. */
   .home-main {
     padding: 24px 16px 32px;
     gap: 20px;
