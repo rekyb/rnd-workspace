@@ -1,7 +1,7 @@
 # PRD: Solve Education! Learner Acquisition & Onboarding
 
 - **Project:** `design/onboarding-solve-edu`
-- **Status:** Reviewed — stakeholder chain approved (round 1 2026-07-29, round 2 2026-07-30); Principal Designer Mode S: **revise**, all items applied 2026-07-30
+- **Status:** Cycles 1–3 reviewed — stakeholder chain approved (round 1 2026-07-29, round 2 2026-07-30); Principal Designer Mode S: **revise**, all items applied 2026-07-30. **Cycle 4 (§6.3, Slice 16) is drafted and has been through neither gate.** It must not be built until the stakeholder chain has vetted its slice and Mode S has passed the document
 - **Informed by:**
   - `research/2026-07-20-unified-onboarding-synthesis-and-patterns` (litreview, peer-reviewed 2026-07-20; coverage Q1,Q3 answered · Q2 partial)
   - `research/2026-07-28-post-signup-handoff-first-run-home` (benchmark, peer-reviewed 2026-07-29; coverage Q2,Q3,Q5 answered · Q1,Q4 partial · Q6 unanswered)
@@ -63,6 +63,31 @@
 > criterion has therefore been discharged by screens that reflow trivially, on a document that never
 > covered the one surface with a two-column shell. That is a measured gap in this PRD, not an
 > inference from the benchmark.
+
+> **Revision note, 2026-07-30 (second of the day), adding Cycle 4.** A revision, not a regeneration.
+> Cycles 1 to 3 are unchanged in substance. What is new: a **§2 assumption note** on the two-column
+> composition, a **§6.3** appetite, **§8.3** with **Slice 16**, its §9 criteria, four §11.1
+> disposition rows, and two §14 entries. **No prior appetite is reopened and no cited study gains a
+> finding** — §2.1 stays at 25 rows, because Cycle 4 adopts nothing new; it rearranges elements
+> Cycle 2 already specifies.
+>
+> **This cycle rests on an assumption, and the document says so in the place that governs.** The
+> two-column composition came from a Mobbin pattern review on 2026-07-30 that is **not** a study in
+> `Informed by:` — no plan, no peer review, no coverage table, and library stills carrying no
+> first-party observation. §2 records it at assumption strength with a first-click test as its
+> validation path and the pass condition routed to §15 rather than invented here.
+>
+> **Two corrections this cycle forces, both recorded where the false statement was rather than
+> quietly overwritten.** §11 previously asserted "there is no rail content to migrate or delete at
+> narrow width"; Slice 16 puts two content slots in a rail and makes that false. §14's layout-F8
+> entry leaned on the same claim as a second reason for its disposition. **The disposition is
+> unchanged in both cases** — the migrate-or-delete rule stays unadopted, because a rule the evidence
+> does not support stays unsupported whether or not there is something for it to govern — but the
+> reasoning that referenced an empty rail has been corrected rather than left to read as still true.
+>
+> **Ordering constraint, stated because it costs money if missed:** Cycle 4 must run **before**
+> Cycle 3. Slice 14's per-slot disposition table is written against a slot set that Slice 16 changes,
+> so agreeing a narrow-width treatment first means paying for it twice. See §6.3.
 
 ---
 
@@ -236,6 +261,48 @@ concentrating on a single category, or spreading evenly across all three with no
 minimum 13-to-17 sample, and a number invented in this paragraph to look decisive would be
 the fabrication this whole section exists to avoid, so it is an owned §15 decision instead.
 Owner: Program Operations, jointly with whoever owns the §15 goal-to-course decision.
+
+### The two-column first-run home is an assumption, not a finding
+
+**The claim.** The first-run Learning Home should be composed as two columns: a dominant content
+column carrying exactly one object (the learner's next course, with its next item named and one
+filled control), and a narrower rail carrying the program card and the course-progress counter.
+Below the dominant object, enrolled courses render as a compact switcher rather than as cards.
+
+**Three parts of that shape are evidenced, and they are already adopted elsewhere in this document.**
+The learner's own work before company-owned content is the 2026-07-29 study's **F3**, adopted
+ordinally in Slice 12. Exactly one filled control per screen is the 2026-07-28 study's **F4**,
+adopted in Slice 14. Every progress affordance rendering at zero against a stated countable
+condition is that study's **F2**, adopted in Slice 12. Cycle 4 changes none of those dispositions
+and adds no finding to §2.1, which stays at 25 rows.
+
+**What is not evidenced is the composition itself:** the two-column split, the ratio between the
+columns, the stacked-deck treatment of the dominant card, and the switcher strip. These were drawn
+from a Mobbin pattern review conducted on 2026-07-30 against Brilliant, Uxcel, Coursera, and
+Duolingo web screens. **That review is not a study in `Informed by:`.** It was not captured into
+`research/`, it has no plan, no peer review, and no coverage table, and its screens are library
+stills carrying no first-party observation. It shows these compositions exist. It does not show a
+learner succeeding with one, and this PRD does not claim it does.
+
+**Why the assumption is taken anyway.** The three evidenced parts constrain the composition more
+tightly than they first appear: a single dominant object plus a single filled control plus
+company-content-after leaves little room for a block stack, and the two-column split is the
+cheapest arrangement satisfying all three at desktop width. The composition is therefore a
+reasonable reading of adopted findings rather than an independent bet, which is why it is recorded
+here at assumption strength rather than routed to a new study first.
+
+**Validation path:** a **first-click test** on the first-run home, wide layout, comparing the
+current block stack against the two-column composition, measuring the share of first clicks landing
+on the primary action. This is the same instrument the 2026-07-29 study named as the terminal step
+of its own gate order, so it is not a new method for this PRD to invent. **The pass condition is
+deliberately not stated here**, for the same reason it is not stated for the age-conditional goal
+set: a share threshold invented in this paragraph to look decisive would be the fabrication this
+section exists to prevent. It is an owned §15 decision. Owner: Design, jointly with whoever owns
+the §15 navigation-inheritance decision, because a first-click test cannot be run against a home
+whose navigation set is unsettled.
+
+*Falsified if:* the two-column composition takes no larger a share of first clicks than the block
+stack, or if the switcher strip is not recognised as a course control by a majority of participants.
 
 ### 2.1 Findings coverage
 
@@ -556,10 +623,13 @@ missed — no later edit recovers them.
    band; corrected 2026-07-30.)* *(This
    measurement was previously carried as a kill threshold; stakeholder review moved it here, because
    a threshold that can fire before a line of code is written belongs in the gate, not the exit.)*
-5. **The §15 decision on which navigation the production home inherits has landed** — the four
-   destinations the prototype carries, or the eleven the production home carries. At eleven, Slice
-   14's budget fails on arrival, so carrying this as a soft deadline meant the one input that can
-   invalidate the slice had no threshold attached to it.
+5. **The §15 decision on which navigation the production home inherits has landed.**
+   **Settled 2026-07-30: neither.** The home inherits the **real eleven destinations reorganized
+   into four top-level families** — Home, Learn, Portfolio, Work. Eight sit one level down in a
+   family panel, Referral sits in the profile menu, and Inbox is an icon control at the top level.
+   Slice 14's five-destination budget holds at four, with headroom, measured against plausible
+   Bahasa labels as well as English. Spec:
+   `docs/superpowers/specs/2026-07-30-learning-home-top-nav-ia-design.md`.
 
 **Recut threshold:** if the work exceeds 4 iterations, **reduce Slice 14's verification width matrix
 from five widths to 360 and 768**, which §16.1 names as the primary and the breakpoint. **Do not cut
@@ -584,6 +654,55 @@ kill path** (§2's layout F7), which is what Slice 14's validation gate names.
 the moderated 360px Android session → stabilization. Slice 14 goes first because it carries both the
 kill decision and the shell cost, and because a conformance pass run against an unstabilised shell
 would be invalidated by the shell work landing after it.
+
+### 6.3 Cycle 4 — the first-run home's composition
+
+**Appetite: 2 iterations.** This recomposes one surface that already exists. It adds no screen, no
+route, no field to any contract, and no new progress affordance: every element it arranges is
+already specified by Cycle 2, and §2's assumption note records that the arrangement itself is the
+only new claim.
+
+- ~1.5 iterations: **Slice 16**, the two-column first-run home, including the relocation of the
+  course-progress counter out of the Up Next card and into the rail, and the course switcher.
+- ~0.5 iterations: stabilization, and the §11.1 disposition rows the new rail slots require.
+
+**This cycle must run *before* Cycle 3, or Cycle 3 must be re-scoped.** Slice 14's per-slot
+disposition table in §11.1 is written against a slot set, and this cycle changes that set: it adds a
+rail with two content slots and a switcher. A narrow-width treatment agreed against the old slot set
+would be invalidated by the recomposition landing after it, which is the same failure mode §6.2
+records for running a conformance pass against an unstabilised shell. **The ordering is therefore a
+constraint, not a preference**, and it is stated here because the alternative is paying for Slice 14
+twice.
+
+**Entry conditions, all four measurable before a line is written:**
+
+1. Cycle 2's Slice 12 has shipped, so there is an honest zero state to recompose. Recomposing an
+   unfinished surface would mean the two cycles' criteria could not be evaluated separately.
+2. The Learning Home shell's navigation treatment has settled. **This is currently in flight** —
+   `feat/learning-home-top-nav` replaced the sidebar with a top bar on 2026-07-30 — and Cycle 4
+   arranges content *beside* the content column, so it cannot begin against a shell still changing
+   shape.
+3. The §15 navigation-inheritance decision has an owner, for the same reason §6.2 names it: the
+   validation instrument below is a first-click test, and a first-click test cannot be run against a
+   home whose destination set is unsettled.
+4. The goal-to-course map returns a **skill denominator** for the first course. Without it the rail's
+   progress counter has no denominator to state, and Slice 12's countable-condition criterion would
+   be discharged by a counter reading `0` against nothing.
+
+**Recut threshold:** if the work exceeds 3 iterations, **drop the course switcher** and keep the
+two-column split with the dominant card. The switcher is the element with the least support: at
+first run a learner has exactly one course, so a switcher renders a strip of one and earns its place
+only once a second course exists. **Do not recut the two-column split itself** — it is the thing the
+cycle exists to test, and a cycle that ships everything except its hypothesis has no read-out.
+
+**Kill threshold:** if entry condition 4 cannot be met — the map returns no skill denominator —
+**stop and do not substitute a percentage or a fabricated total.** A progress figure the system
+cannot derive is the fabrication class Cycle 2 exists to remove, and shipping one here would undo
+the cycle immediately preceding this one.
+
+**Validation gate:** the first-click test named in §2. It is the cycle's read-out, not a
+nice-to-have, because the composition is carried at assumption strength and nothing else in the
+cycle would falsify it.
 
 ---
 
@@ -934,6 +1053,35 @@ walk remains acceptance for the cycle; it is not evidence for this unit.
 
 ---
 
+## 8.3 Cycle 4 — the first-run home's composition
+
+**One slice**, run after Cycle 2 integrates and **before** Cycle 3 for the ordering reason §6.3
+gives, governed by the separate appetite in §6.3.
+
+> **The slice is numbered 16, not 15.** Slice 15 was ruled No-Go at stakeholder review on 2026-07-30
+> and reconstituted as the narrow-width conformance pass; reusing the number would make every
+> reference to "Slice 15" ambiguous between a rejected unit and a new one.
+
+### Slice 16 — The two-column first-run home
+
+The first-run Learning Home renders as two columns: a dominant content column carrying exactly one
+object, the learner's next course with its next item named and one filled control, and a narrower
+rail carrying the program card and the course-progress counter. Enrolled courses render below the
+dominant object as a compact switcher rather than as cards. No block precedes the dominant object in
+document order except the shell's own landmarks and the greeting.
+
+**What this slice moves rather than adds.** The course-progress counter **relocates** out of the Up
+Next card into the rail; the program identity and assigned-task summary **relocate** out of the
+content column into the rail. Nothing new is rendered. This matters for §14: the rail acquires
+content, but it acquires it from blocks this PRD already specifies, so no progress affordance and no
+gamification mechanic enters the surface.
+
+**Demoable on its own:** create an account, and confirm the primary action sits in the first
+screenful of the content column with the counter in the rail — against the same acceptance criteria
+Slice 12 already gates, which must all still pass.
+
+---
+
 ## 9. Acceptance Criteria per Slice
 
 ### Slice 1 — Public landing and entry selection
@@ -1215,6 +1363,32 @@ Account wall, and the program-code modal.
 > draft, which put the property that metric 5.8's baseline depends on inside the cycle that the
 > baseline gates. It is now **§6.2 entry condition 1**, to be emitted before the baseline window opens.
 
+### Slice 16 — The two-column first-run home
+
+**Composition:**
+
+- [ ] Given the first-run Learning Home renders at a viewport of 1024px or wider, when its regions are read, then there are exactly **two** columns: a content column and a rail, and the content column is the wider of the two.
+- [ ] Given the content column renders, when its direct children are counted, then it carries **exactly one** primary object plus the switcher. A second card competing for the same role fails this criterion.
+- [ ] **The one-filled-control invariant holds across both columns, not within each.** Counted over the whole surface, exactly one control carries the filled treatment, and it is the primary action on the dominant object. *(Stated across columns because the rail's program card carries an action too, and a per-column reading would permit two filled buttons on one screen — the precise defect §2.1 F4 is adopted to prevent.)*
+- [ ] Given the surface is read in document order, then no product-owned, explanatory, or promotional block precedes the dominant object, scored against Slice 12's ordinal criterion including its chrome clause. **Slice 12's criterion is re-run against the new composition, not assumed to survive it.**
+- [ ] **The rail is not the first column in document order.** Reading order places the content column before the rail regardless of which side the rail is painted on, so a keyboard or screen-reader user reaches the primary action before the secondary signals.
+
+**Relocated slots:**
+
+- [ ] Given the rail renders, then it carries the program card (program learners) and the course-progress counter, and **nothing else**. No streak, no points, no achievement value, no league, no promotional slot. *(§14. This criterion is the enforceable form of the §14 exclusions on this surface, and it is stated as a closed list because an open one would permit additions without a decision.)*
+- [ ] Given the course-progress counter has relocated to the rail, when it renders, then it still states its denominator in its own slot per Slice 12, and the Up Next card **no longer renders a second copy of it**. Stated as a count of one, so a relocation that leaves the original in place fails.
+- [ ] Given an **organic** learner with no program, when the rail renders, then it shows the course-progress counter and the program slot is **not rendered** rather than rendered empty. The rail's own layout box therefore differs between organic and program learners, which is permitted; **Slice 12's rendering invariant applies per slot, not to the rail as a whole**, and this criterion names that reading so the two do not contradict each other on the same build.
+
+**Course switcher:**
+
+- [ ] Given the learner has exactly one enrolled course, when the switcher renders, then it either shows that one course or is not rendered, and in neither case does it show placeholder, locked, or suggested courses to fill the row. *(A strip padded with courses the learner is not enrolled in is promotional content in a structural slot.)*
+- [ ] Given the switcher renders more than one course, then each entry is reachable by keyboard, exposes an accessible name naming its course, and the current course is marked programmatically as well as visually.
+- [ ] The switcher is **not** the primary action and carries no filled control.
+
+**Regression:**
+
+- [ ] Every Slice 12 and Slice 13 criterion passes unchanged against the recomposed surface. **Enumerated in the slice's test run rather than asserted**, because this slice moves the elements those criteria govern and a passing suite is the only evidence the move preserved them.
+
 ---
 
 ## 10. Users & Roles
@@ -1246,8 +1420,8 @@ are required columns, not optional polish.
 | Goal | Choose one learning goal (organic only). **The presented option set is conditioned on the declared age band**: three categories for 13–17, six for 18 and over | Age or Gender | 6 | **Empty:** Continue disabled with the requirement in its label. **Loading:** goal config for the resolved band. **Error:** config failure blocks rather than showing an arbitrary set. **Success:** stable goal id stored |
 | Account wall | Explain why an account is needed and collect it | Goal or Program preview | 7 | **Empty:** submit disabled until shape valid. **Loading:** prevents duplicate submission. **Error:** provider cancellation returns to the intact wall. **Success:** identity verified |
 | Finalization handoff | Show the destination while finalization resolves. **This is Slice 8's only user-visible surface**, and Slice 12's loading state | Account wall | **8, 12** | **Empty:** not applicable. **Loading:** the primary state, shell rendered with the content region skeletonised and labelled. **Error:** recoverable error on the same surface, never a permanent skeleton. **Success:** content resolves in place |
-| Learning Home (first run, organic) | Orient the learner and route them into their first action. **First-run progress affordances: the Up Next course-progress counter only** (denominator: skills in the first course). Points, streaks, and achievements are not rendered | Finalization handoff | **12, 13** | **Empty:** every progress affordance at zero with its countable condition in the slot; content slots show a neutral empty state plus recovery action; **no slot given to promotion**. **Loading:** per Slice 12's loading state. **Error:** unresolvable first course shows the empty state, never a substituted course. **Success:** primary action emits `lesson_started` |
-| Learning Home (first run, program) | As above, plus the **assigned-task checklist** (denominator: tasks in the enrollment), carrying program identity | Finalization handoff | **12, 13** | As above, plus: tasks fetched from the enrollment, never hard-coded. **Empty:** a program with no assigned tasks yet shows a stated empty state, not a fabricated task. **Success:** primary action emits `assigned_task_opened` |
+| Learning Home (first run, organic) | Orient the learner and route them into their first action. **First-run progress affordances: the Up Next course-progress counter only** (denominator: skills in the first course, **in the rail from Slice 16**). Points, streaks, and achievements are not rendered | Finalization handoff | **12, 13, 16** | **Empty:** every progress affordance at zero with its countable condition in the slot; content slots show a neutral empty state plus recovery action; **no slot given to promotion**. **Loading:** per Slice 12's loading state. **Error:** unresolvable first course shows the empty state, never a substituted course. **Success:** primary action emits `lesson_started` |
+| Learning Home (first run, program) | As above, plus the **assigned-task checklist** (denominator: tasks in the enrollment), carrying program identity, **which moves to the rail at Slice 16** | Finalization handoff | **12, 13, 16** | As above, plus: tasks fetched from the enrollment, never hard-coded. **Empty:** a program with no assigned tasks yet shows a stated empty state, not a fabricated task. **Success:** primary action emits `assigned_task_opened` |
 | First learning action *(prototype-only stub)* | Give the primary action a real destination so the handoff can be demonstrated end to end | Learning Home | **none — see below** | Not specified as a production screen. The lesson player is a §14 non-goal, so this row exists to record the stub rather than to require it |
 
 > **The first-learning-action view belongs to no slice, and that is now recorded rather than
@@ -1294,13 +1468,19 @@ requires each one to name which of the three it takes:
 
 | Slot | Disposition at 360px | Why |
 |---|---|---|
-| Brand lockup in the shell | **Relocated** with the navigation, and it may not become a product-owned block sitting above the learner's next action in document order | The only product-owned element on the surface. Slice 12's F3 criterion is **ordinal**, so a narrow treatment that lifts logo and navigation into a top bar would satisfy this table and fail that criterion on the same build. Slice 12's second criterion now scores chrome explicitly, which is what keeps the two consistent |
+| Brand lockup in the shell | **Kept**, inside the top bar's `banner` landmark at both widths | *(Revised 2026-07-30 with the top bar.)* Under the sidebar the brand had to be removed at narrow width, because it was a product-owned block preceding the learner's next action in document order. A `banner` landmark is the exemption Slice 12's block-order criterion names, so it no longer needs removing — the criterion is satisfied by the landmark rather than by hiding the element |
+| Navigation destinations | **Kept** as four top-level families; the eight members move one level into their family panel | Four labelled destinations fit a 360px row with headroom, in English and against plausible Bahasa labels. Nothing is traded for an icon and nothing hides behind a hamburger, both of which §6.2's kill path forbids |
+| Utility cluster (XP, theme, language, Inbox, profile) | **Kept**, wrapping to its own row below 768px | XP reads zero from durable data. Theme and language are learner choices that persist. Referral lives in the profile menu rather than the navigation |
 | Greeting and subtitle | **Kept**, above the dominant object | It is the learner's own content, which is the block order F3 supports, and it costs one line |
 | Up Next card (organic) | **Kept** — this *is* the dominant object | The primary action; disposing of it would defeat the surface |
 | Up Next card (program) | **Sub-levelled** below the assigned-task block | A program learner's assigned work outranks a goal-derived suggestion, and both cannot be dominant |
 | Assigned-task checklist | **Kept** for program learners; not rendered for organic | Already conditional in the wide layout; no change of kind |
 | Unmapped-goal empty state | **Kept**, replacing Up Next in the dominant slot | It is the dominant object in that data state. An empty state that gets demoted at narrow width reintroduces the silent-substitution defect from the other side |
 | Navigation destinations | **Relocated** off the horizontal axis, all labels retained | §2.1 layout F7 and F8. The mechanism is a §15 decision; the structure is fixed here |
+| Rail as a region *(Cycle 4)* | **Dropped as a region.** Its two slots are disposed of individually below | A rail is a two-column device and there is one column at 360px. Dropping the region without disposing of its contents would be the reflow this table forbids, which is why the next two rows exist |
+| Course-progress counter *(Cycle 4)* | **Relocated** back onto the Up Next card, in its Cycle 2 position | It has a natural home: it describes the course the dominant object names, and the counter and its subject should not be separated when there is one column to hold both. **This is a return, not a new placement**, which is what makes the disposition cheap |
+| Program card *(Cycle 4)* | **Relocated** into the assigned-task block, which §11.1 already makes the dominant object for program learners | Program identity is the header of the work it identifies. Rendering it as a separate stacked card above the tasks would put a second program-owned block ahead of the learner's work, failing Slice 12's ordinal criterion |
+| Course switcher *(Cycle 4)* | **Sub-levelled** behind the navigation's `Courses` destination | At first run it holds one course, so it earns no vertical space in a single column. **Not dropped**, because a learner with a second course must still be able to reach it, and `Courses` is where that already leads |
 | Points, streaks, achievements | **Not applicable** — never rendered at any width | §14 non-goals. Recorded so the row is not read as an omission |
 
 > **A shipped Cycle 1 defect surfaced while writing this table, and it is charged to the §6.2 shell
@@ -1312,12 +1492,28 @@ requires each one to name which of the three it takes:
 > cannot be judged against it while it is true. It is named here because this is where it was found,
 > and paid for in §6.2's shell line because it crosses both units of Cycle 3 work.
 
-**There is no rail content to migrate or delete at narrow width**, which is why §2.1 defers layout F5
-and adopts only F8's structural half. The benchmarked platforms faced that decision because their
-desktop rails carry leagues, quests, and streak cards; this surface's rail carries navigation and
-nothing else. **The decision is cheap here precisely because Cycle 2 declined to fill the rail**, and
-that is worth recording — had the locked-leaderboard slot been adopted, this table would carry a
-migrate-or-delete question the cited study explicitly could not answer.
+**Corrected 2026-07-30 by Cycle 4.** An earlier version of this paragraph read *"There is no rail
+content to migrate or delete at narrow width… this surface's rail carries navigation and nothing
+else."* **That is no longer true.** Slice 16 relocates the program card and the course-progress
+counter into a rail, so this surface now has rail content, and the two rows added to the disposition
+table above are the migrate-or-delete decision the old paragraph said did not exist.
+
+**What survives the correction, and it is most of the argument.** The reason §2.1 defers layout F5
+and adopts only F8's structural half is unchanged: the migrate-or-delete *rule* is unadopted because
+the study derives it from two web-and-phone pairs that produced **opposite** outcomes and labels it
+hypothesis-generating. That was never contingent on our rail being empty. What the empty rail bought
+was that we did not have to *apply* the unadopted rule; now we do, and §11.1 applies it by naming a
+disposition per slot from first principles rather than by importing a rule the evidence does not
+support.
+
+**The decision stayed cheap for a different reason than the old paragraph gave.** Cycle 4's rail
+carries two slots that both already existed elsewhere on the surface, and §14's exclusions keep
+leagues, quests, and streak cards out of it. The benchmarked platforms faced a hard version of this
+question because their rails carry earned-progress mechanics with no natural home in a single
+column. Ours carries a program card and a counter, both of which have an obvious destination. **Had
+the locked-leaderboard slot been adopted, this table would carry the hard version** — which is the
+half of the old paragraph that was right, and it is why the §14 exclusion is load-bearing rather
+than merely cautious.
 
 ---
 
@@ -1464,7 +1660,9 @@ All identifiers in client-visible analytics or URLs must follow the platform's e
 - **A path for an already-onboarded learner to join a program later** (§2.1 F7). This funnel attaches a program only during onboarding. The gap is real: this section previously excluded *editing or switching* a validated program during onboarding and said nothing about joining afterwards, which read as handled. It is deferred rather than built because it needs a settings entry point, authenticated code validation, the attribution-write path, and minor-appropriate consent copy. **Monitored, not merely deferred:** if the §5.3 duplicate-learner-account guardrail (< 0.5%) is breached at the four-week review, **or** metric 5.4 misses its 80% target, this reopens ahead of any other next-cycle candidate. Stakeholder review accepted the diagnosis that this is an operational gap in the **primary distribution channel**, not a preference: a learner who signs up organically and receives a facilitator code a week later can only make a second account. The enabling work is already paid for, because Slice 8 now extracts the enrollment write as a standalone authenticated idempotent operation, so the remaining surface is roughly one iteration rather than surgery. *(An earlier version said to revisit "if Program Operations reports learners asking for it", which is nobody's job.)*
 - **A navigation cardinality device — grouping, a second tier, or a budget-and-overflow — on the Learning Home** (§2.1 layout F1). The cited study's recommendation is to keep every destination visible and apply a structural rule rather than shorten the list, and it is well evidenced: the two benchmarked platforms carrying *more* destinations than our production home both apply a device and both mark current location, while ours does neither. **It is deferred because it is a steady-state information-architecture decision and this PRD builds first-run only**, and because the study's own strongest caveat applies squarely to us: ten of our eleven destinations were never opened, so no grouping can be proposed without a content inventory first. The study's own gate order is content inventory → open card sort in Bahasa Indonesia (n≈15, stratified by facilitated versus self-directed arrival) → first-click test. **Not merely deferred, because it has a live consequence here:** the prototype's home carries four destinations and the production home carries eleven, and which one the production first-run home inherits decides whether Slice 14's five-destination budget holds. That is now an owned §15 decision rather than an assumption
 - **Separating the daily progress signal from a detailed progress record** (§2.1 layout F5). The benchmarked pattern is a small persistent counter on the home with the detailed record on a destination visited deliberately. It does not apply yet, for a structural reason rather than a cost one: **points, streaks, and achievements are already non-goals above, so the first-run home has exactly one progress affordance and there is no detailed record to separate it from.** The finding's own clean-fit rate is 3 of 7, and its second half — running a behavioural goal horizon alongside an outcome horizon, modelled on one platform — needs a steady-state home to sit in. Revisit when a steady-state Learning Home is specified, alongside the deferred F1 device decision
-- **The migrate-or-delete rule for signals losing a navigation rail** (§2.1 layout F8, second half). The structural half of that finding *is* adopted, in Slice 14. The rule for deciding whether a signal that loses its rail should move inward or be dropped is not, because the study derives it from its only two web-and-phone pairs, which produced **opposite** outcomes, and labels it hypothesis-generating rather than a finding. This PRD also has nothing for it to govern: its rail carries navigation and nothing else. Revisit if a steady-state home puts content in a rail
+- **The migrate-or-delete rule for signals losing a navigation rail** (§2.1 layout F8, second half). The structural half of that finding *is* adopted, in Slice 14. The rule for deciding whether a signal that loses its rail should move inward or be dropped is not, because the study derives it from its only two web-and-phone pairs, which produced **opposite** outcomes, and labels it hypothesis-generating rather than a finding. **Amended 2026-07-30 by Cycle 4.** This entry previously added "this PRD also has nothing for it to govern: its rail carries navigation and nothing else", and Slice 16 makes that false by putting two content slots in a rail. The disposition is unchanged and the reason is now the only reason: **an unadopted rule stays unadopted whether or not there is something for it to govern.** §11.1 therefore disposes of the two new slots by naming a destination for each from first principles, and records why, rather than deriving them from a rule the evidence does not support. Revisit if the study's two opposite cases are ever resolved by a third
+
+- **A natural-language "Ask" or smart-search entry point on the first-run Learning Home.** Observed directly on `brilliant.org/home/` on 2026-07-30: a field reading *"What do you want to learn?"* at the head of the rail, which expands into a question box with an attachment affordance, offers **no** typeahead or course suggestions, and uses the learner's recent questions as its zero state. **It is excluded on a design ground before a cost one.** A free-text "what do you want to learn?" box on the first-run home asks the learner the question the goal step asked ninety seconds earlier, which is the intake-discarding failure §2.1 F3 is adopted in Slice 13 to prevent, and which the 2026-07-28 study recorded against CodeSignal — conversational intake resolving to a named path, and a home that discards it. The observed platform can afford the box because its user is *returning* and already carries several courses. **The cost ground is separate and also disqualifying at this appetite:** it is a recommendation surface, which the entry above already excludes; and it would need answer quality in Bahasa Indonesia, a latency and cost budget, and a moderation position for 13-to-17-year-olds, none of which this document specifies. **Revisit when a steady-state Learning Home is specified**, alongside the deferred F1 device decision and F5's daily-signal separation, which are held for the same structural reason. *(Recorded from a single logged-in session on one account. That is an observation of a competitor's shipped interface, not a finding: it has no study behind it, and the account's own query history is not reproduced here or anywhere in this repository.)*
 - Translation beyond English and Bahasa Indonesia
 - A CMS for landing-page content
 
@@ -1505,7 +1703,9 @@ All identifiers in client-visible analytics or URLs must follow the platform's e
 | **Finalization architecture**: is the finalization write a single-datastore transaction, or a saga across separate identity, program, and profile services? | Backend + Architecture | **Before Cycle 1 iteration 1** | Block. This is the decision that determines whether Cycle 1 fits its appetite or reaches §6's kill threshold, and it is free to settle now and expensive to discover at iteration 8 |
 | **Account-existence enumeration on the account wall**: accept it with rate limiting, or disclose out of band by email? | Security + Product | Before Slice 7 build | Accept enumeration, defended by rate limiting, recorded as a signed-off accepted risk. Stakeholder review found the two §9 criteria contradicted each other and could not both pass |
 | Temporary-session data retention and deletion schedule | Privacy + Backend | Before Slice 8 implementation | Expire incomplete sessions after 24 hours and delete consumed sessions promptly |
-| **Which navigation the production first-run Learning Home inherits** — the four destinations the prototype carries, or the eleven the production home carries flat and ungrouped (§2.1 layout F1) | Product + Design | **§6.2 entry condition 5** — before Cycle 3 opens | **The four-destination set**, recorded as a stated assumption rather than an inherited fact. At eleven, Slice 14's five-destination budget fails on arrival and the deferred F1 device decision reopens ahead of Cycle 3. *(Promoted from a soft deadline to an entry condition at stakeholder review: it was the one input that could invalidate the slice after the box opened, with no threshold attached.)* |
+| ~~**Which navigation the production first-run Learning Home inherits**~~ (§2.1 layout F1) | Product + Design | **Settled 2026-07-30** | **The real eleven, reorganized into four top-level families: Home, Learn, Portfolio, Work.** Eight destinations move one level into a family panel, Referral into the profile menu, Inbox becomes an icon control. Nothing is deleted and maximum depth is two. This also **partially reopens the deferred layout F1**: a purpose-based grouping *is* the structural device that finding recommends, so §14's deferral now covers only the steady-state home's full device decision, not the first-run navigation |
+| **Whether the four families and their membership match how learners actually cluster the destinations** | Design/Research + Product | Before any claim that this IA is validated | **Treat as unvalidated.** The names and the assignment are a judgement from destination labels. The cited study **declined to recommend any mapping** because ten of the eleven destinations were never opened: *"Assigning them on their names alone would be a content judgement made without the content."* Gate, in order: content inventory of the ten; **open card sort, n≈15, in Bahasa Indonesia**, stratified by facilitated versus self-directed arrival; first-click test. **Falsified if** the card sort produces clusters matching neither a purpose split nor a scope split, or a first-click test shows the grouped variant no faster than the flat eleven on a majority of tasks |
+| **Whether an XP counter belongs on the first-run home at all** — it is rendered but §14 excludes points as a mechanic | Product + Design | Before Cycle 3 release review | **Ships reading zero, derived from durable data.** Added at the product owner's direction 2026-07-30. It does **not** reopen the points mechanic: no points are awarded, spent, or compared, and the counter is a projection of skills completed. If §14's exclusion is meant to cover the *display* as well as the mechanic, the counter comes out rather than being filled with a literal |
 | **The narrow-width navigation mechanism** — §7.5 fixes the structure and leaves this open deliberately | Design + Engineering, informed by the 360px session | Before Slice 14 build, and **together with** the shell-prerequisite work, not after it | **A destination row directly beneath the page header, in normal flow, scrolling with the content** — all four destinations visible and labelled, no fixed vertical occupancy, no overflow control. Named as a concrete buildable treatment rather than as a property, because the prior wording ("keeps every destination visible without occupying fixed vertical space") was a constraint plus an adjective and left the artefact to whoever was at the keyboard. **Two alternatives are blocked until the shell prerequisite lands** and must not be chosen before it: a fixed bottom bar and any pinned or sticky row both depend on positioning that the shell's persistent entry-animation transform and its clipping currently defeat. **A fixed bottom bar remains disfavoured on its own merits** — in an Android browser it competes with collapsing URL chrome for scarce vertical height, precisely the condition native-iOS evidence cannot speak to |
 | **Approved Bahasa Indonesia navigation label set, measured at 360px** | Localization + Design | **Before Cycle 3 iteration 1** — this is a §6.2 entry condition | Block Cycle 3. A destination budget validated on English has not been validated |
 | **Moderated usability session on a real Android device at 360px**, against the Slice 14 build. **The instrument is designed via `/plan-usability`, not improvised here** — this PRD names what the session must settle and the threshold that fires the kill; the task set, script, and counterbalancing belong in a `test-plan.md` | Design/Research + Product | **Instrument approved before Slice 14 build; session run before Slice 14 is called done** | Block the slice's done call. The **two** mobile claims (layout F7 and F9) are labelled hypotheses, and a hypothesis nobody tests becomes a fact by default, which is the specific failure §2's labelling exists to prevent |
@@ -1753,7 +1953,9 @@ dictionary is what an implementer follows**. An appendix silent on narrow width 
 | Element | Behaviour at 360px | Must not |
 |---|---|---|
 | Learning Home shell | Single content column; navigation leaves the horizontal axis | Retain a fixed-width rail. A 240px declared rail against a 360px viewport leaves no usable content box once the column's own padding is taken, and the rail declares no `flex-shrink: 0`, so what renders is a compressed rail beside a squeezed column |
-| Home navigation destinations | At most five, **every one keeping its text label**, current location marked visibly and with `aria-current="page"`, inside a named `nav` landmark, each meeting the 24 by 24 CSS px target-size floor | Become icon-only; collapse behind a hamburger that hides the whole navigation; drop the current-location marking |
+| Home navigation destinations | **Four top-level families** — Home, Learn, Portfolio, Work — icon above label at narrow width, **every one keeping its text label**, the active family marked visibly and with `aria-current="page"` inside a named `nav` landmark, each meeting the 24 by 24 CSS px target-size floor | Become icon-only; collapse behind a hamburger that hides the whole navigation; drop the current-location marking |
+| Family panel | Opens on its trigger, lists **every member of that family at once**, closes on Escape or an outside click. Border held to SC 1.4.11's 3:1 rather than the decorative hairline | Nest a further level; hide a member behind a scroll; be clipped by the bar that contains it |
+| Active-family marking | When the learner is on a family member, **both** the family in the top bar and the member in the panel carry `aria-current="page"` | Mark only the member, which leaves a row of families saying nothing about where the learner is |
 | Destination icons | **`aria-hidden="true"`**, so each destination's accessible name is its label alone | Contribute ligature text to the accessible name, or render that text visibly before the icon font loads. *(Both are true of the reference implementation today, and both corrupt the Bahasa width measurement this appendix's next row depends on.)* |
 | Up Next card | The dominant object for organic learners, first in the content column | Share the first screenful with a second card competing for the same role |
 | Assigned-task checklist | The dominant object for program learners; Up Next sub-levels below it | Render both as co-equal dominant objects |

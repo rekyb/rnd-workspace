@@ -115,8 +115,10 @@ G128 and ARIA26 as sufficient techniques. It must not be reported as AA conforma
 
 The study's DI1 recommends keeping every destination visible under static headings — which is
 what Uxcel does with thirteen. That works vertically because sidebar height is cheap.
-Horizontal space is not. With four families across the top, **seven of the eleven destinations
-move one click away.**
+Horizontal space is not. With four families across the top, **nine of the eleven destinations move
+one click away** — the eight family members plus Referral in the profile menu. Home and Inbox stay
+at the top level. *(An earlier draft of this spec said seven; corrected 2026-07-30 against the
+actual assignment.)*
 
 The study's specific warning, resting on Larson & Czerwinski `[R1]`, is against **trading
 breadth for depth**. This design incurs exactly one level of depth, and each panel shows its
