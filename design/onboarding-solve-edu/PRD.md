@@ -200,6 +200,30 @@ One further intake field is **not** research-backed and is recorded here as an a
 
 The prototype validates the intended flow shape and interaction model, but it does not validate conversion performance, legal age policy, provider reliability, backend contracts, or production failure handling. All numeric success targets below are launch hypotheses to be reviewed after four weeks of stable production data.
 
+### The teen goal taxonomy is an assumption, not a finding
+
+**Claim:** a 13-to-17 learner is better served by three broad categories (English &
+Communication, Math & Science, Life skills) than by the six work-oriented goals offered to
+adults.
+
+**No study in `Informed by:` proposes these three categories.** They are a Program
+Operations and curriculum input, recorded here as an assumption with a validation path, in
+the same register as layout F7 and F9 (adopted as labelled hypotheses) and the Slice 5
+gender step.
+
+**A same-shape precedent exists and is deliberately not promoted to evidence.** The
+2026-07-28 study observed Khan Academy conditioning its content set on a declared grade
+band (*Grade 9* returning *Pre-algebra, Algebra 1, High school geometry*), and describes its
+Primary / Secondary / University options as "age bands under a different label". That
+sighting sits in the study's gaps-and-caveats section, not in a finding, so it supports the
+*mechanism* of conditioning on a band and says nothing about *these three categories*.
+§2.1 gains no row: no new finding is adopted.
+
+**Validation path:** the `goal_selected` distribution read by age band, which Slice 6's
+analytics criterion now carries. If 13-to-17 selection concentrates on one category or
+spreads evenly with no signal, the taxonomy is wrong and this is what shows it. Owner:
+Program Operations, jointly with whoever owns the §15 goal-to-course decision.
+
 ### 2.1 Findings coverage
 
 Every finding of every study in `Informed by:`, accounted for. Silence is not a disposition; see
@@ -761,7 +785,16 @@ This order intentionally follows the approved prototype (Name → Country → Ag
 
 ### Slice 6 — Organic learning-goal selection
 
-Organic learners choose exactly one configured goal:
+Organic learners choose exactly one configured goal. **The offered set depends on the age
+band declared in Slice 5**; the screen title is the same for every band.
+
+Learners aged 13 to 17:
+
+- English & Communication
+- Math & Science
+- Life skills
+
+Learners aged 18 and over:
 
 - Data and analysis
 - Customer service
@@ -770,7 +803,7 @@ Organic learners choose exactly one configured goal:
 - Communication
 - Language skills
 
-The options are configuration-backed and localized. A selection enables Continue and becomes the initial recommendation signal. Program learners skip this slice because their validated assignment already supplies routing context.
+Both sets are configuration-backed and localized, and their identifiers share one namespace. A selection enables Continue and becomes the initial recommendation signal. The three teen categories are an assumption, not a finding (see §2). Program learners skip this slice because their validated assignment already supplies routing context.
 
 ### Slice 7 — Account creation and social sign-up
 
@@ -942,6 +975,7 @@ walk remains acceptance for the cycle; it is not evidence for this unit.
 - [ ] That sentence, and every other intake instruction, is written to a stated plain-language reading level and validated against it in both English and Bahasa Indonesia. **A rationale the learner cannot read is not a rationale.** *(Reading-level target is an open decision, §15.)*
 - [ ] Selecting 13–17 or 18–24 immediately creates one valid single-choice result.
 - [ ] Selecting Adult reveals 25–34, 35–44, 45–54, and 55+; Continue stays disabled until a subrange is selected.
+- [ ] Each age option is a real control that is reachable and operable by keyboard, exposes its selected state via `aria-pressed` or radio semantics, shows a visible focus ring, and sits in a group with a programmatic label. *(The gender step below carries this criterion and the age step did not, which is how the age options shipped as non-semantic `div`s while the gender options beside them shipped as buttons.)*
 - [ ] Changing from Adult to another primary range clears the adult subrange.
 - [ ] The server evaluates the selected band, country, and current policy version before profile finalization.
 - [ ] A blocked result shows localized, legally approved copy and an explicit safe exit or approved consent route.
@@ -956,14 +990,16 @@ walk remains acceptance for the cycle; it is not evidence for this unit.
 
 ### Slice 6 — Organic learning-goal selection
 
-- [ ] Six localized goal cards render from configuration in the approved order.
+- [ ] The goal cards render from configuration for the learner's declared age band: three for 13–17, six for 18 and over, in the approved order for that set.
 - [ ] Goal selection is single-choice and exposes its state programmatically with `aria-pressed` or radio semantics.
 - [ ] Continue remains disabled until a goal is selected, **and while disabled its label states the unmet requirement** (for example "Choose a goal to continue"). *(§2.1 F8.)*
 - [ ] **Each configured goal resolves to exactly one first course.** The map may not return a shortlist for the learner to choose between, because a first-run home has no basis on which to rank one. *(§2.1 F4; the §15 goal-to-course decision inherits this constraint.)*
-- [ ] Back navigation preserves the current goal.
+- [ ] Back navigation preserves the current goal **within the same option set**.
+- [ ] Changing the age band to one that resolves a different option set clears any stored goal and returns Continue to its disabled state with its stated requirement.
+- [ ] Goal identifiers are unique across every band's set, so a stored identifier is unambiguous without also reading the band.
 - [ ] Program learners never receive the organic goal screen.
 - [ ] The stored value is a stable goal identifier; localized display copy is not used as the database key.
-- [ ] `goal_selected` includes the stable goal identifier and locale but no profile PII.
+- [ ] `goal_selected` includes the stable goal identifier, the locale, and **the age band that determined the option set**, and no profile PII. The band is what makes §2's validation path readable.
 
 ### Slice 7 — Account creation and social sign-up
 
@@ -1194,7 +1230,7 @@ are required columns, not optional polish.
 | Country | Collect country | Name | 4 | **Empty:** combobox announces no results. **Loading:** country list from config. **Error:** flag assets may fail without breaking selection. **Success:** ISO alpha-2 stored |
 | Age | Collect age band and evaluate eligibility | Country | 5 | **Empty:** Continue disabled. **Loading:** policy evaluation. **Error:** policy-service failure is recoverable and never silently admits. **Success:** eligible band stored, or a designed blocked state |
 | Gender *(provisional)* | Collect a reporting dimension | Age | 5 | **Empty:** Continue disabled. **Loading:** not applicable. **Error:** not applicable. **Success:** stable key stored. **Absent entirely** if §15 does not confirm a lawful basis |
-| Goal | Choose one learning goal (organic only) | Age or Gender | 6 | **Empty:** Continue disabled with the requirement in its label. **Loading:** goal config. **Error:** config failure blocks rather than showing an arbitrary set. **Success:** stable goal id stored |
+| Goal | Choose one learning goal (organic only). **The presented option set is conditioned on the declared age band**: three categories for 13–17, six for 18 and over | Age or Gender | 6 | **Empty:** Continue disabled with the requirement in its label. **Loading:** goal config for the resolved band. **Error:** config failure blocks rather than showing an arbitrary set. **Success:** stable goal id stored |
 | Account wall | Explain why an account is needed and collect it | Goal or Program preview | 7 | **Empty:** submit disabled until shape valid. **Loading:** prevents duplicate submission. **Error:** provider cancellation returns to the intact wall. **Success:** identity verified |
 | Finalization handoff | Show the destination while finalization resolves. **This is Slice 8's only user-visible surface**, and Slice 12's loading state | Account wall | **8, 12** | **Empty:** not applicable. **Loading:** the primary state, shell rendered with the content region skeletonised and labelled. **Error:** recoverable error on the same surface, never a permanent skeleton. **Success:** content resolves in place |
 | Learning Home (first run, organic) | Orient the learner and route them into their first action. **First-run progress affordances: the Up Next course-progress counter only** (denominator: skills in the first course). Points, streaks, and achievements are not rendered | Finalization handoff | **12, 13** | **Empty:** every progress affordance at zero with its countable condition in the slot; content slots show a neutral empty state plus recovery action; **no slot given to promotion**. **Loading:** per Slice 12's loading state. **Error:** unresolvable first course shows the empty state, never a substituted course. **Success:** primary action emits `lesson_started` |
@@ -1381,6 +1417,8 @@ ConsentRecord
   consented_at
 ```
 
+**Slice 6's age-conditional option set changes no field on `OnboardingSession`.** `goal_id` values are unique across every band's option set, so the band is not needed to disambiguate a stored goal. The band that produced it remains recoverable from `age_band` on the same record.
+
 All identifiers in client-visible analytics or URLs must follow the platform's exposure policy. Internal database identifiers must not be assumed safe for public use.
 
 ---
@@ -1444,7 +1482,7 @@ All identifiers in client-visible analytics or URLs must follow the platform's e
 | Whether gender is collected at all — the documented purpose, lawful basis, and retention for it | Program Operations + Legal/Privacy | Before Slice 5 development starts | Do not collect it; ship Slice 5 as age and eligibility only |
 | Production identity-provider set and account-linking policy | Security + Engineering | Before Slice 2 integration | Email/password + Google only |
 | Program code character set and cohort-capacity rules | Program Operations + Backend | Before Slice 3 API freeze | Six case-insensitive alphanumeric characters; no client-visible capacity detail |
-| Canonical goal taxonomy and goal-to-first-course map. **Constraint added 2026-07-29: the map must resolve each goal to exactly one first course, not a shortlist** (§2.1 F4) | Content + Product | Before Slice 6 content freeze | Use the six prototype identifiers and manually approved mappings, one course per goal |
+| Canonical goal taxonomy and goal-to-first-course map. **Constraint added 2026-07-29: the map must resolve each goal to exactly one first course, not a shortlist** (§2.1 F4). **Extended 2026-07-30: the taxonomy is now two option sets, so the decision covers the three 13-to-17 goals (English & Communication, Math & Science, Life skills) as well as the six offered to 18 and over.** The three teen categories are the §2 assumption, and this decision is where they are confirmed or replaced | Content + Product | Before Slice 6 content freeze | Use the nine prototype identifiers, three for 13–17 and six for 18 and over, with manually approved mappings, one course per goal |
 | Plain-language reading-level target for all intake and disclosure copy, in English and Bahasa Indonesia, and how it is validated | Content + Design | Before Slice 5 copy freeze | Adopt the organization's existing plain-language standard if one exists; otherwise block the Slice 5 copy freeze rather than ship an unmeasured target |
 | Whether the Slice 3 facilitator-powers disclosure is sufficient for a minor to give informed agreement, and what wording Legal requires | Legal/Privacy + Program Operations | Before Slice 3 copy freeze | Show the capabilities the API reports, in plain language, and route the wording through Legal before release |
 | Email-verification gating policy | Security + Product | Before Slice 7 release review | Send verification after registration; do not block first Learning Home |
@@ -1657,7 +1695,7 @@ Prohibited analytics properties include display name, email, password, raw progr
 | Country | Selected country | ISO alpha-2 code |
 | Age | Recognition-based age segment | Stable configured band key and policy version |
 | Gender | Reporting segment, opt-out available | Stable key or the opt-out key; nullable |
-| Goal | Organic personalization choice | Stable goal identifier |
+| Goal | Organic personalization choice, from the set configured for the declared age band | Stable goal identifier |
 | Program preview | Validated routing context | Opaque program/cohort reference |
 
 ### A.4 Account wall and login
