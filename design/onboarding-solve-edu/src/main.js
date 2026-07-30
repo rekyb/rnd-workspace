@@ -467,6 +467,7 @@ const progressMap = {
         const isSelected = appState.selectedGoal === goal.id;
         card.type = 'button';
         card.className = `choice-card${isSelected ? ' selected' : ''}`;
+        card.dataset.goalId = goal.id;
         card.setAttribute('aria-pressed', isSelected.toString());
         card.innerHTML = `
           <span class="material-symbols-rounded choice-card-icon" aria-hidden="true" style="color: ${goal.color};">${goal.icon}</span>
@@ -477,9 +478,23 @@ const progressMap = {
       });
     }
 
+    /* Updates the previously-selected and newly-selected buttons in place
+       instead of calling renderGoalCards(). A keyboard activation (Enter or
+       Space) fires this handler while the activated button still has focus;
+       rebuilding the whole grid afterward replaced that button with a new
+       node and took focus with it, dropping it to <body>. The goal set itself
+       does not change on selection, so there is nothing here that requires a
+       rebuild in the first place. */
     function selectGoal(goalId) {
       appState.selectedGoal = goalId;
-      renderGoalCards();
+      const grid = document.getElementById('goal_grid');
+      if (grid) {
+        grid.querySelectorAll('.choice-card').forEach(card => {
+          const isSelected = card.dataset.goalId === goalId;
+          card.classList.toggle('selected', isSelected);
+          card.setAttribute('aria-pressed', isSelected.toString());
+        });
+      }
       document.getElementById('global-continue-btn').disabled = false;
     }
 

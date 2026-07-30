@@ -1170,7 +1170,7 @@ Run after Task 7, before considering the work done.
 - [ ] `cd design/onboarding-solve-edu/src && powershell -NoProfile -File src-prototype.test.ps1` reports `PASSED`, 17 groups, 119 checks.
 - [ ] `cd design/onboarding-solve-edu && powershell -NoProfile -File prototype-web.test.ps1` reports `PASSED` — the frozen reference build is untouched.
 - [ ] `git status` shows no modification to `design/onboarding-solve-edu/data.js`, `main.js`, `prototype-web.html`, `standalone.html`, or `prototype-web.test.ps1`.
-- [ ] `git diff --stat 872f143..HEAD -- design/onboarding-solve-edu/src/home.html design/onboarding-solve-edu/src/home.js` is empty. `872f143` is the spec commit, the last commit before this plan's work — comparing against `main` would wrongly show the earlier Cycle 2 and 3 changes to those files.
+- [ ] `git diff --stat e4b09d0..HEAD -- design/onboarding-solve-edu/src/home.html design/onboarding-solve-edu/src/home.js` is empty. `e4b09d0` ("archive first-run-learning-home, superseded for prototyping") is the last commit before this plan's work began; comparing against `main` would wrongly show the earlier Cycle 2 and 3 changes to those files.
 - [ ] Teen path walked end to end in a browser: three goal cards, correct course on the home.
 - [ ] Adult path walked end to end: six goal cards, unchanged behaviour.
 - [ ] `Language skills` still produces the unmapped empty state on the home.

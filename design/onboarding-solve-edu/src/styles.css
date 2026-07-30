@@ -749,6 +749,7 @@ body.is-onboarding .card {
   flex: 1;
   min-width: 120px;
   padding: 24px 16px;
+  background: var(--surf);
   color: var(--ink);
   font: 400 16px/1.5 var(--font-body);
 }

@@ -334,6 +334,17 @@ Check ($mainCode -match 'goalOptionsFor\(appState\.selectedAgeCategory\)') `
 Check ($mainCode -notmatch 'goalOptions\.forEach') `
   'renderGoalCards still iterates the flat list'
 
+# selectGoal used to call renderGoalCards() on every activation, which tears
+# down and recreates every button in the grid. A keyboard Enter/Space fires
+# selectGoal while the activated button still has focus, so that rebuild
+# replaced the focused node and dropped focus to <body>; the next Tab then
+# restarted at the top of the page instead of reaching Continue. A text match
+# cannot prove where focus lands after the call, only that the rebuild which
+# discarded it is gone; the live-browser walk (Tab to a card, press Enter,
+# confirm focus and aria-pressed stay on that same card) is the actual proof.
+Check ($mainCode -notmatch '(?s)function selectGoal\(goalId\)\s*\{\s*appState\.selectedGoal = goalId;\s*renderGoalCards\(\);') `
+  'selectGoal still rebuilds the entire grid via renderGoalCards() on every activation, which is what destroys the focused button on a keyboard select'
+
 # The condition has to be real. A teen key holding a copy of the same six, or
 # sharing ids with them, passes every check above while changing nothing.
 $teenBlock = ''
@@ -446,11 +457,13 @@ Check ($mainCode -notmatch "getElementById\('age-adult-options'\)\.style\.displa
 # Counted, not matched. Three places already write aria-pressed (two in
 # selectGender, one in renderGoalCards), so a bare -match passes before
 # selectAgeOption writes it at all, and a check that is green before the change
-# gates nothing. Those three plus two more: one in clearOptionPeers, which is
-# called from all three deselection sites, and one on the selected element.
+# gates nothing. Those three plus three more: one in clearOptionPeers, which is
+# called from all three deselection sites, one on the selected element in
+# selectAgeOption, and one in selectGoal, which toggles the pressed state on
+# the existing goal buttons in place instead of rebuilding the grid.
 $pressedWrites = ([regex]::Matches($mainCode, "setAttribute\('aria-pressed'")).Count
-Check ($pressedWrites -eq 5) `
-  "$pressedWrites places write aria-pressed; expected 5. selectAgeOption sets a class but not the pressed state the markup declares"
+Check ($pressedWrites -eq 6) `
+  "$pressedWrites places write aria-pressed; expected 6. selectAgeOption sets a class but not the pressed state the markup declares"
 Check ($mainCode -match 'function clearOptionPeers') `
   'the deselection sweep is repeated inline at each call site instead of named once'
 Check ($styles -match '(?s)\.age-subrange-card:focus-visible\s*\{') `
