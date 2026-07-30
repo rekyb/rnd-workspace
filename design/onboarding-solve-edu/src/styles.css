@@ -1217,6 +1217,11 @@ body.is-onboarding .card {
   padding: 12px 24px;
   background: var(--surf);
   border-bottom: 1px solid var(--hair);
+  /* An open panel hangs below the bar, so the bar must not clip it. Stated
+     rather than inherited, because .card sets overflow: hidden and the panel
+     was being cut mid-list. */
+  overflow: visible;
+  position: relative;
 }
 .home-topbar-brand {
   flex-shrink: 0;
@@ -1267,7 +1272,10 @@ body.is-onboarding .card {
   left: 0;
   min-width: 200px;
   background: var(--surf);
-  border: 1px solid var(--hair);
+  /* --hair-dark, not --hair. A panel is a UI component, so its boundary is held
+     to WCAG 2.2 SC 1.4.11's 3:1 rather than to the hairline used for decorative
+     dividers — measured at 1.2:1 on a white surface, which is invisible. */
+  border: 1px solid var(--hair-dark);
   border-radius: 14px;
   box-shadow: 0 12px 32px rgba(0,0,0,0.10);
   padding: 8px;
@@ -1477,6 +1485,26 @@ body.is-onboarding .card {
   padding: 10px 14px;
 }
 
+/* Between the breakpoint and roughly a laptop, the bar's own contents are what
+   overflow: brand plus four destinations plus five utilities do not fit at
+   desktop spacing, so the bar wrapped to two rows above the width where the
+   narrow layout takes over. Tightening the gaps keeps it one row.
+
+   Measured, not assumed: one row from 820px upward; at exactly 768px the
+   contents still need about 977px, so the bar wraps to two rows there. That is
+   left as it is rather than forced — a tablet-width bar carrying a brand, four
+   destinations and five utilities honestly needs two rows, and it costs no
+   overflow and no target-size failure. Below 768px the destinations become
+   their own full-width row instead. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .home-topbar { gap: 10px; padding: 10px 14px; }
+  .home-nav { gap: 2px; }
+  .home-nav-item { padding: 10px 10px; font-size: 14px; gap: 6px; }
+  .home-topbar-utils { gap: 4px; }
+  .home-xp { padding: 8px 10px; font-size: 13px; }
+  .home-icon-btn { min-width: 40px; padding: 0 6px; }
+}
+
 /* ---- Learning Home at narrow width -------------------------------------
    PRD Slice 14. The rail leaves the horizontal axis and becomes a scrolling
    destination row directly beneath the brand, in normal flow: every
@@ -1515,6 +1543,25 @@ body.is-onboarding .card {
     flex-basis: 100%;
     flex: 0 0 100%;
     gap: 4px;
+  }
+  /* The family wrapper has to carry the flex, not just the button inside it.
+     Without this Home took 167px of a 360px row and the three families sized to
+     their text at 38, 55 and 29px — measured, not guessed. The wrapper becomes
+     a flex container so the trigger fills the share it is given. */
+  .home-nav-family {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    /* The panel is positioned against the whole bar rather than against a
+       quarter-width trigger, so it is not squeezed into 71px or clipped by the
+       edge of its own family. */
+    position: static;
+  }
+  .home-nav-family > .home-nav-item { width: 100%; }
+  .home-nav-panel {
+    left: 12px;
+    right: 12px;
+    min-width: 0;
   }
   .home-nav-item {
     flex: 1 1 0;
