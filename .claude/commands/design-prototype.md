@@ -111,10 +111,13 @@ prototype that fails a gate unless the failure is declared.
    **Prototype Element Dictionary**. **Locate those four by heading name, not by number** —
    only `/draft-prd`'s template puts them at §11/§12/§13; a real PRD may number
    differently, and where a numbered section does not carry the expected content, fall back
-   to the appendices. (In `design/onboarding-solve-edu/PRD.md`, §11–§13 are Rabbit Holes /
-   Technical Constraints / Dependencies; its screens, modals, and elements live in
-   `Appendix A: Prototype Element Dictionary` — one `###` per screen — and its data model in
-   `Appendix B: Core Data Model`.) Read
+   to the appendices. (Worked example: `design/onboarding-solve-edu/PRD.md` was revised on
+   2026-07-29 to the current template, so its screens, modals, and data model now *are* at
+   §11/§12/§13, its Prototype Element Dictionary remains `Appendix A` with one `###` per
+   screen, and its former `Appendix B: Core Data Model` was promoted into §13. Before that
+   revision the same file had §11–§13 as Rabbit Holes / Technical Constraints / Dependencies,
+   which is precisely why this step says to locate by heading name rather than by number.)
+   Read
    the project `README.md` for the title and `Informed by:`. For each study named there,
    read its `SYNTHESIS.md` — that is where the *evidence* behind a screen lives, and what
    lets the prototype cite real findings instead of asserting them.
