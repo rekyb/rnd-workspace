@@ -345,6 +345,17 @@ $sharedIds = $teenIds | Where-Object { @('data','customer','project','marketing'
 Check ($sharedIds.Count -eq 0) `
   "the teen set reuses $($sharedIds -join ', ') from the default set. Identifiers must be unique across bands"
 
+# Slice 6: back navigation preserves the goal within an option set, but a band
+# switch that changes the set discards it. Continue re-disables for free,
+# because updateHeaders derives its disabled state from selectedGoal.
+Check ($mainCode -match 'function setAgeCategory') `
+  'the age category is written directly, so nothing can notice that the option set changed'
+Check ($mainCode -match 'appState\.selectedGoal = null') `
+  'switching age band leaves a goal selected that the new set does not contain'
+$rawWrites = ([regex]::Matches($mainCode, 'appState\.selectedAgeCategory\s*=')).Count
+Check ($rawWrites -eq 1) `
+  "$rawWrites places write selectedAgeCategory; expected 1, inside setAgeCategory. A second writer bypasses the clear"
+
 # ---------------------------------------------------------------- report
 Write-Host ''
 if ($script:Failures.Count -eq 0) {

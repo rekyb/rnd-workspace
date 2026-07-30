@@ -380,26 +380,40 @@ const progressMap = {
       document.getElementById('age-adult-options').style.display = 'none';
     }
 
-    
+
+    /* The one writer of selectedAgeCategory. A band whose option set differs
+       from the outgoing one invalidates any goal already chosen, because that
+       goal is not in the set the learner is about to see. Clearing it here is
+       enough to re-disable Continue: updateHeaders derives the disabled state
+       from selectedGoal, so there is no second code path to keep in step.
+       Compared by resolved set, not by raw category, so opening the adult
+       branch (which parks the category at null) does not read as a change. */
+    function setAgeCategory(category) {
+      if (goalOptionsFor(appState.selectedAgeCategory) !== goalOptionsFor(category)) {
+        appState.selectedGoal = null;
+      }
+      appState.selectedAgeCategory = category;
+    }
+
     function selectAgeOption(element, category, isAdultSubOption = false) {
       if (isAdultSubOption) {
         const peers = document.getElementById('age-adult-options').querySelectorAll('.option-card');
         peers.forEach(p => p.classList.remove('selected'));
-        appState.selectedAgeCategory = category;
+        setAgeCategory(category);
         document.getElementById('global-continue-btn').disabled = false;
       } else {
         const peers = document.getElementById('age-primary-options').querySelectorAll('.option-card');
         peers.forEach(p => p.classList.remove('selected'));
-        
+
         if (category === 'adult') {
           showAdultOptions();
-          appState.selectedAgeCategory = null;
+          setAgeCategory(null);
           document.getElementById('global-continue-btn').disabled = true;
           const subPeers = document.getElementById('age-adult-options').querySelectorAll('.option-card');
           subPeers.forEach(p => p.classList.remove('selected'));
         } else {
           hideAdultOptions();
-          appState.selectedAgeCategory = category;
+          setAgeCategory(category);
           document.getElementById('global-continue-btn').disabled = false;
         }
       }
