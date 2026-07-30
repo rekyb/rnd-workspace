@@ -370,16 +370,27 @@ const progressMap = {
     }
 
     function showAdultOptions() {
-      document.getElementById('age-adult-options').style.display = 'flex';
+      document.getElementById('age-adult-options').classList.add('is-open');
       setTimeout(() => {
         document.getElementById('age-adult-options').scrollIntoView({ behavior: 'smooth', block: 'end' });
       }, 50);
     }
 
     function hideAdultOptions() {
-      document.getElementById('age-adult-options').style.display = 'none';
+      document.getElementById('age-adult-options').classList.remove('is-open');
     }
 
+
+    /* Deselect every option in a container, visually and programmatically.
+       The two must move together: a card that looks unselected while still
+       reporting aria-pressed="true" tells a sighted learner one thing and a
+       screen-reader user another. */
+    function clearOptionPeers(containerId) {
+      document.getElementById(containerId).querySelectorAll('.option-card').forEach(p => {
+        p.classList.remove('selected');
+        p.setAttribute('aria-pressed', 'false');
+      });
+    }
 
     /* The one writer of selectedAgeCategory. A band whose option set differs
        from the outgoing one invalidates any goal already chosen, because that
@@ -397,20 +408,17 @@ const progressMap = {
 
     function selectAgeOption(element, category, isAdultSubOption = false) {
       if (isAdultSubOption) {
-        const peers = document.getElementById('age-adult-options').querySelectorAll('.option-card');
-        peers.forEach(p => p.classList.remove('selected'));
+        clearOptionPeers('age-adult-options');
         setAgeCategory(category);
         document.getElementById('global-continue-btn').disabled = false;
       } else {
-        const peers = document.getElementById('age-primary-options').querySelectorAll('.option-card');
-        peers.forEach(p => p.classList.remove('selected'));
+        clearOptionPeers('age-primary-options');
 
         if (category === 'adult') {
           showAdultOptions();
           setAgeCategory(null);
           document.getElementById('global-continue-btn').disabled = true;
-          const subPeers = document.getElementById('age-adult-options').querySelectorAll('.option-card');
-          subPeers.forEach(p => p.classList.remove('selected'));
+          clearOptionPeers('age-adult-options');
         } else {
           hideAdultOptions();
           setAgeCategory(category);
@@ -418,6 +426,7 @@ const progressMap = {
         }
       }
       element.classList.add('selected');
+      element.setAttribute('aria-pressed', 'true');
     }
 
     function continueFromAge() {

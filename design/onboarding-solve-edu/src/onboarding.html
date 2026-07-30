@@ -329,43 +329,43 @@
 
     <!-- S3: Age Gate -->
     <div id="age_gate" class="card text-center">
-      <div style="width: 100%; max-width: 900px !important; margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
-        <div style="width: 100%;"><h1 class="title" style="margin-top: 0;">How would you describe yourself?</h1></div>
-      
-        <div id="age-primary-options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-top: 48px; width: 100%;">
-        <div class="option-card" id="age-btn-teen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;">
-          <span class="material-symbols-rounded" style="font-size: 48px; color: var(--blue);">backpack</span>
-          <div>
-            <div style="font-weight: 800; font-size: 20px; margin-bottom: 8px;">I am a teen</div>
-            <div style="font-size: 14px; opacity: 0.8;">(13-17 years old)</div>
-          </div>
-        </div>
-        
-        <div class="option-card" id="age-btn-young-adult" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;">
-          <span class="material-symbols-rounded" style="font-size: 48px; color: var(--green);">school</span>
-          <div>
-            <div style="font-weight: 800; font-size: 20px; margin-bottom: 8px;">I am a young adult</div>
-            <div style="font-size: 14px; opacity: 0.8;">(18-24 years old)</div>
-          </div>
-        </div>
-        
-        <div class="option-card" id="age-btn-adult" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;">
-          <span class="material-symbols-rounded" style="font-size: 48px; color: var(--magenta);">work</span>
-          <div>
-            <div style="font-weight: 800; font-size: 20px; margin-bottom: 8px;">I am an adult</div>
-            <div style="font-size: 14px; opacity: 0.8;">(25-64 years old)</div>
-          </div>
-        </div>
-      </div>
+      <div class="age-gate-inner card-wide">
+        <div class="age-gate-heading"><h1 class="title" id="age_gate_title">How would you describe yourself?</h1></div>
 
-        <div id="age-adult-options" style="display: none; flex-direction: column; gap: 16px; margin-top: 32px; width: 100%;">
-        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Which range fits best?</h2>
-        <div style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 16px; width: 100%;">
-          <div class="option-card" id="age-btn-adult-25" style="flex: 1; min-width: 120px; padding: 24px 16px;">25-34</div>
-          <div class="option-card" id="age-btn-adult-35" style="flex: 1; min-width: 120px; padding: 24px 16px;">35-44</div>
-          <div class="option-card" id="age-btn-adult-45" style="flex: 1; min-width: 120px; padding: 24px 16px;">45-54</div>
-          <div class="option-card" id="age-btn-adult-55" style="flex: 1; min-width: 120px; padding: 24px 16px;">55+</div>
+        <div id="age-primary-options" class="age-option-grid" role="group" aria-labelledby="age_gate_title">
+          <button type="button" class="option-card choice-card" id="age-btn-teen" aria-pressed="false">
+            <span class="material-symbols-rounded choice-card-icon age-icon-teen" aria-hidden="true">backpack</span>
+            <span>
+              <span class="choice-card-title">I am a teen</span>
+              <span class="choice-card-support">(13-17 years old)</span>
+            </span>
+          </button>
+
+          <button type="button" class="option-card choice-card" id="age-btn-young-adult" aria-pressed="false">
+            <span class="material-symbols-rounded choice-card-icon age-icon-young-adult" aria-hidden="true">school</span>
+            <span>
+              <span class="choice-card-title">I am a young adult</span>
+              <span class="choice-card-support">(18-24 years old)</span>
+            </span>
+          </button>
+
+          <button type="button" class="option-card choice-card" id="age-btn-adult" aria-pressed="false">
+            <span class="material-symbols-rounded choice-card-icon age-icon-adult" aria-hidden="true">work</span>
+            <span>
+              <span class="choice-card-title">I am an adult</span>
+              <span class="choice-card-support">(25-64 years old)</span>
+            </span>
+          </button>
         </div>
+
+        <div id="age-adult-options" class="age-subrange-group" role="group" aria-labelledby="age_subrange_title">
+          <h2 class="age-subrange-heading" id="age_subrange_title">Which range fits best?</h2>
+          <div class="age-subrange-row">
+            <button type="button" class="option-card age-subrange-card" id="age-btn-adult-25" aria-pressed="false">25-34</button>
+            <button type="button" class="option-card age-subrange-card" id="age-btn-adult-35" aria-pressed="false">35-44</button>
+            <button type="button" class="option-card age-subrange-card" id="age-btn-adult-45" aria-pressed="false">45-54</button>
+            <button type="button" class="option-card age-subrange-card" id="age-btn-adult-55" aria-pressed="false">55+</button>
+          </div>
         </div>
       </div>
     </div>

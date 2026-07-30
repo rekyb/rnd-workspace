@@ -391,10 +391,50 @@ Check ($goalScreen -notmatch '!important') `
 Check ($goalScreen -match 'id="goal_grid"[^>]*card-wide') `
   'the goal grid is not widened, so the enlarged cards render inside the 520px cap'
 
+# ---------------------------------------------------------------- 17
+Show-Group 'The age gate is operable by keyboard, like every screen beside it'
+
+# Seven controls on this screen were divs with click handlers, no tabindex and
+# no role, while the gender cards directly below them were already buttons.
+# PRD Slice 10 makes keyboard operation an acceptance requirement for every
+# slice, and the same rule is asserted for the home destinations in group 9.
+$ageGate = ''
+if ($onboarding -match '(?s)id="age_gate"(.*?)id="gender_gate"') { $ageGate = $Matches[1] }
+Check ($ageGate.Length -gt 0) 'could not isolate the age_gate markup'
+
+Check ($ageGate -notmatch '<div[^>]*class="[^"]*option-card') `
+  'an age option is still a non-semantic div. It must be operable by keyboard, not merely clickable'
+$ageButtons = ([regex]::Matches($ageGate, '<button[^>]*class="[^"]*option-card')).Count
+Check ($ageButtons -eq 7) `
+  "$ageButtons age options are buttons; expected 7 (three bands plus four adult sub-ranges)"
+$agePressed = ([regex]::Matches($ageGate, 'aria-pressed')).Count
+Check ($agePressed -eq 7) `
+  "$agePressed age options expose a pressed state; expected 7. A visual highlight tells assistive technology nothing"
+Check ($ageGate -notmatch 'style=') `
+  'the age gate still carries inline styles, which no media query can reach'
+$ageGroups = ([regex]::Matches($ageGate, 'role="group"')).Count
+Check ($ageGroups -eq 2) `
+  "$ageGroups age containers declare a group; expected 2. Without it seven buttons are announced as seven unrelated controls"
+$ageBareIcons = ([regex]::Matches($ageGate, '<span[^>]*material-symbols-rounded(?![^>]*aria-hidden)[^>]*>')).Count
+Check ($ageBareIcons -eq 0) `
+  "$ageBareIcons age icons carry no aria-hidden, so a band is announced as 'backpack I am a teen'"
+Check ($mainCode -notmatch "getElementById\('age-adult-options'\)\.style\.display") `
+  'the sub-range group is shown by writing an inline display, which is the state a media query cannot reach'
+# Counted, not matched. Three places already write aria-pressed (two in
+# selectGender, one in renderGoalCards), so a bare -match passes before
+# selectAgeOption writes it at all, and a check that is green before the change
+# gates nothing. Those three plus two more: one in clearOptionPeers, which is
+# called from all three deselection sites, and one on the selected element.
+$pressedWrites = ([regex]::Matches($mainCode, "setAttribute\('aria-pressed'")).Count
+Check ($pressedWrites -eq 5) `
+  "$pressedWrites places write aria-pressed; expected 5. selectAgeOption sets a class but not the pressed state the markup declares"
+Check ($mainCode -match 'function clearOptionPeers') `
+  'the deselection sweep is repeated inline at each call site instead of named once'
+
 # ---------------------------------------------------------------- report
 Write-Host ''
 if ($script:Failures.Count -eq 0) {
-  Write-Host "src-prototype.test.ps1 PASSED - $($script:Checks) checks, 15 groups"
+  Write-Host "src-prototype.test.ps1 PASSED - $($script:Checks) checks, 17 groups"
   exit 0
 }
 Write-Host "src-prototype.test.ps1 FAILED - $($script:Failures.Count) of $($script:Checks) checks"
