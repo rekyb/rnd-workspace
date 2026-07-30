@@ -1,7 +1,8 @@
 # First-Run Learning Home
 
-**Status:** Active
+**Status:** Archived
 **Started:** 2026-07-29
+**Archived:** 2026-07-30
 **Informed by:** research/2026-07-28-post-signup-handoff-first-run-home, research/2026-07-20-unified-onboarding-synthesis-and-patterns
 **Design system:** ui-library/
 
@@ -60,3 +61,4 @@ buildable on the library today while the funnel is not.
 | 2026-07-29 | Project created. Scoped to the first-run Learning Home after a component-availability check found six unported components blocking a full-funnel build on `ui-library/`. |
 | 2026-07-29 | **Scope widened to the full journey, and four components ported to unblock it.** `RadioGroup`, `Checkbox`, `PasswordInput` and `Select` were ported into `ui-library/behaviors.js` against their published class contracts, and `COMPONENTS.md` updated (ported 4 → 8, not-yet-ported 19 → 15). `Input` stays `not yet ported` and that is accurate: its contract is `.input` plus an `.input.err` modifier with no interactive behaviour, so a native input satisfies it without JavaScript. This is the "port on demand" path `/design-prototype` names first, not a workaround for its stop. |
 | 2026-07-29 | **Prototype rebuilt as a real journey**, replacing a state gallery with a switcher. Eleven screens: landing → program code → program preview → name → country → age → goal → account wall → labelled handoff → Learning Home → first skill. Completing the first skill returns to the same home with `first_action_at` set, so the first-run and returning states are the same markup with different data, which demonstrates the Slice 12 rendering invariant rather than asserting it. Progress derives from one configured step list per entry path (5 organic, 6 program), so the bar and its "Step N of M" text cannot disagree. `check-prototype.ps1`: **PASSED**. Principal Designer Mode T reviewed the earlier state-gallery build and returned **revise**; its component-contract findings were applied, but **the current build has not been re-reviewed**. |
+| 2026-07-30 | **Archived.** Superseded for prototyping: the accepted approach for this journey is `design/onboarding-solve-edu/src/`, copied from the working flat prototype and extended through the Learning Home and the first learning action. This project's lasting contribution is the four components it ported into `ui-library/behaviors.js` (`RadioGroup`, `Checkbox`, `PasswordInput`, `Select`), which stay in the library and are unaffected by this archival. The outstanding Principal Designer Mode T re-review is **not** carried forward — it judged a build no longer being taken forward. |
