@@ -430,6 +430,8 @@ Check ($pressedWrites -eq 5) `
   "$pressedWrites places write aria-pressed; expected 5. selectAgeOption sets a class but not the pressed state the markup declares"
 Check ($mainCode -match 'function clearOptionPeers') `
   'the deselection sweep is repeated inline at each call site instead of named once'
+Check ($styles -match '(?s)\.age-subrange-card:focus-visible\s*\{') `
+  'the sub-range buttons have no focus-visible rule, so the global button reset leaves them focusable with no visible ring'
 
 # ---------------------------------------------------------------- report
 Write-Host ''

@@ -749,6 +749,18 @@ body.is-onboarding .card {
   flex: 1;
   min-width: 120px;
   padding: 24px 16px;
+  color: var(--ink);
+  font: 400 16px/1.5 var(--font-body);
+}
+
+/* As divs these four chips were never tab-reachable, so the missing ring cost
+   nothing. As buttons they are reachable and the button reset above zeroes
+   the outline, so without this rule focus lands on them and shows nothing.
+   Matched to .choice-card:focus-visible so the whole screen rings the same
+   way. */
+.age-subrange-card:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  outline-offset: 3px;
 }
 
 /* The three band icon colours. Classes rather than inline style attributes,
