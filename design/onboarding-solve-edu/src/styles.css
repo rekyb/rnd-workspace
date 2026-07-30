@@ -628,62 +628,77 @@ body.is-onboarding .card {
 .goal-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 24px;
   width: 100%;
   margin: 32px auto;
 }
 
-.goal-card {
+/* Line 169 caps every direct child of a .card at 520px. Both wide surfaces
+   used to escape it with inline `max-width: 900px !important`. This wins on
+   specificity instead: repeating the :not() chain scores (0,4,0) against that
+   rule's (0,3,0), so no !important is needed. A bare .card-wide would score
+   (0,1,0) and lose, which is what the !important was compensating for. */
+.card:not(.landing-card):not(.home-card) > .card-wide {
+  max-width: 900px;
+}
+
+/* The shared recognition card, used by the age gate and the goal screen.
+   The support line is optional: the age bands carry one, the goals do not. */
+.choice-card {
   min-height: 144px;
   border: 2px solid var(--hair);
   border-radius: 16px;
-  padding: 24px 16px;
+  padding: 40px 16px;
   background: var(--surf);
   color: var(--ink);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 16px;
   text-align: center;
+  cursor: pointer;
   box-shadow: 0 4px 0 var(--hair-dark);
   transition: transform 0.2s var(--easing-fast), box-shadow 0.2s var(--easing-fast), border-color 0.2s, background 0.2s;
 }
 
-.goal-card:focus-visible {
+.choice-card:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
   outline-offset: 3px;
 }
 
-.goal-card.selected {
+.choice-card.selected {
   border-color: var(--purple);
   background: var(--purple-bg);
   box-shadow: 0 4px 0 var(--purple-dark);
 }
 
-.option-card:hover, .goal-card:hover, .goal-card:focus-visible {
+.option-card:hover, .choice-card:hover, .choice-card:focus-visible {
   border-color: var(--purple);
   background: var(--purple-bg);
   transform: translateY(-4px);
   box-shadow: 0 8px 0 var(--hair-dark), 0 12px 24px rgba(0,0,0,0.08);
 }
 
-.option-card.selected:hover, .goal-card.selected:hover, .goal-card.selected:focus-visible {
+.option-card.selected:hover, .choice-card.selected:hover, .choice-card.selected:focus-visible {
   box-shadow: 0 8px 0 var(--purple-dark), 0 12px 24px rgba(0,0,0,0.08);
 }
 
-.option-card:active, .goal-card:active {
+.option-card:active, .choice-card:active {
   transform: translateY(4px);
   box-shadow: 0 0px 0 var(--hair-dark);
   transition: transform 0.05s, box-shadow 0.05s;
 }
 
-.option-card.selected:active, .goal-card.selected:active {
+.option-card.selected:active, .choice-card.selected:active {
   box-shadow: 0 0px 0 var(--purple-dark);
 }
 
-.goal-card .material-symbols-rounded { font-size: 36px; }
-.goal-card-title { font: 600 16px/1.4 var(--font-head); }
+.choice-card-icon { font-size: 48px; }
+.choice-card-title { display: block; font: 800 20px/1.3 var(--font-head); }
+.choice-card-support { display: block; margin-top: 8px; font-size: 14px; opacity: 0.8; }
+
+.goal-intake-head { margin-top: 16px; width: 100%; }
 
 @media (max-width: 768px) {
   .goal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

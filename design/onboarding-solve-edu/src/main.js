@@ -458,11 +458,11 @@ const progressMap = {
         const card = document.createElement('button');
         const isSelected = appState.selectedGoal === goal.id;
         card.type = 'button';
-        card.className = `goal-card${isSelected ? ' selected' : ''}`;
+        card.className = `choice-card${isSelected ? ' selected' : ''}`;
         card.setAttribute('aria-pressed', isSelected.toString());
         card.innerHTML = `
-          <span class="material-symbols-rounded" style="color: ${goal.color};">${goal.icon}</span>
-          <span class="goal-card-title">${goal.title}</span>
+          <span class="material-symbols-rounded choice-card-icon" aria-hidden="true" style="color: ${goal.color};">${goal.icon}</span>
+          <span class="choice-card-title">${goal.title}</span>
         `;
         card.addEventListener('click', () => selectGoal(goal.id));
         grid.appendChild(card);

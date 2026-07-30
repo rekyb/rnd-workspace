@@ -366,6 +366,31 @@ foreach ($id in @('english', 'math_science', 'life_skills')) {
 Check ($mainCode -notmatch "'language':\s*\{") `
   'language gained a course. The unmapped path is then unreachable through real data and its guard passes vacuously'
 
+# The age gate and the goal screen always rendered one visual idea at two
+# scales, with the age half expressed as inline styles a media query cannot
+# reach. One class now carries both.
+Check ($styles -match '\.choice-card\s*\{') `
+  'there is no shared card class, so the two screens are still two implementations of one component'
+Check ($styles -notmatch '\.goal-card') `
+  'goal-card survives somewhere in the stylesheet. Two card systems is the duplication this removes'
+Check ($mainCode -notmatch 'goal-card') `
+  'renderGoalCards still emits the retired class, so the goal cards render unstyled'
+Check ($styles -match '\.card-wide') `
+  'nothing overrides the 520px cap on line 169, so the enlarged goal cards render about 162px wide'
+Check ($styles -match '(?s)\.card:not\(\.landing-card\):not\(\.home-card\)\s*>\s*\.card-wide') `
+  'card-wide is declared at too low a specificity to beat the 520px cap and would need !important'
+Check ($styles -notmatch '\.card-wide[^{]*\{[^}]*!important') `
+  'card-wide wins by !important rather than by specificity'
+# Scoped to the goal screen only. The age gate still carries its own inline
+# 900px override at this point; Task 5 removes that one and asserts globally.
+$goalScreen = ''
+if ($onboarding -match '(?s)id="goal_intake"(.*?)id="assigned_content"') { $goalScreen = $Matches[1] }
+Check ($goalScreen.Length -gt 0) 'could not isolate the goal_intake markup'
+Check ($goalScreen -notmatch '!important') `
+  'the goal screen still overrides the 520px cap inline instead of by specificity'
+Check ($goalScreen -match 'id="goal_grid"[^>]*card-wide') `
+  'the goal grid is not widened, so the enlarged cards render inside the 520px cap'
+
 # ---------------------------------------------------------------- report
 Write-Host ''
 if ($script:Failures.Count -eq 0) {
