@@ -63,29 +63,43 @@ reachable through a real data path (`src/main.js:731`). That omission is preserv
 
 ## Evidence position
 
-**The three teen categories are an assumption, not a finding.** No finding in any study in
-the project's `Informed by:` list proposes them, and the PRD's Mode S gate fails a PRD
-that states unevidenced claims as fact.
+**Both halves of this change are assumptions, not findings:** conditioning an intake option
+set on a declared age band, and the three teen categories themselves. No finding in any
+study in the project's `Informed by:` list proposes either, and the PRD's Mode S gate fails
+a PRD that states unevidenced claims as fact.
 
-The **mechanism** — conditioning an intake option set on a declared age band — has a
-same-shape precedent in `research/2026-07-28-post-signup-handoff-first-run-home`: Khan
-Academy's *Grade 9* branch produced *Pre-algebra, Algebra 1, High school geometry*
-(`SYNTHESIS.md:1165`), and that study describes its Primary / Secondary / University
-options as "age bands under a different label" (`SYNTHESIS.md:711`).
+**What the cited research supports, from a finding.** `research/2026-07-28-post-signup-handoff-first-run-home`
+records under **F6** that Khan Academy asks an age-band proxy question with its payoff on the
+modal, *"What grade are you in? / We'll gather the right lessons for you"*, and reads that
+screen's Primary / Secondary / University options as "age bands under a different label"
+(`SYNTHESIS.md:711`, inside F6, which opens at `SYNTHESIS.md:691`). That supports **asking**
+a band question and telling the learner it will shape their content. It says nothing about
+varying the option set by band.
 
-**That precedent is recorded in the study's gaps section, not adopted as a finding**, and
-this spec does not promote it to one. Consequences:
+**What it does not support, and the correction that matters.** An earlier draft of this
+section cited Khan Academy's *Grade 9 → Pre-algebra, Algebra 1, High school geometry* walk
+(`SYNTHESIS.md:1165`) as a same-shape precedent for the conditioning mechanism. That is
+wrong twice over. The line sits in `## Gaps & caveats` (opens at `SYNTHESIS.md:1056`) and
+reads "Intake branches are mine on both Chrome platforms": the grade and the three courses
+were **the researcher's own selections, not system output**, and the same caveat states that
+"findings about *which* content was recommended do not generalise". It is not evidence for
+the mechanism, and the "age bands under a different label" quote it was fused with is not in
+the gaps section at all. Consequences:
 
-- §2 of the PRD carries the change as an **assumption with a named owner and a validation
-  path**, in the register already used for layout F7/F9 ("adopted as labelled
-  hypotheses") and for the Slice 5 gender step ("the one intake field with no research
-  behind it").
+- §2 of the PRD carries **both** claims as assumptions with a named owner and a validation
+  path, in the register already used for the Slice 5 gender step ("the one intake field
+  with no research behind it"). The comparison to layout F7/F9 is dropped: those are
+  adopted study findings labelled as hypotheses, and borrowing their register for a claim
+  with no study behind it flatters it.
 - **§2.1's findings-coverage table gains no row.** No new finding is adopted, so the
   25-row accounting and its `20 Adopted · 4 Deferred · 1 Contradicted` summary stay
   intact.
 - The validation path is the `goal_selected` distribution read **by age band**, which is
   why the analytics criterion in §9 gains the band (see *PRD changes* below). Without
-  that field the assumption is not falsifiable.
+  that field the assumption is not falsifiable. The **pass** condition, a share threshold
+  and a minimum teen sample, is not invented here: it is a named §15 open decision owned by
+  Program Operations and Product with Data. §2 states the two failure shapes it can already
+  recognise and stops there.
 
 ## Approach
 
