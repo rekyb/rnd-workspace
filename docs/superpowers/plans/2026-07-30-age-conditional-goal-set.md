@@ -586,7 +586,7 @@ Then add the replaced inline properties to `src/styles.css`, directly after the 
 cd design/onboarding-solve-edu/src && powershell -NoProfile -File src-prototype.test.ps1
 ```
 
-Expected: `PASSED - 107 checks`.
+Expected: `PASSED - 109 checks`. (The plan first said 107; the Step 1 block contains nine `Check` calls, not seven.)
 
 - [ ] **Step 7: Verify in a browser**
 
@@ -885,7 +885,7 @@ to:
 cd design/onboarding-solve-edu/src && powershell -NoProfile -File src-prototype.test.ps1
 ```
 
-Expected: `PASSED - 117 checks, 17 groups`.
+Expected: `PASSED - 119 checks, 17 groups`.
 
 If `the age gate still carries inline styles` fails, a `style=` attribute survives in the block — find it and move the declaration into one of the `.age-*` classes from Step 3. Do not relax the check: it is the whole point of the task, and the age gate is the screen that proved an inline style cannot be reached by a media query.
 
@@ -972,10 +972,10 @@ The likely failure is the goal grid at 421–768px: two columns of the enlarged 
 Append a row to the status-log table in `design/onboarding-solve-edu/README.md`:
 
 ```markdown
-| 2026-07-30 | **Age-conditional goal set, one shared choice card, and the age gate made keyboard-operable.** A 13-to-17 learner is offered English & Communication, Math & Science and Life skills; every other band keeps the six. `data.js` carries a band-keyed map plus a resolver, `setAgeCategory` clears a goal whose option set no longer contains it, and three `COURSE_MAP` rows carry the teen goals through the handoff. `.goal-card` retired into a shared `.choice-card` at the age gate's scale, with `.card-wide` lifting the goal grid off the 520px cap on `styles.css:169` by specificity rather than `!important`. The age gate's seven `div` controls became buttons with `aria-pressed`, both containers gained a labelled `role="group"`, and every inline style on the screen moved into CSS. **Re-measured at 320/360/414/768/1440 on both pages: 0 overflowing elements, 0 targets below 24x24.** Suite extended 83 -> 117 checks, 15 -> 17 groups. Flat reference files untouched and still green. |
+| 2026-07-30 | **Age-conditional goal set, one shared choice card, and the age gate made keyboard-operable.** A 13-to-17 learner is offered English & Communication, Math & Science and Life skills; every other band keeps the six. `data.js` carries a band-keyed map plus a resolver, `setAgeCategory` clears a goal whose option set no longer contains it, and three `COURSE_MAP` rows carry the teen goals through the handoff. `.goal-card` retired into a shared `.choice-card` at the age gate's scale, with `.card-wide` lifting the goal grid off the 520px cap on `styles.css:169` by specificity rather than `!important`. The age gate's seven `div` controls became buttons with `aria-pressed`, both containers gained a labelled `role="group"`, and every inline style on the screen moved into CSS. **Re-measured at 320/360/414/768/1440 on both pages: 0 overflowing elements, 0 targets below 24x24.** Suite extended 83 -> 119 checks, 15 -> 17 groups. Flat reference files untouched and still green. |
 ```
 
-Correct `83 -> 117` to whatever the suite actually reports, and correct the two measured numbers if Step 2 found anything. **Do not copy either through unverified** — a measurement claim that was never run is the fabrication class this project's suite exists to catch.
+Correct `83 -> 119` to whatever the suite actually reports, and correct the two measured numbers if Step 2 found anything. **Do not copy either through unverified** — a measurement claim that was never run is the fabrication class this project's suite exists to catch.
 
 - [ ] **Step 5: Confirm the reference build is still green**
 
@@ -1154,7 +1154,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 
 Run after Task 7, before considering the work done.
 
-- [ ] `cd design/onboarding-solve-edu/src && powershell -NoProfile -File src-prototype.test.ps1` reports `PASSED`, 17 groups, 117 checks.
+- [ ] `cd design/onboarding-solve-edu/src && powershell -NoProfile -File src-prototype.test.ps1` reports `PASSED`, 17 groups, 119 checks.
 - [ ] `cd design/onboarding-solve-edu && powershell -NoProfile -File prototype-web.test.ps1` reports `PASSED` — the frozen reference build is untouched.
 - [ ] `git status` shows no modification to `design/onboarding-solve-edu/data.js`, `main.js`, `prototype-web.html`, `standalone.html`, or `prototype-web.test.ps1`.
 - [ ] `git diff --stat 872f143..HEAD -- design/onboarding-solve-edu/src/home.html design/onboarding-solve-edu/src/home.js` is empty. `872f143` is the spec commit, the last commit before this plan's work — comparing against `main` would wrongly show the earlier Cycle 2 and 3 changes to those files.
