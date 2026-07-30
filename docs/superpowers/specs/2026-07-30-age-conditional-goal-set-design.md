@@ -1,4 +1,4 @@
-# Age-Conditional Learning-Goal Set — Design Spec
+# Age-Conditional Goal Set, and One Shared Choice Card — Design Spec
 
 **Date:** 2026-07-30
 **Component:** `design/onboarding-solve-edu` (PRD + `src/` prototype)
@@ -6,9 +6,17 @@
 
 ## Goal
 
-Make the organic goal-intake option set depend on the learner's declared age band. A
-learner who selects **13–17** sees three goals instead of six, and that selection carries
-through the existing handoff to the Learning Home unchanged in mechanism.
+Three changes to the organic funnel, in one pass because they touch the same two screens'
+markup:
+
+1. **The goal-intake option set depends on the declared age band.** A learner who selects
+   **13–17** sees three goals instead of six, and that selection carries through the
+   existing handoff to the Learning Home unchanged in mechanism.
+2. **The age gate and the goal screen render one shared card component**, at the age
+   gate's larger scale. Today they are two implementations of one visual idea, and the age
+   gate's half is inline styles.
+3. **The age gate's seven controls become real buttons.** They are non-semantic `div`s
+   today, so the screen is not keyboard-operable.
 
 The screen title stays **"What do you want to get better at?"** for every band. Only the
 option set changes.
@@ -25,7 +33,7 @@ marketing, Communication, Language skills.
 ## Context
 
 The prototype's organic path is landing → name → country → **age** → gender → **goal** →
-save-wall → home. Two facts about the current build govern this change:
+save-wall → home. Four facts about the current build govern this change:
 
 - **The goal list is flat and unconditional.** `src/data.js:199` declares one
   `goalOptions` array, exported as `window.goalOptions`. `renderGoalCards()`
@@ -34,6 +42,14 @@ save-wall → home. Two facts about the current build govern this change:
   `appState.selectedAgeCategory`, with `'teen'` as the 13–17 value
   (`src/main.js:42`). The value the conditional needs is already on state at the moment
   the goal screen renders.
+- **The age gate is styled inline.** Its grid (`:335`) and all three primary cards
+  (`:336`, `:344`, `:352`) carry `style` attributes, so no media query can reach them —
+  the same condition the Cycle 3 Learning Home work had to undo before it could lay the
+  home out at narrow width.
+- **The age gate is not keyboard-operable.** Those three cards and the four adult
+  sub-ranges (`:364`–`:367`) are `div`s with click handlers, no `tabindex`, and no `role`.
+  The gender cards at `:387`–`:389` are already buttons, so this is a gap in one screen,
+  not a project-wide convention.
 
 Carry-over to the home is a **finalization-time write**, not a render-time lookup.
 `finishOnboarding()` (`src/main.js:735`) resolves the goal id against `COURSE_MAP`
@@ -85,6 +101,17 @@ Two alternatives were considered and rejected:
 - **A separate teen goal screen.** Rejected: duplicates the markup, the ARIA wiring, and a
   branch of the state machine for three cards.
 
+**One shared card class rather than restyling `.goal-card` up to match.** Copying the age
+gate's scale into `.goal-card` would produce the same picture from two declarations, and
+would leave the age gate's inline styles in place — so the next responsive change has to be
+made twice and can drift. Converging on one class costs the same edit and removes the
+duplication, and it is the reason the a11y fix below is cheap: the seven age controls are
+already being rewritten.
+
+The rejected direction was the reverse — moving the age gate down to `.goal-card`'s compact
+treatment. It de-inlines equally well but shrinks the age gate instead of enlarging the goal
+screen.
+
 ## Requirements
 
 ### Option sets (`src/data.js`)
@@ -110,17 +137,85 @@ no entry, `goalOptionsByBand.default`. Both the map and the resolver are exporte
 ### Rendering (`src/main.js`)
 
 `renderGoalCards()` iterates `goalOptionsFor(appState.selectedAgeCategory)` instead of the
-module-level list. Card markup, the `goal-card` class, `aria-pressed`, and the click
-binding are unchanged.
+module-level list. The element stays a `<button type="button">` with `aria-pressed` and the
+same click binding; only the class it emits changes, from `goal-card` to `choice-card`
+(see *Shared card component*).
 
-**No structural HTML change.** `#goal_grid` (`src/onboarding.html:401`) is populated by JS
-and the title at `:398` already reads "What do you want to get better at?". The one edit is
-the placeholder comment at `:402`, which names `goalOptions` and would otherwise point at a
-symbol that no longer exists.
+`#goal_grid` (`src/onboarding.html:401`) is populated by JS and the title at `:398` already
+reads "What do you want to get better at?", so neither changes. The placeholder comment at
+`:402` names `goalOptions` and is updated, since that symbol no longer exists.
 
-**No CSS change.** `.goal-grid` is `repeat(3, minmax(0, 1fr))` (`src/styles.css:628`), so
-three cards render as a single full row, and the existing 768px (2-col) and 420px (1-col)
-queries apply to the teen set without modification.
+The grid keeps its column rules: `.goal-grid` stays `repeat(3, minmax(0, 1fr))`
+(`src/styles.css:628`), so three cards render as a single full row and six render as two,
+and the existing 768px (2-col) and 420px (1-col) queries apply to the teen set without
+modification. Its `gap` is the one edit, 16px → 24px, to match the age gate now that both
+render the same card.
+
+### Shared card component
+
+The age gate and the goal screen converge on one class, at the age gate's scale. They
+already share the border, radius, `0 4px 0` shadow, and the hover/active/selected rule
+groups (`src/styles.css:664`–`:683`); what differs is scale, and the age half is expressed
+as inline `style` attributes rather than CSS.
+
+A new `.choice-card` carries the large treatment — the flex-column centring, `40px 16px`
+padding, and a 16px internal gap — with `.choice-card-icon` at 48px, `.choice-card-title`
+at 20px/800, and an **optional** `.choice-card-support` at 14px/0.8 opacity. Single-dash
+child names, matching the file's existing `.goal-card-title`, `.option-title`, and
+`.option-icon`; the file uses no BEM double underscore anywhere.
+
+| Screen | Markup today | After |
+|---|---|---|
+| Age primary (`:336`, `:344`, `:352`) | `option-card` + inline styles, 48px icon, 20px/800 title, support line | `option-card choice-card`, inline styles deleted, support line kept |
+| Goal cards (`main.js:447`) | `goal-card`, 36px icon, 16px/600 title, no support line | `choice-card`, no support line |
+
+Two constraints the implementation must respect:
+
+- **`.option-card` stays on the age cards.** The peer-deselection queries at
+  `src/main.js:386` and `:391` select `.option-card` within the two age containers.
+  Keeping the class means the selection JS needs no change; removing it would silently
+  break deselection.
+- **`.goal-card` is retired into `.choice-card`,** which means `.choice-card` must be added
+  to the existing hover, active, focus-visible, and `.selected` selector lists rather than
+  redeclaring them. The `.goal-card` rules at `:636`–`:686` are removed once nothing
+  references them.
+
+**Goal cards get no support line.** The class makes it optional and the goal set has no
+second line of copy today; inventing one-line descriptions for nine goals is new product
+copy, not a restyle, and is out of scope.
+
+The age gate's own grid (`auto-fit, minmax(220px, 1fr)`, inline at `:335`) moves into CSS
+with the card, since a media query cannot reach an inline style — the same reason recorded
+for the Cycle 3 Learning Home work.
+
+### Age-gate control semantics
+
+Seven controls on the age gate are `<div class="option-card">` with click handlers, no
+`tabindex`, and no `role`: the three primary cards (`:336`, `:344`, `:352`) and the four
+adult sub-ranges (`:364`–`:367`). They are not keyboard-focusable and are not announced as
+controls. The gender cards directly below them (`:387`–`:389`) are already
+`<button type="button" aria-pressed>`, and so are the goal cards, so the age gate is the
+one screen that was missed.
+
+All seven become `<button type="button">` carrying `aria-pressed`, kept in sync on
+selection exactly as `selectGender()` already does (`src/main.js:424`). The three primary
+cards additionally get `.choice-card`; the four sub-range chips keep `.option-card` alone,
+since they are text-only and not the large treatment.
+
+The icons are decorative next to a visible text label, so they take `aria-hidden="true"` —
+consistent with the Cycle 3 navigation work.
+
+`#age-primary-options` and `#age-adult-options` gain `role="group"` with an `aria-labelledby`
+pointing at the heading each already sits under — the `h1` at `:333` and the "Which range
+fits best?" `h2` at `:362`. Both the gender options (`:380`) and the goal grid (`:401`)
+already do this; without it the seven buttons are announced as seven unrelated controls.
+Slice 5 names a programmatic group label for the gender step and this makes the age step
+match.
+
+This is folded in here rather than deferred because it is the same seven elements' markup
+that the inline-style removal already rewrites. PRD Slice 10 makes keyboard operation an
+acceptance requirement for every slice, and `src/src-prototype.test.ps1:185` already
+asserts the rule for the Learning Home's destinations.
 
 ### Band switching clears the goal
 
@@ -188,13 +283,25 @@ the PRD says so rather than presenting these titles as shipping curriculum.
     set — the field the §2 validation path depends on. It remains PII-free.
   - The "each configured goal resolves to exactly one first course" criterion (`:962`) is
     unchanged in wording and now governs nine goals.
+- **§9 Slice 5 acceptance criteria** (`PRD.md:940`) — one new criterion, mirroring the one
+  the gender step already carries at `:951`: each age option exposes its selected state via
+  `aria-pressed` or radio semantics and shows a visible focus ring. **The absence of this
+  parallel criterion is why the age gate shipped as `div`s while the gender step beside it
+  shipped as buttons**, so the fix is written into the criteria, not only into the markup.
 - **§11 Screens, IA & Empty States** — the goal-screen entry notes the conditional set.
 - **§13 Data Model** — no schema change. `goal_id?` is already a free identifier and the
   band that produced it is recoverable from `age_band` on the same record. A note records
   that the goal-id namespace is shared across bands, so ids must stay globally unique.
 - **§15 Rabbit Holes & Open Questions** — the open goal-to-course decision is extended to
   cover the three teen goals.
-- **Prototype Element Dictionary** — unchanged. The goal card is the same component.
+- **Prototype Element Dictionary** — Appendix A.3 is value-addressed rather than
+  component-addressed, so the shared card class does not reach it. Its **Goal** row gains a
+  note that the presented option set is conditioned on the age band while the durable
+  representation stays a stable goal identifier.
+
+**The shared card component itself needs no PRD change.** The PRD specifies behaviour and
+requirements, not class names, and the visual treatment of a recognition-based option was
+never pinned to a scale in it. Only the a11y criterion above is a requirement change.
 
 ## Test guards (`src/src-prototype.test.ps1`)
 
@@ -208,6 +315,22 @@ comment recording why):
    absent from the map and is not covered by this check.
 3. The band-change clear path exists in `main.js` — the rule is enforced in code, not only
    asserted in the PRD.
+4. The age gate carries **no clickable `div`** — every control in `#age-primary-options` and
+   `#age-adult-options` is a `button`, and both containers carry a `role="group"` with a
+   label. This is the `:185` rule applied to the second screen that needed it.
+5. `#age_gate` carries **no `style=` attribute**, so the inline layout cannot creep back and
+   put the age gate out of reach of a media query again.
+6. `.goal-card` no longer appears in `styles.css` or in `main.js` — the retirement is
+   complete rather than leaving two card systems where the spec claims one.
+
+### Re-measurement, not just assertion
+
+The Cycle 3 work recorded a measured result: **0 overflowing elements and 0 targets below
+24×24 at 320/360/414/768/1440 on both pages**. Enlarging every goal card from a 36px icon
+to a 48px one, widening the grid gap, and moving the age grid out of inline styles can all
+break that. The claim is re-measured at the same five widths and the number restated, or
+corrected. A restyle that quietly invalidates a measured guardrail is the failure this
+project's suite exists to prevent.
 
 ## Out of scope
 
@@ -220,6 +343,13 @@ comment recording why):
 - The program path. Program learners never see the goal screen (`src/main.js:414`), and
   Slice 6 already excludes them.
 - The 18–24 and 25–64 option sets, which are unchanged.
-- Any change to `home.html`, `home.js`, `onboarding.html`, or `styles.css`.
+- Any change to `home.html` or `home.js`. The home reads the handoff, not the goal list,
+  and the shared card class is not used on that surface.
+- **The gender gate's cards.** They are already buttons with `aria-pressed` at equal visual
+  weight, and Slice 5 requires the opt-out to sit at the same weight as the other two.
+  Promoting them to the large `.choice-card` treatment would be a third screen's redesign
+  and could disturb that criterion.
+- **Support-line copy for the goal cards.** The shared class supports one; writing nine of
+  them is new product copy.
 - Real curriculum content for the three teen courses. Placeholder rows only, with the real
   mapping recorded as a §15 open decision.
