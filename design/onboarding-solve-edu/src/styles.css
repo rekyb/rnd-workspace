@@ -1192,7 +1192,12 @@ body.is-onboarding .card {
    their family panel and Referral into the profile menu. That trade is recorded
    in the spec, not hidden here. */
 .home-card {
-  max-width: 1000px !important;
+  /* Fills the viewport rather than sitting in a 1000px box on a wide screen.
+     Line length is protected by capping the content column below, not by
+     capping the whole shell, so the top bar spans the full width the way a
+     real application bar does. */
+  max-width: 100% !important;
+  width: 100%;
   padding: 0 !important;
   flex-direction: column;
   justify-content: flex-start;
@@ -1222,6 +1227,17 @@ body.is-onboarding .card {
      was being cut mid-list. */
   overflow: visible;
   position: relative;
+  /* Load-bearing. `.card.active > *` animates a transform with fill-mode
+     forwards, so BOTH the bar and the content column hold a stacking context.
+     As siblings at z-index auto they then paint in DOM order, which puts the
+     content column on top and buries an open panel behind it — the panel's own
+     z-index cannot escape its parent's context. Measured: a click at the
+     panel's lower edge landed on the Up Next card. Ranking the bar above the
+     column fixes it at the level where the two actually compete. */
+  z-index: 20;
+  /* Aligns the bar's contents with the centred content column while the bar
+     itself spans the full width. */
+  padding-inline: max(24px, calc((100% - 1120px) / 2));
 }
 .home-topbar-brand {
   flex-shrink: 0;
@@ -1368,7 +1384,13 @@ body.is-onboarding .card {
 .home-main {
   flex: 1;
   min-width: 0;
-  padding: 40px;
+  width: 100%;
+  /* The shell fills the viewport; the reading column does not. Capping the
+     column rather than the shell keeps line length sane on a wide screen
+     without boxing the whole application into 1000px. */
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 40px 24px 48px;
   display: flex;
   flex-direction: column;
   gap: 24px;

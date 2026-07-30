@@ -563,6 +563,18 @@ Check ($homeCode -match 'function renderXp') 'home.js has no XP renderer'
 
 # Theme and language are learner choices, so they carry state rather than
 # flipping an icon and hoping.
+# `.card.active > *` animates a transform with fill-mode forwards, so the top
+# bar and the content column BOTH hold a stacking context. As siblings at
+# z-index auto they paint in DOM order, which buried every open panel behind the
+# content — the panel's own z-index cannot escape its parent's context.
+Check ($styles -match '(?s)\.home-topbar\s*\{[^}]*z-index:\s*\d+') `
+  'the top bar has no z-index, so an open panel renders behind the content column'
+# The shell fills the viewport; the reading column is what gets capped. A fixed
+# px cap on the shell is what made the prototype look like a boxed screenshot.
+Check ($styles -notmatch '(?s)\.home-card\s*\{[^}]*max-width:\s*\d+px') `
+  'the Learning Home shell is capped at a fixed width, so it does not follow the viewport'
+Check ($styles -match '(?s)\.home-main\s*\{[^}]*max-width:\s*\d+px') `
+  'the reading column has no maximum width, so line length runs away on a wide screen'
 Check ($homeCode -match 'function markLocation') `
   'home.js cannot mark the current location'
 Check ($homeCode -match "setAttribute\('aria-current', 'page'\)") `
