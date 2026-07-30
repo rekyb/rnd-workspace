@@ -15,7 +15,7 @@
 - **`src/` only.** Never edit `design/onboarding-solve-edu/data.js`, `main.js`, `prototype-web.html`, `standalone.html`, or `prototype-web.test.ps1`. Those are the reference build, deliberately frozen at the `src/` split (`README.md:47`). Everything in this plan is under `design/onboarding-solve-edu/src/`.
 - **Run the suite from inside `src/`.** It resolves paths with `$PSScriptRoot`: `cd design/onboarding-solve-edu/src && powershell -NoProfile -File src-prototype.test.ps1`.
 - **Baseline is 83 checks, 15 groups, PASSED.** Measured 2026-07-30 before this work. Every task must leave it passing with a higher count.
-- **The group count is hard-coded** in the final report line (`src-prototype.test.ps1`, last 6 lines): `"src-prototype.test.ps1 PASSED - $($script:Checks) checks, 15 groups"`. Task 5 adds a 16th group and must update that string, or the suite reports a lie while passing.
+- **The group count is hard-coded** in the final report line (`src-prototype.test.ps1`, last 6 lines): `"src-prototype.test.ps1 PASSED - $($script:Checks) checks, 15 groups"`. Task 1 adds group 16 and Task 5 adds group 17; **Task 5 owns the update to that string**, so the report reads `15 groups` from Task 1 through Task 4. That is expected, not a defect to fix early.
 - **No new design token.** Colours must be `var(--…)` names already present in `styles.css`.
 - **No em-dashes in prototype copy.** House vocabulary rule, `.claude/references/prompt-vocabulary.md`.
 - **Goal ids are stable keys.** `english`, `math_science`, `life_skills`. Never the display label.
@@ -667,11 +667,13 @@ Check ($mainCode -notmatch "getElementById\('age-adult-options'\)\.style\.displa
 # Counted, not matched. Three places already write aria-pressed (two in
 # selectGender, one in renderGoalCards), so a bare -match passes before
 # selectAgeOption writes it at all, and a check that is green before the change
-# gates nothing. Those three plus four from selectAgeOption: the two peer
-# sweeps, the sub-range sweep, and the selected element.
+# gates nothing. Those three plus two more: one in clearOptionPeers, which is
+# called from all three deselection sites, and one on the selected element.
 $pressedWrites = ([regex]::Matches($mainCode, "setAttribute\('aria-pressed'")).Count
-Check ($pressedWrites -eq 7) `
-  "$pressedWrites places write aria-pressed; expected 7. selectAgeOption sets a class but not the pressed state the markup declares"
+Check ($pressedWrites -eq 5) `
+  "$pressedWrites places write aria-pressed; expected 5. selectAgeOption sets a class but not the pressed state the markup declares"
+Check ($mainCode -match 'function clearOptionPeers') `
+  'the deselection sweep is repeated inline at each call site instead of named once'
 ```
 
 **No global `!important` check.** `onboarding.html` carries six, on the name, country, age, gender, goal, and program-preview wrappers; this work removes exactly two of them (age and goal). A whole-file assertion would fail permanently. The age half is covered by the `style=` check above, which is stricter, and the goal half by Task 4's scoped check.
@@ -682,7 +684,7 @@ Check ($pressedWrites -eq 7) `
 cd design/onboarding-solve-edu/src && powershell -NoProfile -File src-prototype.test.ps1
 ```
 
-Expected: `FAILED` with 8 of the 9 new checks failing. Verified against the current files: `7` divs carry `option-card`, `0` buttons do, `0` expose `aria-pressed`, the block holds `23` `style=` attributes, `0` containers declare a group, `3` icons lack `aria-hidden`, and `3` places write `aria-pressed`. Only `could not isolate the age_gate markup` should pass — the isolation regex works against the current markup (3023 characters captured).
+Expected: `FAILED` with 9 of the 10 new checks failing. Verified against the current files: `7` divs carry `option-card`, `0` buttons do, `0` expose `aria-pressed`, the block holds `23` `style=` attributes, `0` containers declare a group, `3` icons lack `aria-hidden`, `3` places write `aria-pressed`, and `clearOptionPeers` does not exist. Only `could not isolate the age_gate markup` should pass — the isolation regex works against the current markup (3023 characters captured).
 
 - [ ] **Step 3: Add the age-gate CSS**
 
@@ -823,24 +825,36 @@ In `src/main.js`, replace `showAdultOptions` and `hideAdultOptions` (lines 372�
 
 - [ ] **Step 6: Keep `aria-pressed` in sync**
 
-In `src/main.js`, inside `selectAgeOption`, every place that clears peers must clear the pressed state too, and the selected element must set it. Replace the body of `selectAgeOption` (lines 385–407, keeping the signature) with:
+In `src/main.js`, every place that clears peers must clear the pressed state too, and the selected element must set it. The clear happens in three places, so it gets a helper rather than three copies. Insert it immediately before `setAgeCategory`:
+
+```javascript
+    /* Deselect every option in a container, visually and programmatically.
+       The two must move together: a card that looks unselected while still
+       reporting aria-pressed="true" tells a sighted learner one thing and a
+       screen-reader user another. */
+    function clearOptionPeers(containerId) {
+      document.getElementById(containerId).querySelectorAll('.option-card').forEach(p => {
+        p.classList.remove('selected');
+        p.setAttribute('aria-pressed', 'false');
+      });
+    }
+```
+
+Then replace the body of `selectAgeOption` (lines 385–407, keeping the signature) with:
 
 ```javascript
       if (isAdultSubOption) {
-        const peers = document.getElementById('age-adult-options').querySelectorAll('.option-card');
-        peers.forEach(p => { p.classList.remove('selected'); p.setAttribute('aria-pressed', 'false'); });
+        clearOptionPeers('age-adult-options');
         setAgeCategory(category);
         document.getElementById('global-continue-btn').disabled = false;
       } else {
-        const peers = document.getElementById('age-primary-options').querySelectorAll('.option-card');
-        peers.forEach(p => { p.classList.remove('selected'); p.setAttribute('aria-pressed', 'false'); });
+        clearOptionPeers('age-primary-options');
 
         if (category === 'adult') {
           showAdultOptions();
           setAgeCategory(null);
           document.getElementById('global-continue-btn').disabled = true;
-          const subPeers = document.getElementById('age-adult-options').querySelectorAll('.option-card');
-          subPeers.forEach(p => { p.classList.remove('selected'); p.setAttribute('aria-pressed', 'false'); });
+          clearOptionPeers('age-adult-options');
         } else {
           hideAdultOptions();
           setAgeCategory(category);
@@ -871,7 +885,7 @@ to:
 cd design/onboarding-solve-edu/src && powershell -NoProfile -File src-prototype.test.ps1
 ```
 
-Expected: `PASSED - 116 checks, 17 groups`.
+Expected: `PASSED - 117 checks, 17 groups`.
 
 If `the age gate still carries inline styles` fails, a `style=` attribute survives in the block — find it and move the declaration into one of the `.age-*` classes from Step 3. Do not relax the check: it is the whole point of the task, and the age gate is the screen that proved an inline style cannot be reached by a media query.
 
@@ -958,10 +972,10 @@ The likely failure is the goal grid at 421–768px: two columns of the enlarged 
 Append a row to the status-log table in `design/onboarding-solve-edu/README.md`:
 
 ```markdown
-| 2026-07-30 | **Age-conditional goal set, one shared choice card, and the age gate made keyboard-operable.** A 13-to-17 learner is offered English & Communication, Math & Science and Life skills; every other band keeps the six. `data.js` carries a band-keyed map plus a resolver, `setAgeCategory` clears a goal whose option set no longer contains it, and three `COURSE_MAP` rows carry the teen goals through the handoff. `.goal-card` retired into a shared `.choice-card` at the age gate's scale, with `.card-wide` lifting the goal grid off the 520px cap on `styles.css:169` by specificity rather than `!important`. The age gate's seven `div` controls became buttons with `aria-pressed`, both containers gained a labelled `role="group"`, and every inline style on the screen moved into CSS. **Re-measured at 320/360/414/768/1440 on both pages: 0 overflowing elements, 0 targets below 24x24.** Suite extended 83 -> 116 checks, 15 -> 17 groups. Flat reference files untouched and still green. |
+| 2026-07-30 | **Age-conditional goal set, one shared choice card, and the age gate made keyboard-operable.** A 13-to-17 learner is offered English & Communication, Math & Science and Life skills; every other band keeps the six. `data.js` carries a band-keyed map plus a resolver, `setAgeCategory` clears a goal whose option set no longer contains it, and three `COURSE_MAP` rows carry the teen goals through the handoff. `.goal-card` retired into a shared `.choice-card` at the age gate's scale, with `.card-wide` lifting the goal grid off the 520px cap on `styles.css:169` by specificity rather than `!important`. The age gate's seven `div` controls became buttons with `aria-pressed`, both containers gained a labelled `role="group"`, and every inline style on the screen moved into CSS. **Re-measured at 320/360/414/768/1440 on both pages: 0 overflowing elements, 0 targets below 24x24.** Suite extended 83 -> 117 checks, 15 -> 17 groups. Flat reference files untouched and still green. |
 ```
 
-Correct `83 -> 116` to whatever the suite actually reports, and correct the two measured numbers if Step 2 found anything. **Do not copy either through unverified** — a measurement claim that was never run is the fabrication class this project's suite exists to catch.
+Correct `83 -> 117` to whatever the suite actually reports, and correct the two measured numbers if Step 2 found anything. **Do not copy either through unverified** — a measurement claim that was never run is the fabrication class this project's suite exists to catch.
 
 - [ ] **Step 5: Confirm the reference build is still green**
 
@@ -1140,7 +1154,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 
 Run after Task 7, before considering the work done.
 
-- [ ] `cd design/onboarding-solve-edu/src && powershell -NoProfile -File src-prototype.test.ps1` reports `PASSED`, 17 groups, 116 checks.
+- [ ] `cd design/onboarding-solve-edu/src && powershell -NoProfile -File src-prototype.test.ps1` reports `PASSED`, 17 groups, 117 checks.
 - [ ] `cd design/onboarding-solve-edu && powershell -NoProfile -File prototype-web.test.ps1` reports `PASSED` — the frozen reference build is untouched.
 - [ ] `git status` shows no modification to `design/onboarding-solve-edu/data.js`, `main.js`, `prototype-web.html`, `standalone.html`, or `prototype-web.test.ps1`.
 - [ ] `git diff --stat 872f143..HEAD -- design/onboarding-solve-edu/src/home.html design/onboarding-solve-edu/src/home.js` is empty. `872f143` is the spec commit, the last commit before this plan's work — comparing against `main` would wrongly show the earlier Cycle 2 and 3 changes to those files.
