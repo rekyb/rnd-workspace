@@ -196,14 +196,35 @@ const allCountries = [
   { name: "Zimbabwe", code: "zw" }
 ];
 
-const goalOptions = [
-  { id: 'data', title: 'Data and analysis', icon: 'bar_chart', color: 'var(--blue)' },
-  { id: 'customer', title: 'Customer service', icon: 'support_agent', color: 'var(--magenta)' },
-  { id: 'project', title: 'Project management', icon: 'assignment', color: 'var(--green)' },
-  { id: 'marketing', title: 'Digital marketing', icon: 'campaign', color: 'var(--red)' },
-  { id: 'communication', title: 'Communication', icon: 'forum', color: 'var(--purple)' },
-  { id: 'language', title: 'Language skills', icon: 'language', color: 'var(--blue)' }
-];
+/* The presented goal set depends on the declared age band. The three teen
+   categories are a labelled assumption in PRD section 2 with Program
+   Operations as owner, not a research finding: no study in the project's
+   Informed by list proposes them. The by-band goal_selected distribution is
+   what would validate or kill them. */
+const goalOptionsByBand = {
+  teen: [
+    { id: 'english',      title: 'English & Communication', icon: 'record_voice_over', color: 'var(--blue)' },
+    { id: 'math_science', title: 'Math & Science',          icon: 'calculate',         color: 'var(--green)' },
+    { id: 'life_skills',  title: 'Life skills',             icon: 'self_improvement',  color: 'var(--magenta)' }
+  ],
+  default: [
+    { id: 'data', title: 'Data and analysis', icon: 'bar_chart', color: 'var(--blue)' },
+    { id: 'customer', title: 'Customer service', icon: 'support_agent', color: 'var(--magenta)' },
+    { id: 'project', title: 'Project management', icon: 'assignment', color: 'var(--green)' },
+    { id: 'marketing', title: 'Digital marketing', icon: 'campaign', color: 'var(--red)' },
+    { id: 'communication', title: 'Communication', icon: 'forum', color: 'var(--purple)' },
+    { id: 'language', title: 'Language skills', icon: 'language', color: 'var(--blue)' }
+  ]
+};
+
+/* Any band with no entry of its own gets the default set. The adult branch
+   parks selectedAgeCategory at null while its sub-ranges are open, and that
+   null must resolve to the same set the sub-ranges will, or switching into
+   the adult branch would read as a set change and clear the goal twice. */
+function goalOptionsFor(band) {
+  return goalOptionsByBand[band] || goalOptionsByBand.default;
+}
 
 window.allCountries = allCountries;
-window.goalOptions = goalOptions;
+window.goalOptionsByBand = goalOptionsByBand;
+window.goalOptionsFor = goalOptionsFor;

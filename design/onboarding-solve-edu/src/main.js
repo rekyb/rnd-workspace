@@ -440,7 +440,7 @@ const progressMap = {
       if (!grid) return;
 
       grid.innerHTML = '';
-      goalOptions.forEach(goal => {
+      goalOptionsFor(appState.selectedAgeCategory).forEach(goal => {
         const card = document.createElement('button');
         const isSelected = appState.selectedGoal === goal.id;
         card.type = 'button';

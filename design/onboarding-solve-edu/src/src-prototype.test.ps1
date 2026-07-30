@@ -311,6 +311,40 @@ Check ($stubs -eq 9) `
 Check ($homeCode -match 'is out of scope for this prototype') `
   'the out-of-scope destinations swallow the click instead of saying why nothing happened'
 
+# ---------------------------------------------------------------- 16
+Show-Group 'The goal set is conditioned on the declared age band'
+
+# A 13-to-17 learner is offered a different set of goals from an adult. The
+# three teen categories are a labelled assumption in PRD section 2, not a
+# finding, and the by-band goal_selected read is what would falsify them.
+$dataJs = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'data.js') -Raw
+$dataCode = Remove-Comments $dataJs
+
+Check ($dataCode -match 'goalOptionsByBand') `
+  'data.js still declares one flat goal list, so every age band sees the same six options'
+Check ($dataCode -match 'function goalOptionsFor') `
+  'there is no resolver, so the render path has to know the shape of the band map'
+Check ($dataCode -notmatch 'window\.goalOptions\s*=') `
+  'the old flat export survives. Two sources for one list is how they drift apart'
+foreach ($id in @('english', 'math_science', 'life_skills')) {
+  Check ($dataCode -match "id:\s*'$id'") "the teen set is missing the $id goal"
+}
+Check ($mainCode -match 'goalOptionsFor\(appState\.selectedAgeCategory\)') `
+  'renderGoalCards does not consult the age band, so the conditional set is unreachable'
+Check ($mainCode -notmatch 'goalOptions\.forEach') `
+  'renderGoalCards still iterates the flat list'
+
+# The condition has to be real. A teen key holding a copy of the same six, or
+# sharing ids with them, passes every check above while changing nothing.
+$teenBlock = ''
+if ($dataCode -match '(?s)teen:\s*\[(.*?)\]') { $teenBlock = $Matches[1] }
+$teenIds = [regex]::Matches($teenBlock, "id:\s*'([a-z_]+)'") | ForEach-Object { $_.Groups[1].Value }
+Check ($teenIds.Count -eq 3) `
+  "the teen set holds $($teenIds.Count) goals; expected 3"
+$sharedIds = $teenIds | Where-Object { @('data','customer','project','marketing','communication','language') -contains $_ }
+Check ($sharedIds.Count -eq 0) `
+  "the teen set reuses $($sharedIds -join ', ') from the default set. Identifiers must be unique across bands"
+
 # ---------------------------------------------------------------- report
 Write-Host ''
 if ($script:Failures.Count -eq 0) {
