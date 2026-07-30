@@ -359,6 +359,42 @@
     }
   }
 
+  /* ---- where the learner is ----
+     Marking does two jobs, which is the study's reading of Codecademy: it says
+     where the learner is, and which family they are navigating within. A
+     learner on Practice sees Learn marked in the top bar and Practice marked
+     inside its panel. Without the first job, a top-level row of families tells
+     the learner nothing once they are inside one. */
+  function markLocation(familyName, childName) {
+    var items = document.querySelectorAll('.home-nav-item');
+    Array.prototype.forEach.call(items, function (b) {
+      var isCurrent = familyName
+        ? b.getAttribute('data-family') === familyName
+        : b.getAttribute('data-stub') === 'Home';
+      b.classList.toggle('active', isCurrent);
+      if (isCurrent) { b.setAttribute('aria-current', 'page'); }
+      else { b.removeAttribute('aria-current'); }
+    });
+    var children = document.querySelectorAll('.home-nav-child');
+    Array.prototype.forEach.call(children, function (b) {
+      var isCurrent = !!childName && b.getAttribute('data-stub') === childName;
+      b.classList.toggle('active', isCurrent);
+      if (isCurrent) { b.setAttribute('aria-current', 'page'); }
+      else { b.removeAttribute('aria-current'); }
+    });
+  }
+
+  /* Which family a destination belongs to. Derived from the markup rather than
+     duplicated as a table, so the two cannot drift apart. */
+  function familyOf(stub) {
+    var child = document.querySelector('.home-nav-child[data-stub="' + stub + '"]');
+    if (!child) return null;
+    var panel = child.closest('.home-nav-panel');
+    if (!panel) return null;
+    var trigger = panel.parentElement.querySelector('.home-nav-item[data-family]');
+    return trigger ? trigger.getAttribute('data-family') : null;
+  }
+
   function wire() {
     $('start-lesson-btn').addEventListener('click', openSkill);
     $('skill_done_btn').addEventListener('click', completeSkill);
@@ -394,14 +430,22 @@
       b.addEventListener('click', function () { applyLang(b.getAttribute('data-lang')); });
     });
 
-    /* Every destination is focusable, so every destination answers. A control
-       that takes focus and does nothing is a dead end; these say why they do
-       nothing instead of swallowing the click. */
+    /* Every destination is focusable, so every destination answers — the panel
+       members and the profile menu too, not only the top row. A control that
+       takes focus and does nothing is a dead end; these say why they do nothing
+       instead of swallowing the click. */
     var note = $('home_nav_note');
-    document.querySelectorAll('.home-nav-item[data-stub]').forEach(function (b) {
+    var stubs = document.querySelectorAll('[data-stub]');
+    Array.prototype.forEach.call(stubs, function (b) {
       b.addEventListener('click', function () {
+        var name = b.getAttribute('data-stub');
+        if (name === 'Home') { markLocation(null, null); return; }
+        /* The family is marked even though the destination is a stub: marking
+           is what the top bar owes the learner, and it is demonstrable without
+           building the ten pages behind it. */
+        markLocation(familyOf(name), name);
         if (!note) return;
-        setText('home_nav_note', b.getAttribute('data-stub') + ' is out of scope for this prototype.');
+        setText('home_nav_note', name + ' is out of scope for this prototype.');
         show('home_nav_note', true);
       });
     });

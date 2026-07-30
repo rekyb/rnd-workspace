@@ -563,6 +563,19 @@ Check ($homeCode -match 'function renderXp') 'home.js has no XP renderer'
 
 # Theme and language are learner choices, so they carry state rather than
 # flipping an icon and hoping.
+Check ($homeCode -match 'function markLocation') `
+  'home.js cannot mark the current location'
+Check ($homeCode -match "setAttribute\('aria-current', 'page'\)") `
+  'the current destination is not exposed programmatically'
+Check ($homeCode -match 'function familyOf') `
+  'the family of a destination is not derived, so a hand-maintained table could drift from the markup'
+Check ($styles -match '\.home-nav-child\.active') `
+  'an active family member has no visible treatment inside its panel'
+Check ($homeCode -match "querySelectorAll\('\[data-stub\]'\)") `
+  'the out-of-scope handler is bound to nav items only, so panel members and the profile menu swallow their clicks'
+$stubCount = ([regex]::Matches($homeRendered, 'data-stub=')).Count
+Check ($stubCount -ge 30) `
+  "$stubCount controls declare an out-of-scope response; expected at least 30 across three views"
 Check ($homeCode -match 'function applyTheme') 'there is no theme switch'
 Check ($styles -match ':root\[data-theme="dark"\]') 'dark mode has no token set, so the switch would change nothing'
 Check ($homeRendered -match 'aria-pressed="false"') `
