@@ -731,7 +731,13 @@ const progressMap = {
     'customer':      { id: 'cust-1',    title: 'Customer Service Essentials',    skills: 4, firstSkill: 'Handle an angry customer',    firstSkillMinutes: 10 },
     'project':       { id: 'proj-1',    title: 'Project Management Basics',      skills: 6, firstSkill: 'Write a task brief',          firstSkillMinutes: 7 },
     'marketing':     { id: 'mkt-1',     title: 'Digital Marketing Fundamentals', skills: 5, firstSkill: 'Choose an audience',          firstSkillMinutes: 9 },
-    'communication': { id: 'comm-1',    title: 'Workplace Communication',        skills: 4, firstSkill: 'Ask a clarifying question',   firstSkillMinutes: null }
+    'communication': { id: 'comm-1',    title: 'Workplace Communication',        skills: 4, firstSkill: 'Ask a clarifying question',   firstSkillMinutes: null },
+    /* The teen set. Placeholder titles in the same register as the five above:
+       the real goal-to-course mapping is a Program Operations input under the
+       PRD section 15 open decision, not a curriculum claim made here. */
+    'english':       { id: 'eng-1',     title: 'Everyday English Communication', skills: 5, firstSkill: 'Introduce yourself',          firstSkillMinutes: 6 },
+    'math_science':  { id: 'msci-1',    title: 'Math and Science Foundations',   skills: 6, firstSkill: 'Read a data table',           firstSkillMinutes: 8 },
+    'life_skills':   { id: 'life-1',    title: 'Everyday Life Skills',           skills: 4, firstSkill: 'Plan a weekly budget',        firstSkillMinutes: 7 }
     /* 'language' is deliberately absent: it is the unmapped case, and the home
        must show an empty state rather than substitute a default course. */
   };

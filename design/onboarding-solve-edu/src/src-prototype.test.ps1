@@ -356,6 +356,16 @@ $rawWrites = ([regex]::Matches($mainCode, 'appState\.selectedAgeCategory\s*=')).
 Check ($rawWrites -eq 1) `
   "$rawWrites places write selectedAgeCategory; expected 1, inside setAgeCategory. A second writer bypasses the clear"
 
+# Slice 6 requires each configured goal to resolve to exactly one first course.
+# language is deliberately unmapped so the home unmapped state stays reachable
+# through real data, so this asserts the teen ids only, not every id.
+foreach ($id in @('english', 'math_science', 'life_skills')) {
+  Check ($mainCode -match "'$id':\s*\{") `
+    "the $id goal has no course, so a teen learner reaches the unmapped home state by omission rather than by design"
+}
+Check ($mainCode -notmatch "'language':\s*\{") `
+  'language gained a course. The unmapped path is then unreachable through real data and its guard passes vacuously'
+
 # ---------------------------------------------------------------- report
 Write-Host ''
 if ($script:Failures.Count -eq 0) {
