@@ -123,8 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-
-  renderGoalCards();
 });
 
 const progressMap = {
@@ -180,6 +178,7 @@ const progressMap = {
             btn.disabled = !appState.selectedGender;
             btn.innerText = 'Continue';
           } else if (screenId === 'goal_intake') {
+            renderGoalCards();
             btn.disabled = !appState.selectedGoal;
             btn.innerText = 'Continue';
           } else if (screenId === 'assigned_content') {

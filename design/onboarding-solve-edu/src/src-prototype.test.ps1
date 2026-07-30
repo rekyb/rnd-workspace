@@ -391,6 +391,29 @@ Check ($goalScreen -notmatch '!important') `
 Check ($goalScreen -match 'id="goal_grid"[^>]*card-wide') `
   'the goal grid is not widened, so the enlarged cards render inside the 520px cap'
 
+# Fix round 1. The resolver above was correct on paper and still rendered the
+# wrong set at runtime, because nothing called it at the moment the learner
+# actually reached the goal screen: the only call site ran once at page load,
+# while selectedAgeCategory was still null, and painted the default six for
+# good. A text match cannot observe when a function runs during a real
+# session, only whether its call site exists where the learner arrives and
+# whether the masking page-load call is gone. These are a structural
+# tripwire, not proof; the four-walk browser check is the proof that ran the
+# funnel and watched the grid.
+$updateHeadersBlock = ''
+if ($mainCode -match '(?s)function updateHeaders\(screenId\)\s*\{(.*?)function handleGlobalContinue') {
+  $updateHeadersBlock = $Matches[1]
+}
+Check ($updateHeadersBlock -match "goal_intake'\)\s*\{\s*renderGoalCards\(\)") `
+  'updateHeaders does not render the goal grid on entry to goal_intake, so a stale band is never repainted by navigation alone'
+
+$domReadyBlock = ''
+if ($mainCode -match "(?s)DOMContentLoaded'.*?=>\s*\{(.*?)const progressMap") {
+  $domReadyBlock = $Matches[1]
+}
+Check ($domReadyBlock -notmatch 'renderGoalCards\(\)') `
+  'DOMContentLoaded still renders the goal grid at page load, before any age band is known. That call painted the wrong set and is what hid this bug behind a green suite'
+
 # ---------------------------------------------------------------- 17
 Show-Group 'The age gate is operable by keyboard, like every screen beside it'
 
