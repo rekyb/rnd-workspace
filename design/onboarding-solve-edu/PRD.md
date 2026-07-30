@@ -217,7 +217,7 @@ it.
 payoff stated on the modal itself, *"What grade are you in? / We'll gather the right lessons
 for you"*, and reads that screen's Primary / Secondary / University options as "age bands
 under a different label". That supports one thing: asking a band question, and telling the
-learner the answer will shape what they get. Slice 5 and Slice 6 both rest on it.
+learner the answer will shape what they get. Slice 5 rests on it.
 
 **What the cited research does not support: the conditioning itself.** No finding in any
 cited study observed a platform varying its offered option set by declared band. The single
