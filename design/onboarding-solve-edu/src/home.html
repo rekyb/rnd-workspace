@@ -12,9 +12,26 @@
 </head>
 <body>
 
-  <!-- No global header on the home. The shell already carries the brand and the
-       navigation, so a top bar would repeat both and push the first action
-       further down.
+  <!-- The navigation is a top bar carrying four families: Home, Learn,
+       Portfolio, Work. Between them they reach all eleven production
+       destinations. Home and Inbox stay at the top level; eight sit one level
+       down in a family panel and Referral sits one level down in the profile
+       menu.
+
+       That is the trade a top bar makes. The sidebar this replaced could have
+       kept all eleven visible under static headings, which is what the cited
+       study recommends and what Uxcel does with thirteen; a row cannot, because
+       horizontal space is finite where sidebar height is not. One level of
+       depth, with each panel showing its whole family at once, is the smallest
+       version of that cost. Recorded here because the comment this replaced
+       claimed a top bar would "repeat the brand and push the first action
+       down" — true of the nav that then existed, and not of this one.
+
+       The family names and the item assignment are UNVALIDATED. They are a
+       judgement from destination labels; the study declined to recommend any
+       mapping because ten of the eleven destinations were never opened. The
+       gate is a content inventory, then an open card sort in Bahasa, then a
+       first-click test.
 
        CYCLE 3 (narrow width). Three things changed here, each traceable:
         - The navigation is a real <nav> landmark of <button> elements, and the
@@ -45,11 +62,52 @@
         </div>
         <nav class="home-nav" aria-label="Main">
           <button type="button" class="home-nav-item active" aria-current="page" data-stub="Home"><span class="material-symbols-rounded" aria-hidden="true">home</span> Home</button>
-          <button type="button" class="home-nav-item" data-family="learn"><span class="material-symbols-rounded" aria-hidden="true">school</span> Learn</button>
-          <button type="button" class="home-nav-item" data-family="portfolio"><span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span> Portfolio</button>
-          <button type="button" class="home-nav-item" data-family="work"><span class="material-symbols-rounded" aria-hidden="true">work</span> Work</button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="learn" aria-expanded="false" aria-controls="panel_learn"><span class="material-symbols-rounded" aria-hidden="true">school</span> Learn</button>
+            <div class="home-nav-panel is-hidden" id="panel_learn">
+              <button type="button" class="home-nav-child" data-stub="Catalog">Catalog</button>
+              <button type="button" class="home-nav-child" data-stub="Ladders">Ladders</button>
+              <button type="button" class="home-nav-child" data-stub="Practice">Practice</button>
+              <button type="button" class="home-nav-child" data-stub="Challenges">Challenges</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="portfolio" aria-expanded="false" aria-controls="panel_portfolio"><span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span> Portfolio</button>
+            <div class="home-nav-panel is-hidden" id="panel_portfolio">
+              <button type="button" class="home-nav-child" data-stub="Evidence">Evidence</button>
+              <button type="button" class="home-nav-child" data-stub="Credentials">Credentials</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="work" aria-expanded="false" aria-controls="panel_work"><span class="material-symbols-rounded" aria-hidden="true">work</span> Work</button>
+            <div class="home-nav-panel is-hidden" id="panel_work">
+              <button type="button" class="home-nav-child" data-stub="Opportunities">Opportunities</button>
+              <button type="button" class="home-nav-child" data-stub="Applications">Applications</button>
+            </div>
+          </div>
         </nav>
-        <div class="home-topbar-utils"></div>
+        <div class="home-topbar-utils">
+          <p class="home-xp" id="home_xp"><span class="material-symbols-rounded" aria-hidden="true">bolt</span> <span id="home_xp_value">0</span> XP</p>
+          <button type="button" class="home-icon-btn" id="theme_btn" aria-pressed="false" aria-label="Switch to dark mode"><span class="material-symbols-rounded" aria-hidden="true">dark_mode</span></button>
+          <div class="home-nav-family">
+            <button type="button" class="home-icon-btn home-lang-btn" id="lang_btn" data-family="lang" aria-expanded="false" aria-controls="panel_lang" aria-label="Change language, current language English"><span class="material-symbols-rounded" aria-hidden="true">language</span> <span id="lang_code">EN</span></button>
+            <div class="home-nav-panel home-nav-panel-right is-hidden" id="panel_lang">
+              <button type="button" class="home-nav-child" data-lang="en">English</button>
+              <button type="button" class="home-nav-child" data-lang="id">Bahasa Indonesia</button>
+            </div>
+          </div>
+          <button type="button" class="home-icon-btn" id="inbox_btn" aria-label="Inbox" data-stub="Inbox"><span class="material-symbols-rounded" aria-hidden="true">notifications</span></button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="profile" aria-expanded="false" aria-controls="panel_profile" id="profile_btn"><span class="material-symbols-rounded" aria-hidden="true">account_circle</span> Profile</button>
+            <div class="home-nav-panel home-nav-panel-right is-hidden" id="panel_profile">
+              <button type="button" class="home-nav-child" data-stub="Your profile">Your profile</button>
+              <button type="button" class="home-nav-child" data-stub="Settings">Settings</button>
+              <button type="button" class="home-nav-child" data-stub="Referral">Referral</button>
+              <span class="home-menu-divider"></span>
+              <button type="button" class="home-nav-child" data-stub="Log out">Log out</button>
+            </div>
+          </div>
+        </div>
       </header>
       <div class="home-main">
         <div role="status" aria-live="polite">
@@ -84,13 +142,10 @@
 
          Cycle 3 block order (layout F3, stated ordinally): the learner's own
          content comes first and nothing product-owned precedes their next
-         action. The brand carries an explicit banner role, which is the
-         exemption Slice 12's criterion names, and the narrow layout removes it
-         from the flow entirely — the "Relocated" disposition §11.1 assigns it.
-         An earlier version of this comment claimed the shell had a banner
-         region when the markup had none; the role is now real rather than
-         asserted, and the shell is a div because primary navigation must not
-         sit inside a complementary landmark.
+         action. The brand sits inside the top bar's banner landmark, which is
+         the exemption Slice 12's criterion names, so it stays visible at both
+         widths rather than being removed at narrow. Under the old sidebar it
+         had to be hidden at 360px; a banner does not.
          =================================================================== -->
     <div id="learning_home" class="card home-card">
       <header class="home-topbar" role="banner">
@@ -99,11 +154,52 @@
         </div>
         <nav class="home-nav" aria-label="Main">
           <button type="button" class="home-nav-item active" aria-current="page" data-stub="Home"><span class="material-symbols-rounded" aria-hidden="true">home</span> Home</button>
-          <button type="button" class="home-nav-item" data-family="learn"><span class="material-symbols-rounded" aria-hidden="true">school</span> Learn</button>
-          <button type="button" class="home-nav-item" data-family="portfolio"><span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span> Portfolio</button>
-          <button type="button" class="home-nav-item" data-family="work"><span class="material-symbols-rounded" aria-hidden="true">work</span> Work</button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="learn" aria-expanded="false" aria-controls="panel_learn_2"><span class="material-symbols-rounded" aria-hidden="true">school</span> Learn</button>
+            <div class="home-nav-panel is-hidden" id="panel_learn_2">
+              <button type="button" class="home-nav-child" data-stub="Catalog">Catalog</button>
+              <button type="button" class="home-nav-child" data-stub="Ladders">Ladders</button>
+              <button type="button" class="home-nav-child" data-stub="Practice">Practice</button>
+              <button type="button" class="home-nav-child" data-stub="Challenges">Challenges</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="portfolio" aria-expanded="false" aria-controls="panel_portfolio_2"><span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span> Portfolio</button>
+            <div class="home-nav-panel is-hidden" id="panel_portfolio_2">
+              <button type="button" class="home-nav-child" data-stub="Evidence">Evidence</button>
+              <button type="button" class="home-nav-child" data-stub="Credentials">Credentials</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="work" aria-expanded="false" aria-controls="panel_work_2"><span class="material-symbols-rounded" aria-hidden="true">work</span> Work</button>
+            <div class="home-nav-panel is-hidden" id="panel_work_2">
+              <button type="button" class="home-nav-child" data-stub="Opportunities">Opportunities</button>
+              <button type="button" class="home-nav-child" data-stub="Applications">Applications</button>
+            </div>
+          </div>
         </nav>
-        <div class="home-topbar-utils"></div>
+        <div class="home-topbar-utils">
+          <p class="home-xp" id="home_xp_2"><span class="material-symbols-rounded" aria-hidden="true">bolt</span> <span id="home_xp_value_2">0</span> XP</p>
+          <button type="button" class="home-icon-btn" id="theme_btn_2" aria-pressed="false" aria-label="Switch to dark mode"><span class="material-symbols-rounded" aria-hidden="true">dark_mode</span></button>
+          <div class="home-nav-family">
+            <button type="button" class="home-icon-btn home-lang-btn" id="lang_btn_2" data-family="lang" aria-expanded="false" aria-controls="panel_lang_2" aria-label="Change language, current language English"><span class="material-symbols-rounded" aria-hidden="true">language</span> <span id="lang_code_2">EN</span></button>
+            <div class="home-nav-panel home-nav-panel-right is-hidden" id="panel_lang_2">
+              <button type="button" class="home-nav-child" data-lang="en">English</button>
+              <button type="button" class="home-nav-child" data-lang="id">Bahasa Indonesia</button>
+            </div>
+          </div>
+          <button type="button" class="home-icon-btn" id="inbox_btn_2" aria-label="Inbox" data-stub="Inbox"><span class="material-symbols-rounded" aria-hidden="true">notifications</span></button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="profile" aria-expanded="false" aria-controls="panel_profile_2" id="profile_btn_2"><span class="material-symbols-rounded" aria-hidden="true">account_circle</span> Profile</button>
+            <div class="home-nav-panel home-nav-panel-right is-hidden" id="panel_profile_2">
+              <button type="button" class="home-nav-child" data-stub="Your profile">Your profile</button>
+              <button type="button" class="home-nav-child" data-stub="Settings">Settings</button>
+              <button type="button" class="home-nav-child" data-stub="Referral">Referral</button>
+              <span class="home-menu-divider"></span>
+              <button type="button" class="home-nav-child" data-stub="Log out">Log out</button>
+            </div>
+          </div>
+        </div>
       </header>
 
       <div class="home-main">
@@ -191,11 +287,52 @@
         </div>
         <nav class="home-nav" aria-label="Main">
           <button type="button" class="home-nav-item" data-stub="Home"><span class="material-symbols-rounded" aria-hidden="true">home</span> Home</button>
-          <button type="button" class="home-nav-item active" aria-current="page" data-family="learn"><span class="material-symbols-rounded" aria-hidden="true">school</span> Learn</button>
-          <button type="button" class="home-nav-item" data-family="portfolio"><span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span> Portfolio</button>
-          <button type="button" class="home-nav-item" data-family="work"><span class="material-symbols-rounded" aria-hidden="true">work</span> Work</button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item active"  aria-current="page" data-family="learn" aria-expanded="false" aria-controls="panel_learn_3"><span class="material-symbols-rounded" aria-hidden="true">school</span> Learn</button>
+            <div class="home-nav-panel is-hidden" id="panel_learn_3">
+              <button type="button" class="home-nav-child" data-stub="Catalog">Catalog</button>
+              <button type="button" class="home-nav-child" data-stub="Ladders">Ladders</button>
+              <button type="button" class="home-nav-child" data-stub="Practice">Practice</button>
+              <button type="button" class="home-nav-child" data-stub="Challenges">Challenges</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="portfolio" aria-expanded="false" aria-controls="panel_portfolio_3"><span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span> Portfolio</button>
+            <div class="home-nav-panel is-hidden" id="panel_portfolio_3">
+              <button type="button" class="home-nav-child" data-stub="Evidence">Evidence</button>
+              <button type="button" class="home-nav-child" data-stub="Credentials">Credentials</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="work" aria-expanded="false" aria-controls="panel_work_3"><span class="material-symbols-rounded" aria-hidden="true">work</span> Work</button>
+            <div class="home-nav-panel is-hidden" id="panel_work_3">
+              <button type="button" class="home-nav-child" data-stub="Opportunities">Opportunities</button>
+              <button type="button" class="home-nav-child" data-stub="Applications">Applications</button>
+            </div>
+          </div>
         </nav>
-        <div class="home-topbar-utils"></div>
+        <div class="home-topbar-utils">
+          <p class="home-xp" id="home_xp_3"><span class="material-symbols-rounded" aria-hidden="true">bolt</span> <span id="home_xp_value_3">0</span> XP</p>
+          <button type="button" class="home-icon-btn" id="theme_btn_3" aria-pressed="false" aria-label="Switch to dark mode"><span class="material-symbols-rounded" aria-hidden="true">dark_mode</span></button>
+          <div class="home-nav-family">
+            <button type="button" class="home-icon-btn home-lang-btn" id="lang_btn_3" data-family="lang" aria-expanded="false" aria-controls="panel_lang_3" aria-label="Change language, current language English"><span class="material-symbols-rounded" aria-hidden="true">language</span> <span id="lang_code_3">EN</span></button>
+            <div class="home-nav-panel home-nav-panel-right is-hidden" id="panel_lang_3">
+              <button type="button" class="home-nav-child" data-lang="en">English</button>
+              <button type="button" class="home-nav-child" data-lang="id">Bahasa Indonesia</button>
+            </div>
+          </div>
+          <button type="button" class="home-icon-btn" id="inbox_btn_3" aria-label="Inbox" data-stub="Inbox"><span class="material-symbols-rounded" aria-hidden="true">notifications</span></button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="profile" aria-expanded="false" aria-controls="panel_profile_3" id="profile_btn_3"><span class="material-symbols-rounded" aria-hidden="true">account_circle</span> Profile</button>
+            <div class="home-nav-panel home-nav-panel-right is-hidden" id="panel_profile_3">
+              <button type="button" class="home-nav-child" data-stub="Your profile">Your profile</button>
+              <button type="button" class="home-nav-child" data-stub="Settings">Settings</button>
+              <button type="button" class="home-nav-child" data-stub="Referral">Referral</button>
+              <span class="home-menu-divider"></span>
+              <button type="button" class="home-nav-child" data-stub="Log out">Log out</button>
+            </div>
+          </div>
+        </div>
       </header>
       <div class="home-main">
         <div class="home-greet">

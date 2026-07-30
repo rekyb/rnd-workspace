@@ -213,6 +213,7 @@
        the returning state reachable in the prototype. */
     state.firstActionAt = new Date().toISOString();
     save();
+    renderXp();
     renderHome();
   }
 
@@ -266,12 +267,96 @@
 
     setText('loading_greeting', 'Setting things up, ' + state.displayName);
     wire();
+    renderXp();
+
+    /* Restore the learner's own choices before anything paints, so the theme
+       does not flash from light to dark on a second visit. */
+    var savedTheme = null, savedLang = null;
+    try { savedTheme = localStorage.getItem('se_theme'); savedLang = localStorage.getItem('se_lang'); } catch (e) {}
+    if (savedTheme === 'dark') applyTheme(true);
+    if (savedLang === 'id') { document.documentElement.setAttribute('lang', 'id'); }
 
     /* A learner returning to an account that already has history skips the
        labelled wait: there is nothing to prepare. */
     if (state.firstActionAt !== null && !shouldFail) { renderHome(); return; }
 
     finalize(latency, shouldFail);
+  }
+
+  /* ---- family panels ----
+     Four top-level families stand in for eleven production destinations. A top
+     bar cannot keep all eleven visible the way the old sidebar could, so seven
+     sit one level down — and a panel shows its whole family at once rather than
+     nesting further, which is the difference between one level of depth and the
+     push-depth-down arm the cited study rejects. */
+  function closeAllPanels() {
+    var panels = document.querySelectorAll('.home-nav-panel');
+    Array.prototype.forEach.call(panels, function (p) { p.classList.add('is-hidden'); });
+    var triggers = document.querySelectorAll('.home-nav-item[data-family]');
+    Array.prototype.forEach.call(triggers, function (t) { t.setAttribute('aria-expanded', 'false'); });
+  }
+
+  function openFamily(trigger) {
+    var id = trigger.getAttribute('aria-controls');
+    var panel = document.getElementById(id);
+    var wasOpen = panel && !panel.classList.contains('is-hidden');
+    closeAllPanels();
+    if (panel && !wasOpen) {
+      panel.classList.remove('is-hidden');
+      trigger.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  /* ---- XP ----
+     Derived from durable learner data, never declared. A first-run learner has
+     completed nothing, so this reads 0 — the same rule as every other counter
+     on this surface. A literal here would be the 150-point pill the 2026-07-28
+     benchmark was commissioned over and PRD 5.3 blocks release for. */
+  var XP_PER_SKILL = 20;
+
+  function renderXp() {
+    var xp = (state && typeof state.skillsDone === 'number') ? state.skillsDone * XP_PER_SKILL : 0;
+    var nodes = document.querySelectorAll('[id^="home_xp_value"]');
+    Array.prototype.forEach.call(nodes, function (n) { n.textContent = String(xp); });
+  }
+
+  /* ---- theme ----
+     A tonal variant, applied by re-pointing surface and text tokens on the root
+     element. aria-pressed carries the state, and the label says what the
+     control will do rather than what mode is current. */
+  function applyTheme(dark) {
+    var root = document.documentElement;
+    if (dark) { root.setAttribute('data-theme', 'dark'); }
+    else { root.removeAttribute('data-theme'); }
+    try { localStorage.setItem('se_theme', dark ? 'dark' : 'light'); } catch (e) {}
+    var btns = document.querySelectorAll('[id^="theme_btn"]');
+    Array.prototype.forEach.call(btns, function (b) {
+      b.setAttribute('aria-pressed', dark ? 'true' : 'false');
+      b.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      var icon = b.querySelector('.material-symbols-rounded');
+      if (icon) icon.textContent = dark ? 'light_mode' : 'dark_mode';
+    });
+  }
+
+  /* ---- language ----
+     The prototype switches the indicator and records the choice; the string
+     catalogue itself is out of scope, so the control says so rather than
+     pretending the interface translated. */
+  function applyLang(code) {
+    var name = code === 'id' ? 'Bahasa Indonesia' : 'English';
+    try { localStorage.setItem('se_lang', code); } catch (e) {}
+    var codes = document.querySelectorAll('[id^="lang_code"]');
+    Array.prototype.forEach.call(codes, function (n) { n.textContent = code.toUpperCase(); });
+    var btns = document.querySelectorAll('[id^="lang_btn"]');
+    Array.prototype.forEach.call(btns, function (b) {
+      b.setAttribute('aria-label', 'Change language, current language ' + name);
+    });
+    document.documentElement.setAttribute('lang', code);
+    var note = $('home_nav_note');
+    if (note) {
+      setText('home_nav_note', name + ' selected. Interface strings are out of scope for this prototype.');
+      show('home_nav_note', true);
+    }
   }
 
   function wire() {
@@ -283,6 +368,30 @@
     });
     $('home_retry_btn').addEventListener('click', function () {
       window.location.href = window.location.pathname;
+    });
+
+    var famTriggers = document.querySelectorAll('.home-nav-item[data-family]');
+    Array.prototype.forEach.call(famTriggers, function (t) {
+      t.addEventListener('click', function (e) { e.stopPropagation(); openFamily(t); });
+    });
+    /* A click anywhere else, or Escape, closes an open panel. Without both, the
+       panel is a trap: it opens on click and has no dismissal. */
+    document.addEventListener('click', closeAllPanels);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeAllPanels();
+    });
+
+    var themeBtns = document.querySelectorAll('[id^="theme_btn"]');
+    Array.prototype.forEach.call(themeBtns, function (b) {
+      b.addEventListener('click', function (e) {
+        e.stopPropagation();
+        applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
+      });
+    });
+
+    var langChoices = document.querySelectorAll('.home-nav-child[data-lang]');
+    Array.prototype.forEach.call(langChoices, function (b) {
+      b.addEventListener('click', function () { applyLang(b.getAttribute('data-lang')); });
     });
 
     /* Every destination is focusable, so every destination answers. A control

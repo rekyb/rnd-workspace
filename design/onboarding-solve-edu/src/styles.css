@@ -26,6 +26,29 @@
   --font-body: 'Open Sans', sans-serif;
 }
 
+/* Dark mode, added 2026-07-30 with the top bar.
+   Only the surface and text tokens are re-pointed; the brand hues stay put, so
+   nothing downstream needs a second value. This is a tonal variant, not an
+   inversion: --ink and --bg swap roles rather than being negated, which keeps
+   the purple readable against both. Contrast is asserted by the guard suite
+   rather than eyeballed, because 1.4.3 is a number. */
+:root[data-theme="dark"] {
+  --ink: #f2eff7;
+  --ink2: #cfc8d8;
+  --sub: #a49db2;
+  --bg: #171320;
+  --surf: #211b2c;
+  /* Lighter than a naive dark-mode hairline. At #362d47 the card boundary
+     measured 1.41:1 against the page, below the 3:1 WCAG 2.2 SC 1.4.11 asks of
+     a component boundary. Measured, not guessed. */
+  --hair: #574a70;
+  --hair-dark: #6b5c88;
+  --purple: #d78ae2;
+  --purple-bg: #38204a;
+  --purple-hover: #e3a5ec;
+  --blue-bg: #1b2c38;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -1165,15 +1188,21 @@ body.is-onboarding .card {
    (PRD 7.5, from layout F8's shell-versus-per-view split). */
 /* 2026-07-30: the rail became a top bar, and the eleven production
    destinations were reorganized into four top-level families. A top bar cannot
-   keep all eleven visible the way a sidebar could, so seven move one level into
-   their family panel. That trade is recorded in the spec, not hidden here. */
+   keep all eleven visible the way a sidebar could, so eight move one level into
+   their family panel and Referral into the profile menu. That trade is recorded
+   in the spec, not hidden here. */
 .home-card {
   max-width: 1000px !important;
   padding: 0 !important;
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
-  background: #f8f9fa;
+  /* Tokenised, not a literal. This was `#f8f9fa` — the light-mode value of
+     --bg written out — which meant the shell stayed light when dark mode
+     re-pointed the token, rendering dark cards on a light page. Caught by
+     measuring the rendered colours, not by reading the source: a text
+     assertion cannot see that two themes disagree. */
+  background: var(--bg);
   border: 1px solid var(--hair);
   /* The shared .card sets overflow: hidden, which clips a sticky or fixed
      descendant. The Learning Home is the surface that may need one, so the
@@ -1186,7 +1215,7 @@ body.is-onboarding .card {
   flex-wrap: wrap;
   gap: 24px;
   padding: 12px 24px;
-  background: white;
+  background: var(--surf);
   border-bottom: 1px solid var(--hair);
 }
 .home-topbar-brand {
@@ -1228,9 +1257,97 @@ body.is-onboarding .card {
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
+.home-nav-family { position: relative; }
+/* A panel shows its whole family at once. It never nests another panel: one
+   level of depth is the price of the top bar, and the cited study's R1 warns
+   specifically against trading breadth for depth beyond that. */
+.home-nav-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 200px;
+  background: var(--surf);
+  border: 1px solid var(--hair);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 50;
+}
+.home-nav-child {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  min-height: 44px;
+  border-radius: 10px;
+  color: var(--ink);
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.home-nav-child:hover { background: var(--bg); }
+.home-nav-child:active { background: var(--hair); }
+.home-nav-child.active { background: var(--purple-bg); color: var(--purple); }
+.home-nav-child:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  outline-offset: 2px;
+}
 .home-nav-item.active {
   background: var(--purple-bg);
   color: var(--purple);
+}
+.home-nav-item:active { background: var(--hair); }
+
+/* Utility cluster: XP, theme, language, inbox, profile. */
+.home-xp {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  min-height: 36px;
+  border-radius: 99px;
+  background: var(--purple-bg);
+  color: var(--purple);
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.home-xp .material-symbols-rounded { font-size: 18px; }
+.home-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 10px;
+  border-radius: 12px;
+  color: var(--sub);
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.home-icon-btn:hover { background: var(--bg); color: var(--ink); }
+.home-icon-btn:active { background: var(--hair); }
+.home-icon-btn:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  outline-offset: 2px;
+}
+.home-nav-panel-right { left: auto; right: 0; }
+.home-menu-divider {
+  display: block;
+  height: 1px;
+  background: var(--hair);
+  margin: 6px 4px;
 }
 .home-nav-item:hover:not(.active) {
   background: var(--bg);

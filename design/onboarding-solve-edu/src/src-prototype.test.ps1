@@ -493,10 +493,99 @@ Check ($mainCode -match 'function clearOptionPeers') `
 Check ($styles -match '(?s)\.age-subrange-card:focus-visible\s*\{') `
   'the sub-range buttons have no focus-visible rule, so the global button reset leaves them focusable with no visible ring'
 
+# ---------------------------------------------------------------- 18
+Show-Group 'All eleven destinations are reachable, at most two levels deep'
+
+# The production home carries eleven flat, ungrouped destinations and marks none
+# of them. They are reorganized here into four top-level families. A top bar
+# cannot keep all eleven visible the way a sidebar could, so eight move one
+# level into their family panel — and a panel shows its whole family at once
+# rather than nesting further, which is the difference between one level of
+# depth and the push-depth-down arm the cited study rejects.
+# Reachable means the learner can get there. Inbox is an icon control whose
+# accessible name is its label, so it is matched on aria-label rather than on a
+# text node — the point is that it exists and is named, not that it renders
+# words.
+$dests = 'Home','Inbox','Catalog','Ladders','Practice','Challenges','Evidence','Credentials','Opportunities','Applications','Referral'
+foreach ($d in $dests) {
+  $reachable = ($homeRendered -match ">\s*$d\s*<") -or ($homeRendered -match "aria-label=`"$d`"")
+  Check $reachable "destination '$d' is not reachable anywhere in the navigation"
+}
+foreach ($p in 'panel_learn','panel_portfolio','panel_work') {
+  Check ($homeHtml -match "id=`"$p`"") "family panel $p is missing"
+}
+# Learn 4 + Portfolio 2 + Work 2 = 8 members per view, across three views.
+# Counted per destination rather than by class: .home-nav-child is also the
+# language and profile menu rows, so a bare class count would sweep those in and
+# stop discriminating.
+foreach ($m in 'Catalog','Ladders','Practice','Challenges','Evidence','Credentials','Opportunities','Applications') {
+  Check ((([regex]::Matches($homeRendered, ">\s*$m\s*<")).Count) -eq 3) `
+    "family member '$m' does not appear once per view"
+}
+Check ($homeRendered -notmatch '(?s)home-nav-panel[^>]*>(?:(?!</div>).)*?home-nav-panel') `
+  'a panel nests another panel. A family shows all its members at once, never a deeper tree'
+Check ($homeCode -match 'function openFamily') 'home.js cannot open a family panel'
+Check ($homeCode -match 'function closeAllPanels') 'home.js cannot close the panels'
+Check ($homeCode -match "key === 'Escape'") 'Escape does not close an open panel'
+Check ((([regex]::Matches($homeRendered, 'aria-expanded="false"')).Count) -ge 9) `
+  'family controls do not report their expanded state'
+# Ids repeat across three views unless they are suffixed, and a duplicate id
+# makes aria-controls point at whichever one the parser saw first.
+$panelIds = [regex]::Matches($homeHtml, 'id="(panel_[a-z_0-9]+)"') | ForEach-Object { $_.Groups[1].Value }
+Check (($panelIds | Select-Object -Unique).Count -eq $panelIds.Count) `
+  'panel ids repeat across views, so aria-controls resolves to the wrong panel'
+$allIds = [regex]::Matches($homeHtml, 'id="([A-Za-z_0-9-]+)"') | ForEach-Object { $_.Groups[1].Value }
+Check (($allIds | Select-Object -Unique).Count -eq $allIds.Count) `
+  'home.html carries a duplicate id, so getElementById returns whichever came first'
+
+# ---------------------------------------------------------------- 19
+Show-Group 'The utility cluster tells the truth about the learner'
+
+Check ($homeHtml -match 'id="inbox_btn"') 'Inbox has no control'
+Check ($homeRendered -match 'aria-label="Inbox"') `
+  'the Inbox icon control has no accessible name, so it is announced as an unlabelled button'
+Check ($homeHtml -match 'id="panel_profile"') 'there is no profile menu'
+foreach ($m in 'Your profile', 'Settings', 'Referral', 'Log out') {
+  Check ($homeRendered -match [regex]::Escape($m)) "the profile menu is missing '$m'"
+}
+Check ($styles -match '\.home-menu-divider') `
+  'Log out is not separated from the navigational items above it'
+
+# XP is the one addition on this surface that could reintroduce the exact defect
+# Cycle 2 removed. A literal is the 150-point pill; these make that impossible.
+Check ($homeRendered -match 'id="home_xp_value">0<') `
+  'the XP counter does not start at zero in markup. A first-run learner has earned nothing'
+Check ($homeCode -match 'state\.skillsDone \* XP_PER_SKILL') `
+  'XP is not derived from durable learner data, so it is a declared number'
+Check ($homeRendered -notmatch '(?i)\b[1-9][0-9]*\s*XP\b') `
+  'a non-zero XP literal appears in the markup. Every progress value is computed or absent (PRD 5.3)'
+Check ($homeCode -match 'function renderXp') 'home.js has no XP renderer'
+
+# Theme and language are learner choices, so they carry state rather than
+# flipping an icon and hoping.
+Check ($homeCode -match 'function applyTheme') 'there is no theme switch'
+Check ($styles -match ':root\[data-theme="dark"\]') 'dark mode has no token set, so the switch would change nothing'
+Check ($homeRendered -match 'aria-pressed="false"') `
+  'the theme control does not expose its state, so assistive technology cannot tell which mode is on'
+Check ($homeCode -match "aria-label', dark \? 'Switch to light mode' : 'Switch to dark mode'") `
+  'the theme control keeps one label in both states, so it announces the wrong action in one of them'
+# Dark mode only works if the shell reads its colours from tokens. `#f8f9fa` is
+# the light value of --bg written out, so it stayed light when the token
+# re-pointed and produced dark cards on a light page. Found by measuring
+# rendered colours; a text check cannot see two themes disagreeing, but it can
+# see the literal that causes it.
+Check ($styles -notmatch '(?s)\.home-card\s*\{[^}]*background:\s*(#|white|black)') `
+  'the Learning Home shell hard-codes a background, so dark mode leaves it light'
+Check ($styles -notmatch '(?s)\.home-topbar\s*\{[^}]*background:\s*(#|white|black)') `
+  'the top bar hard-codes a background, so dark mode leaves it light'
+Check ($homeCode -match 'function applyLang') 'there is no language switch'
+Check ($homeCode -match 'out of scope for this prototype') `
+  'the language switch implies the interface translated when the string catalogue is out of scope'
+
 # ---------------------------------------------------------------- report
 Write-Host ''
 if ($script:Failures.Count -eq 0) {
-  Write-Host "src-prototype.test.ps1 PASSED - $($script:Checks) checks, 17 groups"
+  Write-Host "src-prototype.test.ps1 PASSED - $($script:Checks) checks, 19 groups"
   exit 0
 }
 Write-Host "src-prototype.test.ps1 FAILED - $($script:Failures.Count) of $($script:Checks) checks"
