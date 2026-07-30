@@ -1,14 +1,15 @@
 # PRD: Solve Education! Learner Acquisition & Onboarding
 
 - **Project:** `design/onboarding-solve-edu`
-- **Status:** Draft — pending stakeholder approval
+- **Status:** Reviewed — stakeholder chain approved (round 1 2026-07-29, round 2 2026-07-30); Principal Designer Mode S: **revise**, all items applied 2026-07-30
 - **Informed by:**
   - `research/2026-07-20-unified-onboarding-synthesis-and-patterns` (litreview, peer-reviewed 2026-07-20; coverage Q1,Q3 answered · Q2 partial)
   - `research/2026-07-28-post-signup-handoff-first-run-home` (benchmark, peer-reviewed 2026-07-29; coverage Q2,Q3,Q5 answered · Q1,Q4 partial · Q6 unanswered)
+  - `research/2026-07-29-learning-home-layout-and-ia` (benchmark, peer-reviewed 2026-07-29; coverage Q1,Q5 answered · Q2,Q3,Q4 partial · Q6 withdrawn)
 - **Design system:** independent — 23 tokens hand-copied into `styles.css`. Settled 2026-07-28: this project will not migrate to `ui-library/`. See the project `README.md`.
-- **Prototype:** `design/onboarding-solve-edu/prototype-web.html`
+- **Prototype:** `design/onboarding-solve-edu/src/` (`onboarding.html` + `home.html`); `prototype-web.html` is the untouched flat reference
 - **Audience:** Product, Design, Engineering, Data, Content, Program Operations, Legal/Privacy
-- **Last revised:** 2026-07-29
+- **Last revised:** 2026-07-30
 
 > **Revision note, 2026-07-29.** This is a revision, not a regeneration. Cycle 1 (Slices 1 to 10) is
 > unchanged in substance apart from the amendments listed in §2.1. What is new: a second cited
@@ -19,6 +20,49 @@
 > takes Learning Home past the handoff boundary §7.4 previously
 > declared out of scope. Former §§10 to 13 are renumbered to §§14 to 17; the four in-document
 > references to the old §11 now point at §15.
+
+> **Revision note, 2026-07-30.** Also a revision, not a regeneration. Cycles 1 and 2 are unchanged
+> in substance apart from the amendments listed in §2.1. What is new: a **third** cited study
+> (`research/2026-07-29-learning-home-layout-and-ia`), a third §2 claim table and a third §2.1
+> findings table taking the accounted total from 16 findings to **25**, and a **Cycle 3** slice set
+> (Slice 14 plus a narrow-width conformance pass) with its own appetite in §6.2, which specifies the
+> funnel and the first-run Learning Home at narrow viewport width.
+>
+> **On the appetites, stated after correction rather than asserted before it.** The first draft of
+> this revision claimed neither prior appetite was reopened, and **stakeholder review found that
+> false**: it had added four structure-and-ranking criteria to Cycle 2's Slice 12 — including a card
+> redesign and a markup refactor of twelve non-semantic elements across three views — and two criteria
+> to Slice 13 that added fields to a **Cycle 1** contract. The claim has been made true rather than
+> defended, by moving the work to where its code is already open:
+>
+> - The **filled-control invariant, the `nav` landmark, and `aria-current`** move from Slice 12 to
+>   Cycle 3's Slice 14, which must extract that markup regardless. Doing them in Cycle 2's wide layout
+>   and again when Slice 14 rewrites the same elements is paying twice for one surgery. **F3's ordinal
+>   block-order criterion stays in Slice 12** — it is width-independent and costs a reordering.
+> - The **first-item title and duration fields** move from Slice 13 into **Cycle 1's** Slice 8
+>   finalization contract, landing while that code is open. This is the precedent the 2026-07-29
+>   review set when it extracted the enrollment write for the same reason. Slice 13 keeps its criteria
+>   as pure reads, which is what §6.1 says Cycle 2 is, and §6.1's entry-condition list now names both
+>   fields.
+>
+> Net: **Cycle 2 loses four criteria and gains no build. Cycle 1 gains two nullable response fields.
+> Cycle 3 gains markup work it was already paying for.** Neither prior box changes size.
+>
+> **Why a third cycle rather than a wider Cycle 2.** Measured 2026-07-30 against
+> `src/styles.css`: no media query in the file touches `.home-card`, `.home-sidebar`,
+> `.home-nav-item`, or `.home-main`. The Learning Home shell is `flex-direction: row` with a fixed
+> `width: 240px` sidebar and **no narrow-width rule of any kind**. At a 360px viewport the sidebar's
+> declared width consumes two thirds of the available space before the content column's own 40px
+> padding, leaving a content box in the tens of pixels — and because the sidebar declares no
+> `flex-shrink: 0`, what actually renders is a compressed sidebar and a squeezed column rather than a
+> clean split. Either way the surface does not function at that width. *(An earlier draft of this note
+> stated a clean "240px against 120px" split; corrected 2026-07-30 after verification showed the
+> padding and the flex behaviour both change the number. The conclusion is unchanged; the arithmetic
+> offered as evidence for it was wrong.)* Every responsive rule in that file serves the
+> landing page and the funnel's single-column form screens. Slice 10's existing "usable at 375px"
+> criterion has therefore been discharged by screens that reflow trivially, on a document that never
+> covered the one surface with a two-column shell. That is a measured gap in this PRD, not an
+> inference from the benchmark.
 
 ---
 
@@ -34,6 +78,8 @@ Both paths defer account creation until the learner has supplied enough context 
 This PRD covers the public landing page through the first authenticated Learning Home view. It does not cover lesson delivery, complete dashboard functionality, program administration, or assessment design.
 
 **Cycle 2 extends the far end of that range.** The original scope treated Learning Home as a verified handoff: a greeting plus one action. A 2026-07-29 benchmark of seven education platforms found that the moment immediately after account creation is where a funnel either proves the intake mattered or quietly discards it, and that our own prototype currently fabricates progress a new learner has not made. Cycle 2 therefore builds the **first-run** Learning Home honestly: every progress affordance renders at zero against a stated, countable condition, the primary action is computed from the learner's stored intake rather than from behaviour they do not yet have, and nothing stands between finalization and that action except a labelled wait. It does not build the steady-state dashboard, and it deliberately declines to add a first-run tour or a locked leaderboard.
+
+**Cycle 3 makes the whole funnel work at the width our learners actually hold.** The audience is Android-first on small screens, and the funnel has never been specified at narrow width: the form screens reflow because a single column reflows by default, and the Learning Home's two-column shell has no narrow-width rule at all. Cycle 3 specifies both — narrow-width states for every screen and modal in §11.1, a Learning Home shell whose navigation collapses to at most five labelled destinations carrying one dominant object, and WCAG 2.2 SC 2.5.8 target sizing across every interactive control. Its structural claims come from a 2026-07-29 benchmark of seven learning platforms, four of them on phones. **The two claims that rest on the phone evidence alone — the labelled destination budget and the one-dominant-object rule — are carried as hypotheses with a named validation path**, because that evidence is native iOS and this target is an Android browser. The rest are web-benchmarked findings and are stated as such: current-location marking holds on every platform in the set, the single-filled-control rule on every screen where controls were counted, and the collapsible-shell claim across four web platforms.
 
 ---
 
@@ -64,6 +110,46 @@ says so.
 | Stating why a sensitive field is asked, at the moment of asking, costs one line and does not depend on the field-ordering decision | Post-signup handoff, **F6** | Medium for the step-level form (two first-party sightings). **The age-specific form is a single library-sourced sighting from outside the study's own scope** and is labelled as such wherever it reaches Legal/Privacy | Slice 5 states why age is asked, inline and in plain language |
 | A primary control can carry its own unmet requirement while disabled, preventing the error instead of reporting it | Post-signup handoff, **F8** | Low as a pattern (single platform). The derived rule, that the interface must not state a number the system does not enforce, has a **second instance in our own prototype** and is verifiable by unit test | Slices 3 and 6 use conditional primary labels; Slice 10's progress text equivalent becomes testable |
 | First-run instrumentation that teaches reward mechanics before the learner has anything to be rewarded for is spent too early | Post-signup handoff, **F9** | Low. Single platform, first-party, and it counts screens rather than measuring time | §14 excludes a first-run tour before the first learning action; Slice 12 bounds what may stand between finalization and that action |
+
+**Cycles 2 and 3 add seven further claims from the 2026-07-29 layout-and-IA benchmark.** Two
+qualifiers apply to **every row below** and are not repeated in each cell:
+
+1. **That study observed populated, returning-learner homes and scopes first-run composition out**
+   ("Answered next door"). Its structural readings are carried here as applying to a surface at a
+   state it did not observe. Where a claim is state-dependent, the row says so.
+2. **Two rows rest on native-iOS evidence against an Android-mobile-web target** (F7 and F9) — a
+   two-step transfer the study labels a *hypothesis for validation* throughout and states must not
+   reach a PRD as fact. They are **assumptions with validation paths**, not findings, and are marked
+   **Hypothesis** in the confidence column. The validation path is the same for both: a moderated
+   session on a real Android device at 360px (§15, §17). **F8's adopted half is not one of them** —
+   the shell-versus-per-view split is observed on four *web* platforms, and it is that half, not the
+   phone-sourced one, that this PRD adopts. **This reads against a blanket sentence in the source**,
+   whose caveats say "F7, F8, and F9 are labelled hypotheses throughout". The narrower reading is
+   taken deliberately, on the ground that the finding's own body records the structural claim across
+   four web platforms and explicitly separates it from the n=2 rule the blanket sentence is about.
+   Recorded here so the divergence is visible rather than silent: where this PRD is more permissive
+   than a study it cites, it says so.
+
+**Citation convention.** `[R#]` markers below and elsewhere in this document refer to the external
+sources logged in `research/2026-07-29-learning-home-layout-and-ia/references.md`, which records each
+one's retrieval status. Only sources that study marks as read and citable are used here: **R4** (the
+WCAG 2.2 SC 2.4.8 technique set), **R5** (Treisman & Gelade on feature-integration and pop-out
+search), **R7** (Dhar on choice deferral), **R8** (the archived Material Design bottom-navigation
+guidance), and **R9** (W3C, citing IBM globalization guidance, on string expansion). Sources that
+study marks abstract-only or located-but-unreadable are cited nowhere in this PRD. *(R1, Larson &
+Czerwinski on breadth versus depth, was listed here in an earlier draft but is invoked by no claim in
+this document; it is removed rather than left as a citation to nothing. It remains the load-bearing
+source for the deferred F1 device decision in §14, where the study carries it.)*
+
+| Claim | Source | Confidence | Product implication |
+|---|---|---|---|
+| A navigation that does not mark the learner's current location fails the "where am I" half of orientation, and the cost lands hardest on learners arriving from a notification or a bookmark | Layout & IA, **F2** | **High for the visible half** (7 of 7 platforms, 9 of 9 surfaces, on `Q1 Answered`). **The semantic half is not benchmark-supported**: a reference still cannot show `aria-current`, so that half rests on WCAG technique documentation `[R4]` and on a DOM query of our own home, which returned no `aria-current` and no active class on any of its eleven items | Slice 12: the first-run home's navigation marks current location **visibly**, and exposes it with `aria-current="page"` inside a real `nav` landmark. Slice 14 preserves the marking in the narrow treatment |
+| The first block of a home belongs to the learner or to the material; content placed above the learner's next action is a tax paid every session | Layout & IA, **F3** | Medium. The rule holds **6 of 7** platforms, and the sole dissent has a documented commercial motive. Rests on **Q2, which the study marks `Partial`**: block *order* is answered at High, but fold position is not measurable from reference stills, so this is an **ordinal** claim and carries no "above the fold" reading. Observed at a populated state | Slice 12: no product-owned or promotional block renders above the learner's next action on the first-run home. Stated ordinally, because this PRD cannot test a fold it has not measured |
+| Fill is a ranking signal only while exactly one control owns it; a second filled control converts a parallel visual search into a serial one | Layout & IA, **F4**, mechanism per feature-integration theory `[R5]` | Medium. **The ranking-device half holds 7 of 7** and is answered at High. **The scarcity half is bounded to the four home screens whose full control set was enumerated**, not to all 33 reference screens, and rests on **Q3, which the study marks `Partial`**: per-home action counts are not obtainable from reference stills | Slice 12: exactly one filled control renders on the first-run home, asserted by test rather than by review. This is a live risk in the reference implementation, where the Up Next card is a filled block sitting directly above a filled primary button |
+| A resume control that names one specific, time-bounded item converts an unbounded commitment into a bounded decision, and deferral falls as the absolute attractiveness of the option rises `[R7]` | Layout & IA, **F6** | Low to medium, **and out of the cited study's own scope.** Three of seven platforms name the next item by title and three state a time cost. **The study retains F6 as a deliberate out-of-scope observation**: it reports control *copy*, which that study's README scopes out, and it was **removed from its Q3 coverage row** at peer review because it answers no planned question. Its stronger sub-claim — that remaining-cost framing beats percentage-complete framing — was **retracted as confounded**. Adopted here on its narrow, well-cited half only | Slice 13: the primary action names the **specific first item** and states a bounded time cost, not the course. §16.2 carries the duration estimate, so the cost line is interpolated rather than hard-coded |
+| A phone home carries three to five destinations, each with a text label; the one platform exceeding five drops its labels **and** adds an overflow | Layout & IA, **F7** | **Hypothesis.** Four iOS platforms. It converges with published three-to-five guidance `[R8]`, but that is **archived Material Design 1 guidance for native Android apps**, is a normative specification rather than a study, and plausibly shares one ancestry with the four apps — so the corroboration is convergent, not independent. One benchmarked platform is a published counter-instance at six | Slice 14: the narrow Learning Home exposes **at most five labelled destinations**. The prototype's home navigation is four, so the budget holds with **no demotion** — the asymmetry that makes a narrow home affordable here and would not hold for an eleven-item navigation. **Stated as a property of the prototype, not of production:** which navigation the production first-run home inherits is undecided (§6.2 entry condition 5), and one of the four currently routes to a surface §14 does not build |
+| A navigation rail the layout does not depend on is cheaper to collapse at narrow width than one it does | Layout & IA, **F8**, structural half | Medium, and **stronger than the finding's headline**. The shell-versus-per-view split is recorded across **four web platforms** and is not the n=2 claim. **The migrate-or-delete rule in the same finding is explicitly hypothesis-generating** (two pairs, opposite outcomes) and is *not* adopted | Slice 14: the home's sidebar is specified as **per-view chrome the layout does not depend on**, so the narrow treatment is a substitution rather than a reflow of a load-bearing shell |
+| No phone home in the set stacks the desktop's secondary blocks beneath the primary object; each disposes of them by moving them to another destination, pushing them down a level, or dropping them | Layout & IA, **F9** | **Hypothesis**, holding 4 of 4 on the disposal claim after peer review narrowed it. The stricter reading it replaced was falsified by one platform in the same set | Slice 14: the narrow first-run home carries **one dominant object**. Every other slot is disposed of explicitly — moved, sub-levelled, or dropped — and the disposition is stated per slot in §11.1 rather than left to reflow |
 
 ### Where this PRD departs from its own cited research
 
@@ -145,11 +231,36 @@ Every finding of every study in `Informed by:`, accounted for. Silence is not a 
 | F6 | Code-first linked entry for program learners | **Adopted** | Slice 3 |
 | F7 | A 15+ age gate immediately after the landing screen | **Contradicted** | Slice 5 admits 13 to 17 and resolves eligibility from policy configuration rather than a hard-coded threshold. Reason in §2, *Where this PRD departs from its own cited research* |
 
-**Summary of the 16 rows:** 13 Adopted · 2 Deferred · 1 Contradicted · 0 Rejected outright · 0
-Retired upstream. Three of the 13 adoptions carry a partial deferral or rejection inside them
-(benchmark F2's locked-league half and F7's join-later half are deferred to §14; litreview F3's
-placement fork is deferred and F5's permission-priming half is not applicable), which is stated in
-each row rather than counted separately here.
+**`research/2026-07-29-learning-home-layout-and-ia`** (benchmark, 9 findings)
+
+| F# | Finding | Disposition | Where / why |
+|---|---|---|---|
+| F1 | The cardinality device — a navigation needs a structural rule, not a shorter list | **Deferred** | §14 — navigation information architecture is a steady-state decision and this PRD builds first-run only. **The deferral has a named consequence rather than a shrug:** the prototype's home carries four destinations and the production home carries **eleven, flat, ungrouped, with no device and no current-location signal**, and Slice 12's shell criterion says "navigation" without saying which of the two the production first-run home inherits. That question is now an owned §15 decision, because the answer changes whether Slice 14's five-destination budget holds |
+| F2 | Marking where the learner currently is | **Adopted** | **Slice 14** — visible marking plus `aria-current="page"` inside a named `nav` landmark, at every width. *(Drafted against Slice 12 and migrated at stakeholder review: it is a refactor of the same non-semantic markup Slice 14 must extract anyway, across all three prototype views, so doing it twice would pay twice for one surgery.)* The reference implementation already carries the visible half as an `active` class, so what this adds is the semantics, the landmark, and hiding the decorative icons from the accessible name |
+| F3 | The learner-first block order | **Adopted** | Slice 12. Stated **ordinally**, not as a fold claim, because the cited study could not measure fold position and neither can this PRD |
+| F4 | One filled action per screen | **Adopted** | **Slice 14**, as an invariant asserted per data state rather than a review note. *(Migrated from Slice 12 for the same reason as F2: the filled treatment is an inline style on the Up Next card, so the invariant is uncountable until Slice 14 extracts the content column into classes. The fix is a redesign of that card, not a test.)* |
+| F5 | Progress separated by permanence | **Deferred** | §14 — the separation needs a detailed record to separate *from*, and points, streaks, and achievements are already non-goals, so the first-run home has exactly one progress affordance by construction. The finding's own clean-fit rate is **3 of 7**, and its behavioural-goal-horizon half needs a steady-state home. **F8's narrow-width version is answered trivially here for the same reason:** there is no rail content to migrate or delete |
+| F6 | The resume control names the specific next item and its cost | **Adopted, on its narrow half** | Slice 13. Adopted knowing the study **scopes it out of its own coverage** (see §2) — it is retained here because its evidence is well cited and the change is one line of copy plus one contract field. Its retracted remaining-cost sub-claim is not adopted |
+| F7 | The mobile tab budget: three to five, labelled | **Adopted as a labelled hypothesis** | Slice 14. §2 carries it as an assumption with a validation path, never as a finding. **It is also the one claim whose falsification is a kill rather than an accepted finding** — §6.2's kill path turns on it, and Slice 14's validation gate names it |
+| F8 | When the rail disappears, the signal migrates or dies | **Adopted, structural half only** | Slice 14 adopts the shell-versus-per-view claim (four web platforms). **The migrate-or-delete rule is not adopted** — the study labels it hypothesis-generating from two opposite cases, and this PRD has no rail content for it to govern. §2 records that this reading is narrower than the source's blanket caveat |
+| F9 | The mobile home is one thing scrolled, not a stack of blocks | **Adopted as a labelled hypothesis** | Slice 14, with the per-slot disposition stated in §11.1 |
+
+**Where the narrow-width work lives.** Seven of these dispositions name Slice 14 or §14; none names
+the narrow-width conformance pass, because that unit carries no finding of its own — it is the
+funnel-side conformance work §8.2 describes, and every finding it would otherwise cite is already
+adopted through Slice 14. Recorded so the absence is legible rather than read as a gap.
+
+**Summary of the 25 rows:** 20 Adopted · 4 Deferred · 1 Contradicted · 0 Rejected outright · 0
+Retired upstream. Per study: litreview 5 Adopted, 1 Deferred, 1 Contradicted; post-signup handoff 8
+Adopted, 1 Deferred; layout and IA 7 Adopted, 2 Deferred.
+
+Five adoptions carry a partial deferral, rejection, or narrowing inside them, which is stated in each
+row rather than counted separately here: post-signup F2's locked-league half and F7's join-later half
+are deferred to §14; litreview F3's placement fork is deferred and F5's permission-priming half is
+not applicable; layout F8 adopts its structural half and declines its n=2 rule; layout F6 adopts its
+narrow half and declines its retracted sub-claim. **Two of the 20 adoptions (layout F7 and F9) are
+adopted as labelled hypotheses rather than as evidence**, and §2 states what would validate each. An
+adoption is a commitment to build, not a claim that the evidence behind it is stronger than it is.
 
 Two dispositions carry a partial rejection inside an adoption (LR-F5's permission priming, LR-F3's
 placement fork); both are named in the row rather than left to inference. No finding of either study
@@ -192,11 +303,30 @@ When I decide to start learning with Solve Education!, I want the product to und
 | 5.5 | Authenticated organic learners who start their first lesson in the same session | ≥ 50% | `lesson_started / learning_home_viewed`, organic only |
 | 5.6 | Authenticated program learners who open an assigned task in the same session | ≥ 60% | `assigned_task_opened / learning_home_viewed`, program only |
 | 5.7 | Onboarding completion parity between English and Bahasa Indonesia | absolute gap < 8 percentage points | Compare metric 5.2 by locale |
+| 5.8 | Onboarding **completion** parity between narrow and wide device classes | absolute gap < 8 percentage points | Compare metric 5.2 by `device class`, narrow defined as a viewport **below the 768px reference breakpoint in §16.1**. **Baseline must be captured before Cycle 3 opens** (§6.2 entry condition), or the comparison has nothing to move against |
+| 5.9 | **First-action** parity between narrow and wide device classes | absolute gap < 8 percentage points | Compare metrics **5.5 and 5.6** by `device class`. **This is Slice 14's read-out and 5.8 is not:** 5.2 is `account_linked / onboarding_started`, entirely pre-authentication, so it cannot see a surface that renders after the account wall. Added at stakeholder review, which found the slice §6.2 forbids cutting was the slice with no metric |
+
 **Cycle 2's read-out is 5.5 and 5.6, measured before and after.** If an honest first-run home
 works, more authenticated learners start their first lesson (5.5, organic) or open their first
 assigned task (5.6, program) in the same session. That is the business claim Cycle 2 makes and the
 number it is judged on. The two first-run invariants that were briefly drafted as targets here are
 not outcomes and have moved to §5.3 Guardrails.
+
+**Cycle 3's read-out is 5.8 and 5.9, and both are deliberately parity metrics rather than lifts.** A
+responsive funnel does not promise more completions; it promises that the completion rate stops
+depending on the width of the device a learner owns. Stated as a lift it would be unfalsifiable,
+because any movement could be attributed to it. Stated as parity against a pre-Cycle-3 baseline it
+can fail. **This is also the answer to the standing review finding that Cycle 2 shipped with no
+outcome metric** — Cycle 3 does not repeat it. The baseline is a Cycle 3 entry condition (§6.2), not
+something to reconstruct afterwards from a dashboard that was not split by device class when the
+traffic arrived.
+
+**The two metrics are not interchangeable and each reads out one half of the cycle.** 5.8 reads the
+narrow-width conformance pass, whose whole surface is pre-authentication. 5.9 reads Slice 14, whose
+whole surface is post-authentication. Stakeholder review found the first draft carried only 5.8 and
+therefore claimed a read-out for a slice it could not observe, which is the same defect as a
+guardrail that reports a pass by construction: not a missing metric, but a metric that answers about
+the wrong population and is trusted anyway.
 
 ### 5.3 Guardrails
 
@@ -211,6 +341,28 @@ not outcomes and have moved to §5.3 Guardrails.
 | Progress values rendered on the first-run Learning Home that are not derived from durable learner data | 0 | Treat as a correctness defect and block the Slice 12 release. This is the guardrail against the defect the prototype currently has |
 | Authenticated views between successful finalization and the first learning action | ≤ 1 (the Learning Home itself) | Count `learning_home_viewed` plus every `interstitial_viewed` between `onboarding_finalization_result` and `lesson_started` / `assigned_task_opened`. **Requires the `interstitial_viewed` event added in §16.5**: without it this guardrail counts exactly one by construction and reports a pass whether or not an interstitial exists, which is worse than no guardrail |
 | First-run Learning Home views whose primary action does not resolve to the learner's stored first-course identifier | 0 | Compare `first_action_target` against `LearnerProfile.initial_course_id` on `learning_home_viewed` where `is_first_run` is true. **Requires the two properties and the field added in §16.5 and §13** |
+| Funnel or first-run-home screens requiring horizontal scrolling to complete their primary task, measured at **360px** | 0 at Cycle 3 release | **Release-review check, not an automated gate.** A screen-by-screen and modal-by-modal walkthrough on the §17 device-lab handset, producing the written pass/fail list that is also the conformance pass's demo. Measured at 360px, not 320px: 360 is the modal Android width this audience holds, and 320 was passing on screens that reflow by default |
+| Interactive controls failing **WCAG 2.2 SC 2.5.8 *Target Size (Minimum)*, Level AA** (24 by 24 CSS px, or the spacing exception) in the funnel or first-run home | 0 at Cycle 3 release | **Release-review check**, measured per control at 360px in the same walkthrough. Named as **AA**, which it is in WCAG 2.2, and therefore already inside this PRD's existing "0 critical A/AA blockers" commitment rather than an addition to it |
+| Narrow-width Learning Home destinations rendered without a text label | 0 | **DOM assertion**, which this is cheap enough to be: it counts rendered text nodes per destination and needs no layout engine. Trading labels for icons is the specific move §6.2's kill path forbids, so it needs a check that fails rather than a paragraph that asks |
+
+> **On why two of these three are review checks rather than automated gates** *(recorded at
+> stakeholder review, 2026-07-30; the factual premise corrected the same day)*. The committed
+> regression suite cannot carry them: `src-prototype.test.ps1` is text-pattern assertion over source
+> files, with no HTML parse, no layout computation, and no script execution. **Browser automation is
+> not absent from this machine, and an earlier draft of this note wrongly said it was.** A
+> DevTools-Protocol probe exists in gitignored working files, Node and Chrome are installed, and
+> headless layout verification has in fact been run against this prototype before, including at a
+> narrow viewport. What does not exist is a **committed, maintained harness** — no package manifest,
+> no runner configuration, nothing a release gate could depend on.
+>
+> Building one was costed at roughly a full iteration and **rejected on capability, not on price, and
+> the capability argument does not depend on the corrected premise**: the failures Cycle 3 is most
+> exposed to are the Android on-screen keyboard, collapsing URL chrome, and rotation, and a
+> `position: fixed` element resolves against the layout viewport that the Android keyboard does not
+> shrink. A headless harness buys the half least likely to fail and cannot reach the half most likely
+> to. **A guardrail that asserts an automated pass no automation performs is worse than no guardrail,
+> because it is trusted** — the same finding made against `interstitial_viewed` on 2026-07-29. These
+> say what actually verifies them.
 
 Targets are hypotheses, not claims of existing performance. Product and Data must reset targets after four weeks of representative traffic and document the new baseline.
 
@@ -271,8 +423,12 @@ because slack discovered mid-cycle gets spent, and the deferred join-a-program-l
 sits next to it.
 
 **Entry condition. Cycle 2 does not open until Cycle 1 has landed** `LearnerProfile.initial_course_id`,
-`LearnerProfile.first_action_at`, the stored idempotency key and finalization result, and the §16.2
-replay and timeout contract. If Cycle 1 integrates without them, the remediation is a **Cycle 1**
+`LearnerProfile.first_action_at`, the stored idempotency key and finalization result, the §16.2
+replay and timeout contract, and — **added 2026-07-30** — the **first-item title and nullable
+duration fields on the §16.2 handoff response**, together with the rule that a replayed
+`finalization_result` missing the duration key is treated identically to a null one. Slice 13 reads
+all of these and writes none of them, so an omission here is a Cycle 1 defect that surfaces as a
+Cycle 2 blocker. If Cycle 1 integrates without them, the remediation is a **Cycle 1**
 defect fix charged to Cycle 1's recut. A 5-to-6 box that opens with a migration into shipped,
 integrity-sensitive code is not a 5-to-6 box, and Cycle 2 does not absorb the cost of a Cycle 1
 omission.
@@ -287,6 +443,110 @@ cycle was commissioned to remove**, and a deadline is not a reason to reintroduc
 an earlier threshold keyed to the §15 goal-to-course decision, which stakeholder review found could
 not be reached: Slice 9 carries the same dependency in Cycle 1, so if that decision were missing,
 Cycle 1 would already have failed.)*
+
+### 6.2 Cycle 3 — the funnel and the first-run home at narrow width
+
+**Appetite: 3–4 atomic implementation iterations, run as a separate cycle after Cycle 2 integrates.**
+
+Cycles 1 and 2 keep their appetites and are not reopened. A third box was chosen over widening
+Cycle 2 for two reasons. Cycle 2's own §6.1 states that its remaining slack "buys the stabilization
+pass Cycle 1 has and this cycle previously lacked; **it does not buy new scope**", and spending it
+here would be exactly the mid-cycle slack consumption that sentence exists to prevent. And narrow
+width is a different failure mode from a dishonest zero state: Cycle 2 can ship, be correct, and be
+unusable on the device most of this audience owns, which is a separable bet that deserves its own
+kill threshold.
+
+**What the appetite counts** is the same as §6: internal engineering iterations only. The moderated
+Android session that validates the mobile hypotheses is **research, not an iteration** — it sits in
+§15 as a dated decision and §17 as a dependency, and it must return before the §6.2 kill threshold
+can be evaluated.
+
+Allocation, revised at stakeholder review after the first draft was found to hide two costs:
+
+- ~0.5 iterations: **the shared shell prerequisite**, which no slice owned in the first draft and both
+  needed. Three shipped rules block narrow-width work on the base `.card` class that the Learning Home
+  and all seven funnel screens share: `min-height: 100vh` must become a dynamic viewport unit,
+  `overflow: hidden` must be scoped off `.home-card` (it clips `position: sticky`), and the
+  `.card.active > *` entry animation's `forwards` fill must be scoped so it stops leaving a permanent
+  transform — a transformed ancestor becomes the containing block for `position: fixed` descendants,
+  which silently disqualifies two of the three navigation mechanisms §15 leaves open. The shared
+  `.modal-overlay` height rule and the **Cycle 1 gender-opt-out defect** named in §11.1 are charged
+  here too, because both cross the boundary between the two work items
+- ~1.75 iterations: **Slice 14**, the first-run Learning Home at narrow width, now including the three
+  structure-and-ranking criteria migrated from Slice 12. Larger than the first draft's 1.5 because the
+  content column is authored as inline `style` attributes rather than classes — **29 across the three
+  views, 22 in the Learning Home's own column**, plus further inline styles written at runtime by the
+  view's script — so it must be extracted before any media query can reach it. This is a markup
+  rewrite, not a breakpoint. *(An earlier draft cited 38, which is the whole file including the three
+  sidebars; corrected 2026-07-30.)*
+- ~0.75 iterations: **the narrow-width conformance pass**, the seven pre-authentication screens, four
+  modals, and SC 2.5.8 target sizing. Smaller than the first draft's 1.5 because measurement
+  established that most funnel screens already reflow and that one of the two "hard cases" is already
+  solved — the country listbox already renders below its input at every width
+- ~0.5–1 iteration: stabilization, plus the fixes the moderated Android session returns
+
+That lands at **3.5–4.0 against a 3-to-4 box: it fits, with no slack, and nothing hidden inside it.**
+
+**On the verification instrument, chosen explicitly rather than assumed.** Roughly nine acceptance
+criteria and three §5.3 guardrails are measurements rather than behaviours, and this repo has no
+layout-capable test harness. Building one was costed at about a full iteration and **rejected on
+capability rather than price** — see the note under §5.3. Cycle 3 therefore buys a **device-lab
+checklist against the handset §17 already funds**, and §5.3's two measurement guardrails are stated
+as release-review checks. Two criteria that looked like they needed a harness do not: the Bahasa
+label budget is four strings at one width, which a static type specimen settles, and the
+filled-control invariant is a DOM count once Slice 14 has extracted the inline styles it must extract
+anyway.
+
+**Entry conditions. Cycle 3 does not open until five things are true.** The first two expire if
+missed — no later edit recovers them.
+
+1. **`account_linked` is emitted, and `device class` resolves from the 768px breakpoint** (§16.5).
+   Metric 5.8 is a split of 5.2, whose numerator is `account_linked`; until 2026-07-30 that event
+   was in no schema. A baseline captured against a missing numerator, or bucketed at a threshold that
+   disagrees with the layout breakpoint, is a parity figure over a biased population.
+2. **Metric 5.8's and 5.9's baselines have been captured** on pre-Cycle-3 traffic, under the
+   corrected definitions above. Without them the cycle has no read-out, only an assertion.
+3. **Cycle 2 has integrated.** Making a home responsive before it is honest would specify
+   narrow-width states for slots that are about to change.
+4. **The approved Bahasa Indonesia navigation label set exists, and the destination budget has been
+   measured against it.** The budget in Slice 14 is a **pixel** budget, and validating it against
+   English monosyllables proves nothing: W3C, citing IBM globalization guidance, puts expansion at
+   **200 to 300% for source strings of up to 10 characters**, and 180 to 200% for the 11-to-20 band
+   `[R9]`. Three of the prototype's four labels sit in the first band and `Achievements`, at twelve
+   characters, sits in the second — so **every one of them expands, at two different rates**, which is
+   why the measurement is per-label rather than a single multiplier. Testing `Settings` and shipping
+   `Pengaturan` is the failure this prevents. *(An earlier draft said all our labels sat in the sub-10
+   band; corrected 2026-07-30.)* *(This
+   measurement was previously carried as a kill threshold; stakeholder review moved it here, because
+   a threshold that can fire before a line of code is written belongs in the gate, not the exit.)*
+5. **The §15 decision on which navigation the production home inherits has landed** — the four
+   destinations the prototype carries, or the eleven the production home carries. At eleven, Slice
+   14's budget fails on arrival, so carrying this as a soft deadline meant the one input that can
+   invalidate the slice had no threshold attached to it.
+
+**Recut threshold:** if the work exceeds 4 iterations, **reduce Slice 14's verification width matrix
+from five widths to 360 and 768**, which §16.1 names as the primary and the breakpoint. **Do not cut
+the modal treatment** — one shared overlay rule discharges all four modals and is the only thing
+standing between the program-code modal and both a measured horizontal overflow and a primary action
+the on-screen keyboard puts out of reach. *(This replaces the first draft's recut, which named the
+modals: stakeholder review measured it as worth roughly 0.3 of an iteration and aimed at the
+cheapest, highest-value item in the cycle. A recut lever that removes the fix for the worst measured
+failure is mis-aimed, not conservative.)*
+
+**Kill threshold:** if entry condition 4's measurement shows the budget cannot hold at 360px with the
+**Bahasa** label set, **do not trade the labels for icons.** The benchmarked platform that makes that
+trade is a daily-use product whose icon vocabulary its learners have already learned; a first-time
+learner meeting `Kredensial` as an unlabelled glyph has not. Reduce the destination count or push the
+tail down one level instead. **A hamburger that hides the whole navigation is specifically not the
+fallback** — the study records that the one observed overflow keeps seven destinations permanently
+visible and is *not* a menu replacing the navigation, so defaulting to one would be inventing a
+pattern and attributing it to the benchmark. **This is also the claim whose falsification fires the
+kill path** (§2's layout F7), which is what Slice 14's validation gate names.
+
+**Sequencing inside the cycle:** shared shell prerequisite → Slice 14 → the conformance pass →
+the moderated 360px Android session → stabilization. Slice 14 goes first because it carries both the
+kill decision and the shell cost, and because a conformance pass run against an unstabilised shell
+would be invalidated by the shell work landing after it.
 
 ---
 
@@ -413,6 +673,60 @@ The distinction Cycle 2 draws is between *first-run* and *steady-state*, not bet
 *complete*. What a home owes a learner in the first thirty seconds is a different question from what
 it becomes on day thirty, and only the first is settled here.
 
+### 7.5 Narrow-width shape (Cycle 3)
+
+Cycle 3 changes no step in §7.1's flow. Every screen, decision, and transition above is identical at
+360px; what changes is the **shell each screen renders inside**, and one shell is currently missing.
+
+The funnel screens are a single centred column, so they narrow without a structural decision. The
+Learning Home is not: it is a persistent 240px sidebar beside a flexible content column, and at 360px
+there is no usable content box left once the sidebar's declared width and the column's own padding
+are taken. The decision Cycle 3 makes is what that sidebar becomes.
+
+```mermaid
+flowchart TD
+    subgraph Gate["BEFORE the cycle opens — §6.2 entry condition 4, not a runtime branch"]
+      Budget{"Do 5 destinations fit at 360px<br/>with the approved Bahasa labels?"}
+      Budget -->|No| Recut["Kill path: reduce the count,<br/>or push the tail down one level.<br/>Never icon-only. Never a hamburger."]
+    end
+
+    Budget -->|Yes| Home["First-run Learning Home"]
+    Home --> W{"Viewport width at render"}
+
+    W -->|"≥ 768px"| Wide["Sidebar beside content<br/>labelled destinations<br/>current location marked"]
+    W -->|"< 768px"| Narrow["Single content column<br/>destinations relocated, all labelled<br/>current location still marked"]
+
+    Narrow --> Dominant["One dominant object: Up Next"]
+    Dominant --> Dispose["Every other slot disposed of explicitly<br/>per §11.1: moved, sub-levelled, or dropped"]
+```
+
+**The budget check is a build-time gate, not a decision the running product makes.** It is drawn
+inside the diagram because it constrains everything below it, and it is fenced off because an earlier
+version placed it in the render flow, where it read as a runtime branch on a question §6.2 settles
+before a line of code is written.
+
+**Three properties of that shape, and where each comes from.**
+
+The sidebar is specified as **per-view chrome the layout does not depend on**, not a persistent
+structural shell. The cited study records the split across four web platforms and finds the
+per-view kind cheaper to collapse, and it is the difference between substituting a navigation
+treatment and re-architecting a layout that assumes one is present.
+
+The narrow home carries **one dominant object**, and every other slot has a stated disposition. The
+observed phone homes do not stack their desktop secondary blocks beneath the primary object; each
+disposes of them. This PRD's first-run home has few slots, so the disposition table in §11.1 is
+short — but it is written out rather than left to reflow, because "it reflows" is not a disposition
+and cannot be checked.
+
+**Nothing here prescribes an interaction convention, deliberately.** The cited study bars its
+narrow-width questions from making platform-convention claims, and whether a fixed bottom bar is
+even correct in an Android browser — where it competes with collapsing URL chrome for scarce
+vertical space — is not something four native iOS screens can settle. This PRD therefore states the
+**structure** (at most five destinations, all labelled, current location marked, one dominant
+object, detail off the home) and routes the **mechanism** to a §15 decision informed by the
+moderated 360px session. A PRD that named the mechanism here would be asserting as settled the one
+thing its evidence explicitly cannot reach.
+
 ---
 
 ## 8. Vertical Slices
@@ -510,6 +824,67 @@ has finalized, and confirm that learner's primary action does not change. *(The 
 completing onboarding twice with different goals, was rejected at stakeholder review because it
 passes on a Slice 9 build alone. This one fails without the durable write, which is the only thing
 Slice 13 adds.)*
+
+---
+
+## 8.2 Cycle 3 — narrow-width
+
+**One slice and one conformance pass**, run after Cycle 2 integrates and governed by the separate
+appetite in §6.2. They are preceded by the shared shell prerequisite §6.2 allocates, which is
+infrastructure rather than either unit's scope.
+
+> **Slice 15 was ruled No-Go as a slice at stakeholder review, and its requirements were not
+> dropped.** It is reconstituted below as the **narrow-width conformance pass**, with its own §6.2
+> allocation line and its own place in the recut ordering. It was removed as a *slice* because it
+> delivers no step, no screen, and no durable state change, modifies nine existing slices rather than
+> adding a tenth, and its stated demo — completing onboarding end to end at 360px — is the demo of
+> Slices 1, 3, 4, 5, 6 and 7. It could not fail for a reason of its own without nine other slices on
+> stage, and by this PRD's own account most funnel screens already reflow, so the majority of that
+> demo passed before a line was written. **It is deliberately *not* routed to §14**, on the same
+> grounds as Slice 11 on 2026-07-29: a non-goal would misrecord the decision, because every
+> requirement it carries is still being built.
+>
+> **It was equally deliberately not folded into Slice 10**, and this document contains the argument.
+> Slice 10's `320px / 375px` criterion is the thing that just failed: it was discharged by
+> single-column screens that reflow by default while the one two-column surface went uncovered.
+> Folding narrow-width work back into that slice would re-create the conditions of the original
+> defect — no cycle, no allocation line, no recut candidate, no gate of its own. A cross-cutting
+> concern needs a schedule and a budget, which the conformance pass has and Slice 10 does not.
+
+### Slice 14 — The first-run Learning Home at narrow width
+
+At a 360px viewport the first-run Learning Home renders a single content column with one dominant
+object, its navigation reduced to at most five destinations that all keep their text labels, and the
+learner's current location still marked. Every slot that does not survive into the narrow layout has
+a stated disposition in §11.1 rather than being reflowed into the scroll. **Demoable on its own:**
+open the first-run home on a real Android device at 360px and walk to the first learning action.
+
+*This slice exists because the surface is currently unusable at that width, not merely unspecified —
+see the 2026-07-30 measurement in the revision note.* It also absorbs the **filled-control
+invariant, the `nav` landmark, and `aria-current`** migrated out of Slice 12, because it must extract
+that same markup regardless and doing the work twice pays twice for one surgery.
+
+### Narrow-width conformance pass
+
+Each of the seven pre-authentication screens and all four modals complete their primary task at
+360px without horizontal scrolling, and every interactive control in the funnel meets WCAG 2.2
+SC 2.5.8 target sizing. **The boundary with Slice 14 is the account wall:** everything after
+finalization renders the Learning Home shell, including the labelled wait, so those three §11 rows
+belong to Slice 14 and are not counted twice here.
+
+The two controls the first draft named as hard cases were measured, and only one of them is. The
+**country combobox already renders its listbox below its input at every width** — the list is
+absolutely positioned against a relatively positioned container at `top: 100%`, `left: 0`, full width
+— so its binding constraint is not width. Because it is **out of flow it does not push following
+content down**, which means its maximum height can overhang a short viewport, so the real constraint
+is the on-screen keyboard covering the list: a height problem shared with §12.
+The **six-segment program-code input genuinely overflows today**, by roughly 116px at 360px, and §9
+states its remedy as an ordered set rather than as a prohibition.
+
+**Demonstrated by a written artefact, not by a walkthrough of other slices:** a per-screen and
+per-modal pass/fail list at 360px in Bahasa, produced on the §17 device-lab handset. That list is
+produced by no other unit of work and regresses on its own, which the end-to-end walk does not. The
+walk remains acceptance for the cycle; it is not evidence for this unit.
 
 ---
 
@@ -623,6 +998,7 @@ Slice 13 adds.)*
 - [ ] **Finalization writes `LearnerProfile.initial_course_id`**, resolved from the goal-to-course map for organic learners or from the enrollment for program learners. *(Cycle 2's Slice 13 is a read against this field. Without it, Cycle 2 opens with a migration into shipped code.)*
 - [ ] **Finalization stores its own result** (the destination payload) and its **idempotency key**, so a reload or a retry replays the original outcome rather than erroring on a consumed session or re-running.
 - [ ] **The enrollment write is a standalone authenticated idempotent operation**, callable outside the finalization transaction. *(Extracted now, while this code is open, at near-zero marginal cost. It is what makes the deferred join-a-program-later surface in §14 affordable later instead of surgery.)*
+- [ ] **The handoff response carries the first item's title and a nullable duration estimate**, and the stored `finalization_result` carries them too, so a replay returns them. **A consumer treats an absent key and a null value identically.** *(Added 2026-07-30 on the same extract-while-open principle as the criterion above. Cycle 2's Slice 13 reads both fields and writes neither; introducing them there would open Cycle 2 with a contract change into shipped code.)*
 - [ ] The finalization architecture stated in §16.2 is the one implemented: either a single-datastore transaction, or the specified saga whose idempotency anchor is the unique constraint on learner, program, and cohort, and whose compensation is enrollment revocation.
 
 > **This is the decision that decides whether Cycle 1 fits its appetite.** If profile, consent, and
@@ -648,7 +1024,7 @@ Slice 13 adds.)*
 - [ ] Changing locale mid-onboarding preserves the current step and entered values.
 - [ ] Progress reflects the actual configured step count for the current entry path and exposes equivalent text such as “Step 3 of 5.”
 - [ ] Browser Back and the in-product Back action do not create contradictory history or accidental duplicate submissions.
-- [ ] At 320px width, no primary task requires horizontal scrolling; layouts remain usable at 375px, 768px, and 1440px.
+- [ ] At 320px width, no primary task requires horizontal scrolling; layouts remain usable at 375px, 768px, and 1440px. **Amended 2026-07-30: this criterion is discharged for the funnel by Cycle 3's narrow-width conformance pass and for the Learning Home by Slice 14, and was previously discharged by neither.** Measured against `src/styles.css` on 2026-07-30, no media query in the file touches the Learning Home shell, so this criterion had been passing on single-column form screens that reflow by default while the one two-column surface went uncovered. A criterion that only ever meets cases which cannot fail it is not gating anything.
 - [ ] Focus order follows visual order, focus is visible, and modals restore focus on close.
 - [ ] Status and error feedback does not rely on color or animation alone.
 - [ ] Reduced-motion preference disables nonessential shake, pulse, slide, and spring motion.
@@ -683,6 +1059,20 @@ Slice 13 adds.)*
 - [ ] **The affordances this criterion governs are named, not inferred**: the course-progress affordance on the Up Next card (denominator: skills in the first course) and, for program learners, the assigned-task checklist (denominator: tasks in the enrollment). Both denominators arrive on the §16.2 handoff response. *(Points, streaks, and achievements are §14 non-goals, so without naming what remains, "every progress affordance renders at zero" would be vacuously true and would gate nothing.)*
 - [ ] **The greeting is true on first run.** A newly created account is not greeted as a returning one. *(The reference implementation currently renders "Welcome back!" to an account created seconds earlier.)*
 
+**Block order** *(added 2026-07-30 from §2.1 layout F3)*:
+
+- [ ] Given the first-run Learning Home renders, when its blocks are read in document order, then **no product-owned, explanatory, or promotional block precedes the learner's next action**. Stated and tested **ordinally**, as a block sequence — not as a fold or pixel-offset claim, which this PRD has not measured and its cited study could not measure either. *(§2.1 layout F3.)*
+- [ ] **Chrome is scored against this criterion, not exempted from it.** Where the shell places a brand lockup, a header, or a navigation region above the content column in document order, that region counts as product-owned unless it is a `banner` or `navigation` landmark carrying no promotional content. Named because Slice 14's narrow treatment relocates the navigation, and without this rule the two criteria could pass separately and contradict each other on the same build.
+
+> **Three criteria drafted here on 2026-07-30 were moved to Slice 14 at stakeholder review**: the
+> exactly-one-filled-control invariant, the `nav` landmark with `aria-current`, and the note recording
+> SC 2.4.8 as an above-AA choice. They are not dropped and their §2.1 dispositions are unchanged. They
+> moved because each is a rewrite of the same markup Slice 14 must extract anyway — the content column
+> is authored as inline style attributes and the navigation as non-semantic elements across three
+> views — so doing them in Cycle 2's wide layout and again in Cycle 3's narrow one pays twice for one
+> surgery. **F3 stayed** because a block reordering is width-independent and cheap. This is why the
+> 2026-07-30 revision can say Cycle 2's appetite is unchanged and mean it.
+
 ### Slice 13 — Intake-derived first action
 
 - [ ] Given an organic learner has completed onboarding, when the Learning Home renders, then the primary action resolves from the **stored first-course identifier** derived from their selected goal.
@@ -692,6 +1082,89 @@ Slice 13 adds.)*
 - [ ] Given the goal-to-course map returns more than one candidate, when the primary action is rendered, then exactly one is presented as primary and the rest are not shown as co-equal actions.
 - [ ] Given the stored first-course identifier is missing or unresolvable, when the Learning Home renders, then the surface shows the Slice 12 empty state with a recovery action and **does not** substitute a default, popular, or arbitrary course. The **handoff contract distinguishes "unmapped" from "default"**, and the client does not collapse that distinction with a fallback operator. *(The reference implementation currently resolves an unmapped goal with `|| 'General Skills Mastery'`, which is exactly the substituted default this forbids.)*
 - [ ] The stored identifier used by the Learning Home is the same value written at finalization; the binding is covered by a test.
+- [ ] **The primary action names the specific first item and bounds its cost**, not the course it belongs to — the item's own title plus a duration estimate, both **read from** the §16.2 handoff response and neither hard-coded. *(§2.1 layout F6. Adopted on the finding's narrow half: three of seven benchmarked platforms name the next item by title and three state a time cost. The finding's stronger sub-claim, that remaining-cost framing beats percentage-complete framing, was **retracted at that study's peer review as confounded** and is not adopted here.)*
+- [ ] **A stated duration is a claim the product is held to.** Where the handoff response carries **no duration value — whether the key is null or absent entirely** — the cost line is omitted rather than filled with a default or a rounded guess. *(This is the same rule as "unmapped is not default": a fabricated estimate is the fabrication class this cycle exists to remove, and an estimate the learner learns to distrust devalues every later one. **Absent and null must be treated identically** because §13 replays a stored `finalization_result`, so sessions finalized before the field existed replay a payload where the key is missing, not null.)*
+
+> **Both criteria above are pure reads. The fields they read are Cycle 1's**, added to Slice 8's
+> finalization contract and to §6.1's entry-condition list at stakeholder review, rather than being
+> introduced here. Slice 13 was drafted on 2026-07-30 as though it could add two fields to a §16.2
+> contract that Cycle 1 delivers — which would have opened Cycle 2 with a schema change into shipped,
+> integrity-sensitive code, the specific failure §6.1's entry condition exists to prevent. The
+> precedent is the 2026-07-29 extraction of the enrollment write: land it while the code is open, at
+> near-zero marginal cost, rather than as surgery later.
+
+### Slice 14 — The first-run Learning Home at narrow width
+
+**Shell and layout:**
+
+- [ ] Given a viewport of 360px, when the first-run Learning Home renders, then the primary task completes with **no horizontal scrolling**, and no element extends beyond the viewport width.
+- [ ] Given a viewport of 360px, when the surface renders, then the content column occupies the full width and **no persistent navigation rail consumes horizontal space alongside it**.
+- [ ] **Tested at 360, 320, 414, 768, and 1440 CSS px**, so the treatment is verified at both edges of the transition rather than at one convenient width.
+- [ ] Given the layout crosses its breakpoint in either direction, when it re-renders, then **no learner-entered or learner-derived value is lost** and the scroll position resolves to the top of the dominant object rather than to an arbitrary offset.
+
+**Navigation** *(the first three criteria were migrated from Slice 12 at stakeholder review; they apply at every width, and they land here because this slice extracts the markup they depend on)*:
+
+- [ ] Given the surface renders a navigation **at any width**, when the learner is on the Learning Home, then the current destination is **marked visibly** and exposed programmatically with `aria-current="page"`, and the destinations sit inside a `nav` landmark with an accessible name. *(§2.1 layout F2. The reference implementation carries the visible half as an `active` class on non-semantic `div` elements across **three** views, so the semantics and the landmark are what this adds — including the first-learning-action view, which §11 records as a prototype-only stub.)*
+- [ ] **The current-location requirement is recorded as an above-AA choice, not as conformance.** WCAG 2.2 SC 2.4.8 *Location* is **Level AAA**, and its sufficient techniques are G128 and ARIA26. This PRD's baseline commitment is A/AA, so this criterion is adopted on orientation grounds for learners arriving from a notification or a bookmark, and must not be reported as a conformance obligation.
+- [ ] Given the surface renders in any of its data states **at any width**, when every control is enumerated, then **exactly one carries the filled treatment**. *(§2.1 layout F4. The scarcity precondition is the whole mechanism: a second filled control converts a parallel visual search into a serial one, so the signal stops ranking anything. The reference implementation fails this today — the Up Next card is a filled block directly above a filled primary button — and the fix is a redesign of that card, not a test.)*
+- [ ] Given the narrow layout, when the navigation renders, then it exposes **at most five destinations**, and **every one carries a text label**. *(§2.1 layout F7, adopted as a labelled hypothesis. Our four destinations fit this budget with no demotion; the eleven-item production navigation would not, which is §6.2 entry condition 5.)*
+- [ ] Given the narrow layout, when the navigation renders, then the current destination is **marked visibly and exposed with `aria-current="page"`**, exactly as in the wide layout. *(A narrow treatment that drops the marking would trade away the cheapest orientation signal at the width where orientation is hardest.)*
+- [ ] **Every decorative icon in a destination is `aria-hidden="true"`, and no destination's accessible name contains its icon's ligature text.** *(Found at stakeholder review. The reference implementation carries thirteen icon spans and zero `aria-hidden`, so assistive technology reads each destination as, for example, "emoji_events Achievements" — and until the icon font loads, that literal text renders visually. This must land **before** any Bahasa label measurement is taken, or the measurement has two answers depending on font-load timing.)*
+- [ ] Given the navigation labels are rendered in **Bahasa Indonesia** at 360px, when each destination is measured, then no label truncates, wraps to a second line, or overlaps a neighbour. **Validated against the approved Bahasa set, not the English one** — this is a pixel budget, and source strings expand 180 to 300% depending on their length band `[R9]`. *(§6.2 entry condition 4.)*
+- [ ] Every navigation destination meets **WCAG 2.2 SC 2.5.8 *Target Size (Minimum)*, Level AA** — 24 by 24 CSS px, or the spacing exception — measured at 360px.
+
+**Content disposition:**
+
+- [ ] Given the narrow layout, when the content column renders, then **exactly one dominant object** occupies the first screenful: the Up Next card for organic learners, or the assigned-task block for program learners. *(§2.1 layout F9, adopted as a labelled hypothesis.)*
+- [ ] Given any slot that does not survive into the narrow layout, when it is removed, then its **disposition is one of the three stated in §11.1** — relocated to another destination, pushed down one level, or dropped — and **no slot is disposed of by being reflowed to the bottom of the scroll**. *(A slot pushed below the fold has not been disposed of; it has been hidden while still costing bytes and render time.)*
+- [ ] Every state Slice 12 specifies — loading, zero, populated, unmapped, error — is **reachable and specified at 360px**, not only at desktop width. A state that exists only in the wide layout is an unspecified state, not an inherited one.
+- [ ] **The content column is authored as classes, not as inline style attributes.** *(Not housekeeping: the reference implementation carries **22 inline `style` attributes in the Learning Home's content column** — 29 across all three views — and its script writes further inline `display`, `width`, and `cssText` values at runtime, so **no media query can reach any of it**. This criterion is the precondition for every other criterion in this slice, and it is why §6.2 prices the slice above the first draft's estimate.)*
+
+**Validation, stated as a gate rather than an intention:**
+
+- [ ] **The two mobile claims this slice rests on are labelled hypotheses** (§2: layout F7 and F9). A **moderated session on a real Android device at 360px** is run against this build before the slice is called done, and every finding is recorded with a disposition. *(§15, §17. The session is research and is not charged to §6.2's iteration box. The count is two, not four — §2 marks exactly two rows `Hypothesis`, and F8's adopted half is web-sourced.)*
+- [ ] **One falsification is a kill, not a note:** if **fewer than 6 of 8 participants locate a named destination without error** at 360px on Android, the **five-destination labelled budget** is falsified — §2's layout F7, the claim §6.2's kill path turns on — and the slice takes that kill path rather than recording an accepted finding. *(Stated with a number because "resolved or explicitly accepted" admits every outcome and therefore gates nothing on substance. Every other session finding may be accepted with a written reason; this one may not. The threshold and the task are fixed in the §15 `test-plan.md` decision, not chosen after the session.)*
+
+### Narrow-width conformance pass
+
+**Verification conditions, stated once so every criterion below is measurable.** §16.1 states widths
+and nothing stated heights, which left "readable", "operable", and "out of reach" unable to fail on a
+bench. The pass is run at **360 by 640 CSS px with browser chrome expanded**, and additionally at the
+**keyboard-raised height** for the three screens that raise the on-screen keyboard on entry: Name,
+Account wall, and the program-code modal.
+
+- [ ] Given the stated conditions, when each of the **seven pre-authentication screens** in §11 renders — Landing, Name, Country, Age, Gender, Goal, Account wall — then its primary task completes with **no horizontal scrolling** and its primary control is reachable. Recorded screen by screen as a written pass/fail list, which is also this unit's demo. *(The remaining three §11 rows render the Learning Home shell and belong to Slice 14.)*
+- [ ] Given the stated conditions, when each of the four modals in §12 renders, then **no text is clipped by the modal's own bounds**, its controls are operable, its dismissal control is reachable, and **its primary action is reachable at the keyboard-raised height**, scrolling within the modal where necessary. *("Readable" was the one word in this criterion §16.1's bench did not anchor, so it is replaced by the clipping test, which an observation can fail.)*
+- [ ] Every interactive control in the funnel meets **WCAG 2.2 SC 2.5.8 *Target Size (Minimum)*, Level AA** — 24 by 24 CSS px, or the spacing exception — at 360px. Named as AA because it is AA in WCAG 2.2, which places it inside this PRD's existing "0 critical A/AA blockers at launch" commitment rather than beside it.
+- [ ] **The country combobox remains operable and announced at 360px**, including its listbox, active-descendant behaviour, keyboard navigation, and empty state — and **its listbox is not obscured by the on-screen keyboard, and does not overhang the viewport at the keyboard-raised height**. *(Corrected 2026-07-30: the first draft specified the listbox moving from beside its input to below it. Measured, it already renders below at every width — absolutely positioned at `top: 100%` against a relatively positioned container — so width was never the problem. Because it is out of flow it does not push content down, so its maximum height must be bounded against the raised viewport rather than assumed absorbed. **It must not be degraded to a native `select`**, which would lose the localized-alternate-name search Slice 4 requires.)*
+- [ ] **The six segments of the program-code input fit the 360px content box**, and each segment meets the SC 2.5.8 floor. Remedies apply **in this order**: (1) reduce the modal's narrow-width padding; (2) reduce segment width and gap to no less than the floor; (3) wrap to two rows only if (1) and (2) together cannot reach it. Paste, auto-advance, and backspace behaviour are unchanged.
+
+> **Corrected at stakeholder review, against arithmetic.** The first draft said "shrinking the
+> segments to fit is a target-size failure, not a layout solution" and required wrapping before
+> shrinking. Measured: six 56px segments with 12px gaps occupy **396px** against a **280px** content
+> box at 360px, so the control does overflow today. But **six 40px segments with 8px gaps occupy
+> exactly 280px, and 40 by 68 CSS px clears the 24 by 24 floor by a wide margin** — shrinking breaches
+> nothing. Reducing the modal's 40px padding to 20px at narrow width gives a 320px box, which fits six
+> 44px segments **at an 8px gap** (304px) though not at the shipped 12px one (324px), and 44 by 68
+> clears even SC 2.5.5 *Enhanced* (AAA) on both axes. The original rule stated a
+> target-size failure its own numbers disprove and mandated the worse layout, two rows of three
+> breaking the gestalt of a single six-character code. **A PRD asserting a standard it has not
+> checked is the same defect class as an invented finding**, and it was load-bearing here because it
+> forced a build decision.
+
+- [ ] The seven screens and four modals are checked at **320, 360, 414, 768, and 1440 CSS px**, the same matrix Slice 14 uses and §16.1 states. *(Without this the pass would verify one width, and Slice 10's amended criterion — which this discharges — covered four. A discharge that narrows coverage is not a discharge.)*
+- [ ] Given the funnel is rendered at 360px in **Bahasa Indonesia**, when each screen's controls and validation messages render, then no string truncates or overflows its control. Validated against the approved Bahasa set.
+- [ ] Given a learner rotates the device or the browser's URL chrome collapses mid-step, when the viewport height changes, then **no entered value is lost and no control becomes unreachable**. *(Collapsing browser chrome is the Android-mobile-web condition that native-app evidence cannot show, and it is a height problem rather than a width one. Note that a `position: fixed` element resolves against the layout viewport, which the Android on-screen keyboard does not shrink, so satisfying this may require `visualViewport` behaviour rather than CSS alone.)*
+
+> **Narrow coverage lives here, not duplicated into Slices 1 through 9.** These criteria are addressed
+> screen by screen and modal by modal, and §11's table maps every screen to its owning slice, so every
+> funnel slice is covered exactly once. Restating them inside each §9 block would create nine places
+> for them to drift apart. **Stated explicitly so the absence reads as a decision rather than an
+> omission.**
+>
+> **`device class` instrumentation is deliberately not a criterion here.** It was one in the first
+> draft, which put the property that metric 5.8's baseline depends on inside the cycle that the
+> baseline gates. It is now **§6.2 entry condition 1**, to be emitted before the baseline window opens.
 
 ---
 
@@ -726,9 +1199,76 @@ are required columns, not optional polish.
 | Finalization handoff | Show the destination while finalization resolves. **This is Slice 8's only user-visible surface**, and Slice 12's loading state | Account wall | **8, 12** | **Empty:** not applicable. **Loading:** the primary state, shell rendered with the content region skeletonised and labelled. **Error:** recoverable error on the same surface, never a permanent skeleton. **Success:** content resolves in place |
 | Learning Home (first run, organic) | Orient the learner and route them into their first action. **First-run progress affordances: the Up Next course-progress counter only** (denominator: skills in the first course). Points, streaks, and achievements are not rendered | Finalization handoff | **12, 13** | **Empty:** every progress affordance at zero with its countable condition in the slot; content slots show a neutral empty state plus recovery action; **no slot given to promotion**. **Loading:** per Slice 12's loading state. **Error:** unresolvable first course shows the empty state, never a substituted course. **Success:** primary action emits `lesson_started` |
 | Learning Home (first run, program) | As above, plus the **assigned-task checklist** (denominator: tasks in the enrollment), carrying program identity | Finalization handoff | **12, 13** | As above, plus: tasks fetched from the enrollment, never hard-coded. **Empty:** a program with no assigned tasks yet shows a stated empty state, not a fabricated task. **Success:** primary action emits `assigned_task_opened` |
+| First learning action *(prototype-only stub)* | Give the primary action a real destination so the handoff can be demonstrated end to end | Learning Home | **none — see below** | Not specified as a production screen. The lesson player is a §14 non-goal, so this row exists to record the stub rather than to require it |
+
+> **The first-learning-action view belongs to no slice, and that is now recorded rather than
+> implied.** The prototype renders a third view so the primary action resolves somewhere real and so
+> completing it can change the home. It is **not production scope** — the lesson player is a §14
+> non-goal — and no slice pays for it. It appears here for one reason: **it carries the same
+> navigation markup as the other two views**, so Slice 14's `nav` landmark and `aria-current` work
+> must either cover all three or be recorded as covering two. **It covers all three**, because the
+> prototype is the demo surface and a landmark refactor that leaves one view inconsistent would be
+> visible in the demo it exists to serve. Nothing else about this view is in scope at any width.
 
 **Modal surfaces** (program code, login, eligibility explanation) are specified in §12 rather than as
 screens, because they overlay a parent rather than occupying a route.
+
+### 11.1 Narrow-width behaviour (Cycle 3)
+
+Every screen above at a **360px** viewport, except the prototype-only first-learning-action stub,
+whose sole narrow-width obligation is the navigation treatment Slice 14 applies to all three views.
+The Slice column reads `pass` for the units the **narrow-width conformance pass** owns and `14` for
+Slice 14's; there is no Slice 15, which was ruled No-Go as a slice.
+
+Narrow width is treated as a specified state, not as
+whatever the wide layout happens to do when squeezed. The three dispositions permitted for a slot
+that does not survive the narrow layout are **relocated** (moved to another destination),
+**sub-levelled** (pushed down one level behind a named control), and **dropped** (not rendered at
+all). **"Reflowed to the bottom of the scroll" is not one of them** — a slot below the fold has been
+hidden, not disposed of, and still costs bytes and render time on a metered connection.
+
+| Screen | Shell at 360px | What changes | What must not change | Slice |
+|---|---|---|---|---|
+| Landing | Single column | Hero and CTA stack; marketing sections below the impact banner may be **sub-levelled** behind a disclosure, which is also §6's existing Cycle 1 recut candidate | The three entry actions stay visible without scrolling, and "Get started" stays the single dominant action | pass |
+| Name | Single column | Nothing structural | Inline validation stays tied by `aria-describedby` and visible with the on-screen keyboard raised | pass |
+| Country | Single column | **Nothing structural** — the listbox is absolutely positioned at `top: 100%` and already renders below the input at every width. What changes is height handling: because it is out of flow it does not push content down, so its height must be bounded against the keyboard-raised viewport rather than assumed absorbed | Combobox semantics, active descendant, keyboard operation, localized alternate-name search, and the announced empty state are all preserved. **A native `select` is not an acceptable substitute** — it loses the search Slice 4 requires | pass |
+| Age | Single column | The adult subrange reveals in place; the band cards go one per row | Continue stays reachable without scrolling past the options; the reveal does not push it off-screen | pass |
+| Gender *(provisional)* | Single column | Cards go one per row | The opt-out keeps equal visual weight. **This is a Cycle 1 defect fix, not a narrow-width requirement** — see below | pass |
+| Goal | Single column | The goal grid collapses to one column *(the existing `max-width: 420px` rule already does this; it is recorded here so it is covered rather than incidental)* | Six goals stay reachable; selection state stays programmatically exposed | pass |
+| Account wall | Single column | Provider buttons stack full-width | Terms and Privacy links stay visible **before** submission, not below it | pass |
+| Finalization handoff | Learning Home shell, narrow | Skeleton occupies the single content column; the navigation renders in its narrow treatment | The two-number skeleton rule (400ms delay, 500ms minimum) is width-independent; the shell still renders before its payload | 14 |
+| Learning Home (first run, organic) | Single content column | Navigation leaves the horizontal axis; **Up Next is the one dominant object** and occupies the first screenful | Every progress value still reads zero with its condition in the same slot; exactly one filled control; current location still marked | 14 |
+| Learning Home (first run, program) | Single content column | As organic. The assigned-task block becomes the dominant object; the Up Next card is **sub-levelled** below it rather than competing for the first screenful | Tasks still come from the enrollment; the task checklist still states its denominator | 14 |
+
+**Slot dispositions on the narrow Learning Home**, stated per slot because §9's Slice 14 criterion
+requires each one to name which of the three it takes:
+
+| Slot | Disposition at 360px | Why |
+|---|---|---|
+| Brand lockup in the shell | **Relocated** with the navigation, and it may not become a product-owned block sitting above the learner's next action in document order | The only product-owned element on the surface. Slice 12's F3 criterion is **ordinal**, so a narrow treatment that lifts logo and navigation into a top bar would satisfy this table and fail that criterion on the same build. Slice 12's second criterion now scores chrome explicitly, which is what keeps the two consistent |
+| Greeting and subtitle | **Kept**, above the dominant object | It is the learner's own content, which is the block order F3 supports, and it costs one line |
+| Up Next card (organic) | **Kept** — this *is* the dominant object | The primary action; disposing of it would defeat the surface |
+| Up Next card (program) | **Sub-levelled** below the assigned-task block | A program learner's assigned work outranks a goal-derived suggestion, and both cannot be dominant |
+| Assigned-task checklist | **Kept** for program learners; not rendered for organic | Already conditional in the wide layout; no change of kind |
+| Unmapped-goal empty state | **Kept**, replacing Up Next in the dominant slot | It is the dominant object in that data state. An empty state that gets demoted at narrow width reintroduces the silent-substitution defect from the other side |
+| Navigation destinations | **Relocated** off the horizontal axis, all labels retained | §2.1 layout F7 and F8. The mechanism is a §15 decision; the structure is fixed here |
+| Points, streaks, achievements | **Not applicable** — never rendered at any width | §14 non-goals. Recorded so the row is not read as an omission |
+
+> **A shipped Cycle 1 defect surfaced while writing this table, and it is charged to the §6.2 shell
+> prerequisite rather than smuggled into Cycle 3's scope.** Slice 5's shipped criterion requires the
+> gender opt-out to be "styled at the same weight as the other options". Measured 2026-07-30, the
+> reference implementation places `Prefer not to say` **outside** the option grid as a following
+> sibling, at a lighter weight and smaller size in a muted colour — so it is de-emphasised and stacked
+> last **at every width today**, not only at narrow width. The narrow layout does not cause this and
+> cannot be judged against it while it is true. It is named here because this is where it was found,
+> and paid for in §6.2's shell line because it crosses both units of Cycle 3 work.
+
+**There is no rail content to migrate or delete at narrow width**, which is why §2.1 defers layout F5
+and adopts only F8's structural half. The benchmarked platforms faced that decision because their
+desktop rails carry leagues, quests, and streak cards; this surface's rail carries navigation and
+nothing else. **The decision is cheap here precisely because Cycle 2 declined to fill the rail**, and
+that is worth recording — had the locked-leaderboard slot been adopted, this table would carry a
+migrate-or-delete question the cited study explicitly could not answer.
 
 ---
 
@@ -751,6 +1291,34 @@ coach-mark sequence before the first learning action, so the Learning Home has n
 **Constraint on modal copy.** A modal that carries a legal or capability disclosure (program preview,
 eligibility blocked) is subject to the same plain-language reading-level requirement as Slice 5's
 intake copy. A disclosure the learner cannot read does not discharge the obligation to disclose.
+
+**Narrow-width behaviour (Cycle 3, the conformance pass).** All four modals are specified at 360px, and the
+binding constraint is **height, not width**. A modal that fits horizontally and pushes its primary
+action below a viewport shortened by the on-screen keyboard has failed, which is the failure mode
+these four are most exposed to: the program-code modal raises the keyboard immediately, and the login
+modal raises it twice.
+
+- The **dismissal control stays reachable without scrolling** in every modal, at every viewport
+  height these screens are specified at.
+- **Backdrop dismissal is not the only exit at narrow width.** A backdrop that has been reduced to a
+  few pixels of visible margin is not a control, so each modal keeps an explicit Cancel or Close
+  affordance inside its own bounds.
+- The **program-code modal's six segments** follow the ordered remedy in §9: reduce the modal's
+  narrow-width padding first, then segment width and gap down to the SC 2.5.8 floor, and wrap only if
+  neither reaches it. *(Corrected 2026-07-30 — an earlier version forbade shrinking on target-size
+  grounds its own arithmetic disproves.)*
+- The existing focus trap, inert background, Escape handling, and focus restoration are
+  **width-independent** and are not re-specified per viewport.
+
+**One shared rule discharges most of this, and it is cheaper than four modal fixes.** Measured
+2026-07-30, the shared overlay is a full-viewport fixed container that centres its child with **no
+maximum height and no scroll path**, so a modal taller than the viewport is clipped at both ends with
+no way to reach either. Anchoring the child to the top, bounding it to the dynamic viewport height,
+and allowing it to scroll within itself fixes all four at once, and it is charged to §6.2's shell
+prerequisite rather than to any single modal. **The keyboard case needs behaviour, not CSS:** a
+fixed-position element resolves against the layout viewport, which the Android on-screen keyboard
+does not shrink, so meeting the keyboard-raised criterion requires reading the visual viewport at
+runtime.
 
 ---
 
@@ -824,7 +1392,7 @@ All identifiers in client-visible analytics or URLs must follow the platform's e
 ## 14. Non-Goals
 
 - Full Learning Home/dashboard implementation beyond the first authenticated handoff
-- Lesson player, course catalogue, assessments, certificates, points, streaks, or achievements
+- Lesson player, course catalogue, assessments, certificates, points, streaks, or achievements — **the mechanics.** *(Clarified 2026-07-30. Stakeholder review found the prototype's Learning Home navigation carries an `Achievements` destination while this line excluded achievements outright, so Slice 14's five-destination budget was being computed over a set containing something this PRD does not build. **The reconciliation is that a navigation destination is not a mechanic:** the shell may route to a surface this PRD does not specify, exactly as `Courses` and `Settings` already do. What stays excluded is rendering any points, streak, or achievement **value** on the first-run home, which §11.1 records as "never rendered at any width" and Slice 12 gates. If the destination is instead removed, the budget is three and Slice 14's headroom grows; either answer is fine and the §6.2 entry-condition decision on which navigation production inherits settles it.)*
 - Program creation, cohort administration, facilitator tools, or reporting
 - Recommendation-model development; MVP uses deterministic goal-to-course configuration
 - Multiple simultaneous organic goals
@@ -843,6 +1411,9 @@ All identifiers in client-visible analytics or URLs must follow the platform's e
 - **A first-run tour, coach-mark sequence, or feature walkthrough before the first learning action** (§2.1 F9). The one platform captured at genuine first run placed four tour steps over a two-step blocking modal, all four teaching reward mechanics to an account with no courses, including one control that could not yet act. If a tour ships later it belongs *after* the first learning action and should explain the mechanic the learner has just triggered
 - **A locked leaderboard, league, or peer-comparison slot on the first-run home** (§2.1 F2). The locked-slot device is the benchmark's best-replicated finding and is still cheap to build, but its peer review ruled the decision motivational and cross-cultural rather than a cost question, for 13-to-17-year-olds in a facilitator-mediated setting. The exclusion of points, streaks, and achievements above therefore stands on a stronger reason than appetite alone. The competence-framed zero counter (Slice 12) ships; the social-comparison slot does not
 - **A path for an already-onboarded learner to join a program later** (§2.1 F7). This funnel attaches a program only during onboarding. The gap is real: this section previously excluded *editing or switching* a validated program during onboarding and said nothing about joining afterwards, which read as handled. It is deferred rather than built because it needs a settings entry point, authenticated code validation, the attribution-write path, and minor-appropriate consent copy. **Monitored, not merely deferred:** if the §5.3 duplicate-learner-account guardrail (< 0.5%) is breached at the four-week review, **or** metric 5.4 misses its 80% target, this reopens ahead of any other next-cycle candidate. Stakeholder review accepted the diagnosis that this is an operational gap in the **primary distribution channel**, not a preference: a learner who signs up organically and receives a facilitator code a week later can only make a second account. The enabling work is already paid for, because Slice 8 now extracts the enrollment write as a standalone authenticated idempotent operation, so the remaining surface is roughly one iteration rather than surgery. *(An earlier version said to revisit "if Program Operations reports learners asking for it", which is nobody's job.)*
+- **A navigation cardinality device — grouping, a second tier, or a budget-and-overflow — on the Learning Home** (§2.1 layout F1). The cited study's recommendation is to keep every destination visible and apply a structural rule rather than shorten the list, and it is well evidenced: the two benchmarked platforms carrying *more* destinations than our production home both apply a device and both mark current location, while ours does neither. **It is deferred because it is a steady-state information-architecture decision and this PRD builds first-run only**, and because the study's own strongest caveat applies squarely to us: ten of our eleven destinations were never opened, so no grouping can be proposed without a content inventory first. The study's own gate order is content inventory → open card sort in Bahasa Indonesia (n≈15, stratified by facilitated versus self-directed arrival) → first-click test. **Not merely deferred, because it has a live consequence here:** the prototype's home carries four destinations and the production home carries eleven, and which one the production first-run home inherits decides whether Slice 14's five-destination budget holds. That is now an owned §15 decision rather than an assumption
+- **Separating the daily progress signal from a detailed progress record** (§2.1 layout F5). The benchmarked pattern is a small persistent counter on the home with the detailed record on a destination visited deliberately. It does not apply yet, for a structural reason rather than a cost one: **points, streaks, and achievements are already non-goals above, so the first-run home has exactly one progress affordance and there is no detailed record to separate it from.** The finding's own clean-fit rate is 3 of 7, and its second half — running a behavioural goal horizon alongside an outcome horizon, modelled on one platform — needs a steady-state home to sit in. Revisit when a steady-state Learning Home is specified, alongside the deferred F1 device decision
+- **The migrate-or-delete rule for signals losing a navigation rail** (§2.1 layout F8, second half). The structural half of that finding *is* adopted, in Slice 14. The rule for deciding whether a signal that loses its rail should move inward or be dropped is not, because the study derives it from its only two web-and-phone pairs, which produced **opposite** outcomes, and labels it hypothesis-generating rather than a finding. This PRD also has nothing for it to govern: its rail carries navigation and nothing else. Revisit if a steady-state home puts content in a rail
 - Translation beyond English and Bahasa Indonesia
 - A CMS for landing-page content
 
@@ -860,6 +1431,10 @@ All identifiers in client-visible analytics or URLs must follow the platform's e
 - **Do not introduce a general recommendation engine.** A configuration map is sufficient for the approved MVP.
 - **Do not add fields merely because they may be useful later.** Name, country, age band, goal or program, identity, and consent are the approved minimum. Gender is the one field beyond that minimum, and it is provisional: it survives only if §15's purpose-and-lawful-basis decision confirms it.
 - **Do not treat social providers as guaranteed.** Each provider needs health monitoring, configuration, and an alternate path.
+- **Do not invent a mobile navigation convention and attribute it to the benchmark.** The cited layout study bars its narrow-width questions from making platform-convention claims: its evidence is four native iOS apps, and this target is an Android browser. Specifically, **a hamburger that hides the whole navigation is not the observed pattern** — the one benchmarked overflow keeps seven destinations permanently visible and is recorded as *not* a menu replacing the navigation. Ship the structure the evidence supports and settle the mechanism with the 360px session.
+- **Do not validate a pixel budget against English strings.** Every navigation label in the benchmarked set is a short English word, and source strings under 10 characters expand 200 to 300% in translation `[R9]`. A destination count that fits `Settings` and not `Pengaturan` has not been validated; it has been flattered.
+- **Do not let "responsive" mean "it does not overflow".** The narrow layout is a specified state with its own dispositions in §11.1, not the wide layout at a smaller width. A slot reflowed to the bottom of the scroll has been hidden while still costing bytes and render time, which on a metered connection is the worse of the two outcomes.
+- **Do not treat a stated duration as decoration.** Slice 13 states a time cost for the first item; a systematically optimistic estimate erodes trust in every later estimate, so it is instrumented against actual duration or it is not shown.
 
 ### Open Questions requiring named decisions
 
@@ -878,6 +1453,13 @@ All identifiers in client-visible analytics or URLs must follow the platform's e
 | **Finalization architecture**: is the finalization write a single-datastore transaction, or a saga across separate identity, program, and profile services? | Backend + Architecture | **Before Cycle 1 iteration 1** | Block. This is the decision that determines whether Cycle 1 fits its appetite or reaches §6's kill threshold, and it is free to settle now and expensive to discover at iteration 8 |
 | **Account-existence enumeration on the account wall**: accept it with rate limiting, or disclose out of band by email? | Security + Product | Before Slice 7 build | Accept enumeration, defended by rate limiting, recorded as a signed-off accepted risk. Stakeholder review found the two §9 criteria contradicted each other and could not both pass |
 | Temporary-session data retention and deletion schedule | Privacy + Backend | Before Slice 8 implementation | Expire incomplete sessions after 24 hours and delete consumed sessions promptly |
+| **Which navigation the production first-run Learning Home inherits** — the four destinations the prototype carries, or the eleven the production home carries flat and ungrouped (§2.1 layout F1) | Product + Design | **§6.2 entry condition 5** — before Cycle 3 opens | **The four-destination set**, recorded as a stated assumption rather than an inherited fact. At eleven, Slice 14's five-destination budget fails on arrival and the deferred F1 device decision reopens ahead of Cycle 3. *(Promoted from a soft deadline to an entry condition at stakeholder review: it was the one input that could invalidate the slice after the box opened, with no threshold attached.)* |
+| **The narrow-width navigation mechanism** — §7.5 fixes the structure and leaves this open deliberately | Design + Engineering, informed by the 360px session | Before Slice 14 build, and **together with** the shell-prerequisite work, not after it | **A destination row directly beneath the page header, in normal flow, scrolling with the content** — all four destinations visible and labelled, no fixed vertical occupancy, no overflow control. Named as a concrete buildable treatment rather than as a property, because the prior wording ("keeps every destination visible without occupying fixed vertical space") was a constraint plus an adjective and left the artefact to whoever was at the keyboard. **Two alternatives are blocked until the shell prerequisite lands** and must not be chosen before it: a fixed bottom bar and any pinned or sticky row both depend on positioning that the shell's persistent entry-animation transform and its clipping currently defeat. **A fixed bottom bar remains disfavoured on its own merits** — in an Android browser it competes with collapsing URL chrome for scarce vertical height, precisely the condition native-iOS evidence cannot speak to |
+| **Approved Bahasa Indonesia navigation label set, measured at 360px** | Localization + Design | **Before Cycle 3 iteration 1** — this is a §6.2 entry condition | Block Cycle 3. A destination budget validated on English has not been validated |
+| **Moderated usability session on a real Android device at 360px**, against the Slice 14 build. **The instrument is designed via `/plan-usability`, not improvised here** — this PRD names what the session must settle and the threshold that fires the kill; the task set, script, and counterbalancing belong in a `test-plan.md` | Design/Research + Product | **Instrument approved before Slice 14 build; session run before Slice 14 is called done** | Block the slice's done call. The **two** mobile claims (layout F7 and F9) are labelled hypotheses, and a hypothesis nobody tests becomes a fact by default, which is the specific failure §2's labelling exists to prevent |
+| **The session's kill threshold on layout F7** — what observation shows the five-destination labelled budget does not hold on Android at 360px | Design/Research + Product | Before Slice 14 build, in the `test-plan.md` | **n≈8, a locate-the-destination task per destination, and the kill fires if fewer than 6 of 8 participants locate a named destination without error.** Modelled on the threshold the cited study sets for its own equivalent step, so the number is inherited rather than invented. Stated because this is the one Cycle 3 finding that may **not** be accepted with a written reason, and until 2026-07-30 it was the only gate in the cycle with no participant count, no task, and no failure rule |
+| **Device-class baseline for metric 5.8**, captured on pre-Cycle-3 traffic | Data | **Before Cycle 3 opens** — a §6.2 entry condition | Block Cycle 3. A parity metric with no baseline cannot fail, and Cycle 3 would repeat Cycle 2's no-outcome-metric finding |
+| **Page-weight and time-to-interactive budget for the narrow funnel and home** on a low-end Android device and a metered connection | Engineering + Product | Before Slice 14 build | Adopt the organization's existing performance budget if one exists; otherwise measure the current funnel on a representative device and set the budget at no regression. **Named because it would otherwise be missed by default:** §11.1 orders blocks by attention and never asks what each costs to fetch and render, and the cited study records that no analysis lens in use here covers performance at all |
 
 ---
 
@@ -891,6 +1473,12 @@ All identifiers in client-visible analytics or URLs must follow the platform's e
 - Country flags are supplementary; country selection must remain understandable and operable if flag assets fail.
 - Third-party video and external marketing assets must not block onboarding actions or core rendering.
 - The web app must support the latest two major versions of Chrome, Edge, Firefox, and Safari, including mobile Safari and Chrome for Android.
+- **Narrow width is a specified state, not a fallback** (Cycle 3). Every screen in §11 and every modal in §12 has a stated behaviour at 360px in §11.1, and the Learning Home's narrow layout is a substitution rather than a reflow: its navigation is per-view chrome the layout does not depend on.
+- **The reference breakpoint is 768px** — below it the Learning Home is single-column. **Verification widths are 320, 360, 414, 768, and 1440 CSS px**, with **360px as the primary target**, because that is the modal Android width for this audience and 320px was previously being satisfied by screens that reflow by default. The same 768px value defines the narrow bucket for metrics 5.8 and 5.9 (§16.5); the layout breakpoint and the measurement threshold are one number, stated once.
+- **Verification heights are stated alongside widths, because half of Cycle 3's failure modes are vertical.** The reference height is **640 CSS px with browser chrome expanded**, plus the **keyboard-raised height** for every screen that raises the on-screen keyboard on entry. Criteria phrased as "reachable" or "operable" are measured against these; without them such wording cannot fail on a bench.
+- **Viewport height is a first-class constraint, not an afterthought.** Android browser chrome collapses on scroll and the on-screen keyboard removes roughly half the viewport, so layouts use dynamic viewport units where a fixed `vh` would strand a control, and no primary action may depend on a height the keyboard can take away. **This rule is currently violated by shipped code in two places, not one** — both the shared card base **and the document body** set a fixed `100vh` minimum, and the dynamic-unit fallback reaches only the onboarding shell, not the Learning Home. §6.2's shell prerequisite covers both; scoping it to the card alone would leave the body rule stranding controls at the same viewport heights.
+- **A fixed-position element resolves against the layout viewport, which the Android on-screen keyboard does not shrink.** Any requirement expressed as "reachable while the keyboard is raised" therefore needs runtime visual-viewport handling, not a CSS rule. Stated so the cost is visible at specification time rather than discovered at build.
+- **Text labels are not traded for icons at any width.** An icon-only destination assumes a learned icon vocabulary that a first-time learner does not have, and it interacts badly with the localized label set. Where the budget cannot hold, the count is reduced or the tail is sub-levelled — see §6.2's kill threshold.
 
 ### 16.2 API contracts
 
@@ -919,6 +1507,16 @@ Additional contract requirements, added after stakeholder review:
 - **The handoff response carries a denominator for every countable first-run affordance** (skills in
   the first course; tasks in the enrollment) and the **assigned-task payload shape**. Without these,
   the only way to render "0 of 1 skill" is hard-coded text, which Slice 12's first criterion forbids.
+- **The handoff response carries the first item's title and its duration estimate**, as separate
+  fields, so Slice 13's primary action can name one specific time-bounded thing by interpolation
+  rather than by hard-coded copy. **The duration field is nullable and its absence is meaningful:**
+  where it is null the client omits the cost line rather than substituting a default, which is the
+  same rule as "unmapped is not default" applied to time instead of to content. **A consumer treats a
+  null value and an absent key identically** — the stored `finalization_result` is replayed verbatim,
+  so a session finalized before these fields existed returns a payload where the key is missing, and
+  a client distinguishing the two would render a cost line for some learners and not others on the
+  same code path. *(Both fields are **Cycle 1** deliverables on Slice 8, added there rather than in
+  Cycle 2 so that Slice 13 stays a pure read; see §6.1's entry conditions.)*
 - **The handoff response distinguishes "unmapped" from "default"** for the first course, so the client
   cannot collapse the two with a fallback operator.
 - **Validate-program-code returns a facilitator-capability set**, which Slice 3's disclosure appends
@@ -951,7 +1549,15 @@ All write endpoints require server-side validation, structured error codes, corr
 
 Required events:
 
-`landing_viewed`, `entry_action_selected`, `onboarding_started`, `program_code_submitted`, `program_code_result`, `program_preview_viewed`, `onboarding_step_viewed`, `onboarding_step_completed`, `goal_selected`, `account_wall_viewed`, `auth_attempted`, `auth_result`, `onboarding_finalization_result`, `learning_home_viewed`, `lesson_started`, `assigned_task_opened`, `locale_changed`, **`interstitial_viewed`**.
+`landing_viewed`, `entry_action_selected`, `onboarding_started`, `program_code_submitted`, `program_code_result`, **`program_code_validated`**, `program_preview_viewed`, `onboarding_step_viewed`, `onboarding_step_completed`, `goal_selected`, `account_wall_viewed`, `auth_attempted`, `auth_result`, **`account_linked`**, `onboarding_finalization_result`, **`program_enrollment_completed`**, `learning_home_viewed`, `lesson_started`, `assigned_task_opened`, `locale_changed`, **`interstitial_viewed`**.
+
+**Three events were added 2026-07-30 because metrics referenced them and the schema did not define
+them.** `account_linked` is the **numerator of metric 5.2**, which metric 5.8 is a split of and which
+§6.2 entry condition 2 requires a baseline for; `program_code_validated` and
+`program_enrollment_completed` are both terms of **metric 5.4**. Until this edit, three launch
+targets and Cycle 3's only read-out rested on events no implementer was asked to emit. This is the
+same defect class as the `interstitial_viewed` gap found on 2026-07-29 and it was caught the same
+way, by reading a metric definition back against the schema rather than forward from it.
 
 **`interstitial_viewed`** carries a `surface_id` property. **Any full-screen or blocking surface
 between finalization and the first learning action must emit it.** Without this event the §5.3
@@ -961,6 +1567,24 @@ an interstitial exists, which is worse than having no guardrail because it is tr
 **`learning_home_viewed`** additionally carries `is_first_run` (boolean, derived from
 `LearnerProfile.first_action_at` being null) and `first_action_target` (the **stable content
 identifier**, never an internal database key). Both are required by the §5.3 first-run guardrail.
+
+**`device class` is required on every funnel event, not merely permitted** (Cycle 3), and it must
+resolve narrow from **viewport width below the 768px reference breakpoint in §16.1** rather than from
+a user-agent string, which misreports tablets, desktop-mode browsers, and split-screen windows.
+Metric 5.8 is a parity comparison across this dimension, so an event missing it is an event that
+cannot be compared, and a property populated on only part of the funnel produces a parity figure
+computed over a biased subset — which reads as a result rather than as missing data.
+
+**The threshold is 768px because the breakpoint is 768px.** An earlier draft of this section set it
+at 480px while §16.1 set the layout breakpoint at 768px, which would have given every learner in
+**[480, 768) the narrow treatment while counting them in the wide cohort** — a parity metric
+measuring a population that does not match the population the cycle changed. The two numbers are the
+same number and are stated once here, referenced from §5.2.
+
+**This property must ship before the metric 5.8 baseline window opens, not inside Cycle 3.** It is
+listed in §6.2 as an entry condition for that reason: a baseline captured under the old definition
+and compared against a post-cycle measurement under the new one is not a comparison, and no later
+edit recovers it.
 
 Common safe properties:
 
@@ -988,12 +1612,14 @@ Prohibited analytics properties include display name, email, password, raw progr
 - **Program service:** code validation, program/cohort metadata, status and capacity rules, and idempotent enrollment
 - **Learner profile service:** durable profile schema and partial-profile update rules
 - **Content service:** goal taxonomy, localized labels, deterministic first-course mapping, and program task payload
-- **Localization:** approved English and Bahasa Indonesia strings, country names, validation messages, legal copy, and translation QA
+- **Localization:** approved English and Bahasa Indonesia strings, country names, validation messages, legal copy, and translation QA. **Cycle 3 adds a dated dependency:** the approved **Bahasa navigation label set** must exist before Cycle 3 iteration 1, because Slice 14's destination budget is a pixel budget and validating it in English validates nothing (§6.2 entry condition 4)
 - **Legal/Privacy:** age policy, consent language and versions, temporary-session retention, analytics consent rules, and blocked-state copy
 - **Data/Analytics:** event taxonomy, funnel dashboard, data-quality checks, deduplication, and four-week target review
 - **Design/Accessibility:** responsive specifications, focus states, reduced-motion behavior, contrast validation, and assistive-technology QA
 - **Program Operations:** code rules, preview metadata quality, facilitator-data policy, revoked/expired behavior, and support playbook
 - **Platform/DevOps:** secure environments, secrets, rate limiting, feature flags, monitoring, alerts, and rollback
+- **Research (Cycle 3):** a **moderated usability session on a real Android device at 360px**, run against the Slice 14 build. This is the named validation path for the **two** mobile claims §2 carries as hypotheses — layout F7 and F9 — and Slice 14 is not done until it has returned. It is **research, not an engineering iteration**, and is therefore outside §6.2's box — which also means it must be scheduled by someone, or it will be skipped for costing nothing against the appetite
+- **Device lab or equivalent (Cycle 3):** at least one representative low-end Android handset on a throttled connection, for the performance budget in §15 and for the session above. Emulated narrow viewports on a developer machine verify layout and cannot verify conditions of use, which is the variable this audience carries and the benchmarked platforms do not
 
 ---
 
@@ -1065,6 +1691,30 @@ Prohibited analytics properties include display name, email, password, raw progr
 > addressed to no element, the dictionary wins in practice. Corrected 2026-07-29 at stakeholder
 > review, which ruled this a blocker on **approval**, not on release.
 
+### A.6 Narrow-width element behaviour (Cycle 3)
+
+Added because A.1 to A.5 are element-addressed and describe one width. The 2026-07-29 correction to
+A.5 established that where this dictionary contradicts a requirement addressed to no element, **the
+dictionary is what an implementer follows**. An appendix silent on narrow width therefore reads as
+"unchanged at narrow width", which for the Learning Home shell is exactly wrong.
+
+| Element | Behaviour at 360px | Must not |
+|---|---|---|
+| Learning Home shell | Single content column; navigation leaves the horizontal axis | Retain a fixed-width rail. A 240px declared rail against a 360px viewport leaves no usable content box once the column's own padding is taken, and the rail declares no `flex-shrink: 0`, so what renders is a compressed rail beside a squeezed column |
+| Home navigation destinations | At most five, **every one keeping its text label**, current location marked visibly and with `aria-current="page"`, inside a named `nav` landmark, each meeting the 24 by 24 CSS px target-size floor | Become icon-only; collapse behind a hamburger that hides the whole navigation; drop the current-location marking |
+| Destination icons | **`aria-hidden="true"`**, so each destination's accessible name is its label alone | Contribute ligature text to the accessible name, or render that text visibly before the icon font loads. *(Both are true of the reference implementation today, and both corrupt the Bahasa width measurement this appendix's next row depends on.)* |
+| Up Next card | The dominant object for organic learners, first in the content column | Share the first screenful with a second card competing for the same role |
+| Assigned-task checklist | The dominant object for program learners; Up Next sub-levels below it | Render both as co-equal dominant objects |
+| Primary action button | Full-width, and **the only filled control on the surface** in every data state | Sit below a viewport shortened by browser chrome without the column scrolling to reach it |
+| Unmapped-goal empty state | Occupies the dominant slot in that data state, at the same weight as the card it replaces | Be demoted below other content because it is "just" an empty state |
+| Country combobox | Listbox renders as a full-width panel below the input, semantics unchanged | Degrade to a native `select`, which loses the localized alternate-name search Slice 4 requires |
+| Program-code segments | Six segments fit the narrow content box on one row, each at or above the target-size floor. Remedies in order: reduce modal padding, then reduce segment width and gap, then wrap | Shrink below the floor; or wrap while a compliant single-row fit is still available. *(Corrected 2026-07-30 — the earlier "wrap before they shrink" rule mandated two rows of three, which breaks the gestalt of a single six-character code, on target-size grounds the arithmetic disproves.)* |
+| Modal container | Anchored to the top, bounded by the dynamic viewport height, scrollable within itself | Centre a too-tall modal so both ends clip with no scroll path — the current shared behaviour |
+| Goal cards | One per row | — |
+| Gender cards | One per row, **opt-out at equal visual weight** | Stack the opt-out last at reduced weight, which re-creates the de-emphasis Slice 5 forbids |
+| Modal surfaces | Dismissal reachable without scrolling; an explicit Cancel or Close inside the modal's own bounds | Depend on backdrop tap as the only exit, since the backdrop may be a few pixels of margin |
+| Skeleton and loading states | Occupy the single content column; the 400ms delay and 500ms minimum are width-independent | Be skipped at narrow width on the assumption that mobile is faster |
+
 ---
 
 ## Stakeholder Review
@@ -1072,6 +1722,11 @@ Prohibited analytics properties include display name, email, password, raw progr
 Run 2026-07-29 by the `/draft-prd` stakeholder chain: Product Manager, then Tech Lead having read the
 PM, then Head of Product deciding last having read both. **The unit of judgment is the vertical
 slice.** Every change listed here has been applied to the document above.
+
+**A second round was run 2026-07-30 over Cycle 3.** It is recorded in
+`## Stakeholder Review — round 2 (2026-07-30, Cycle 3)` below. The round-1 record is left unedited:
+it is what was decided on the day, and the consolidated verdict table below covers Slices 1 to 13
+only.
 
 ### Product Manager
 
@@ -1176,4 +1831,155 @@ box, and the resulting slack buys the stabilization pass it previously lacked ra
 edit land the four §13 fields and extract the enrollment write. One decision on one code path. Made
 now it costs a paragraph and a migration file; made at iteration 8 it decides whether Cycle 1 reaches
 its kill threshold, and whether Cycle 2 opens as a read or as a migration into shipped code.
+
+---
+
+## Stakeholder Review — round 2 (2026-07-30, Cycle 3)
+
+Same chain, same order, judging **Slice 14**, the proposed **Slice 15**, the 2026-07-30 amendments to
+Slices 10, 12 and 13, and §6.2's appetite. All three reviewers verified claims directly against
+`src/` rather than accepting the document's account of the code, and every change below is applied.
+
+### Product Manager
+
+Found Slice 14 the best-evidenced work in the revision and §11.1's per-slot disposition table its
+strongest artefact, because it refuses "it reflows" as a disposition. Confirmed the revision note's
+measured claim about the missing narrow-width rules, including the adjacency trap that a nearby
+`card-flex` media query does not reach the home shell.
+
+Its findings: **Cycle 3's declared read-out could not read out Slice 14**, because metric 5.8 splits a
+pre-authentication metric while Slice 14 renders after the account wall; **Cycle 2's appetite had in
+fact been reopened** despite the note claiming otherwise; the §15 navigation default was "a constraint
+plus an adjective, not a fallback an implementer can build"; the destination-set decision could
+invalidate the slice after the box opened with no threshold attached; and two counts disagreed with
+the document, including the validation gate's, which defines the set the moderated session must clear.
+Caught that **one of the four navigation destinations routes to a §14 non-goal**, so the
+five-destination budget was computed over a set containing something this PRD does not build.
+
+### Tech Lead
+
+Rated both units **High** and found the largest single defect in the revision: **no test harness in
+this workspace can carry the new criteria.** The existing suite is text-pattern assertion over source
+files, and there is no browser automation anywhere in the repo, while roughly nine criteria and three
+guardrails were written as automated measurements. Costed a harness at about an iteration, unbudgeted.
+
+Also found: the Learning Home content column is authored as inline style attributes rather than
+classes — the reviewer cited 38, which independent verification later established was the whole-file
+count against a content-column figure of 22 — so no
+media query can reach it and Slice 14 begins with a markup rewrite rather than a breakpoint; the
+shared card base leaves **a permanent transform** after its entry animation and **clips overflow**,
+which silently disqualifies two of the three navigation mechanisms §15 left open; §16.1's
+dynamic-viewport-unit constraint is **violated by shipped code on the very surface Cycle 3 exists to
+fix**; the device-class threshold at 480px **contradicted** the 768px breakpoint, so every learner
+between them would receive the narrow treatment and be counted wide; and — the round's counterpart to
+its own 2026-07-29 `initial_course_id` finding — **`account_linked`, the numerator of metric 5.2, was
+in no event schema**, along with both terms of metric 5.4. Corrected the PM on two counts and
+contradicted the PRD on the code-segment rule with arithmetic.
+
+### Head of Product
+
+Verified both reviewers directly, upheld and overruled each once, and found two things neither caught:
+**every navigation destination's accessible name is polluted by icon-font ligature text** (thirteen
+icon elements, no `aria-hidden`), which collides with three Cycle 3 criteria at once and corrupts the
+Bahasa width measurement depending on font-load timing; and **the PM's proposed larger recut lever
+does not exist**, because §6 already spends it as Cycle 1's recut candidate.
+
+Settled the four disagreements, chose the verification instrument, and ruled the document **not
+approvable as written** pending nine changes — almost none of them a build, in the same pattern as
+2026-07-29.
+
+### Consolidated verdict — round 2
+
+| Unit | PM | Tech Lead | Head of Product |
+|---|---|---|---|
+| 14 — First-run Learning Home at narrow width | Needs refinement | **High** — §15's mechanism decision is blocked by shell rules the slice must first unwind | **Conditional Go** — five conditions, all applied |
+| ~~15 — The funnel at narrow width~~ | Needs refinement; **layer, not a slice** | High as specified, Medium as content | **No-Go as a slice** — reconstituted as the narrow-width conformance pass; **not** a non-goal |
+
+### The four disagreements, as settled
+
+**Slice 15's classification.** Both reviewers called it a layer and both rejected folding it into
+Slice 10, on the document's own evidence: Slice 10's width criterion is the thing that just failed.
+Head of Product removed it as a slice and reconstituted it as a **conformance pass** with its own
+allocation line and recut position — the Slice 11 instrument from round 1 applied to the same problem.
+
+**Its pricing.** **Tech Lead upheld, PM overruled.** The PM's replacement demo was the browser harness
+priced at zero. The demo is now a **device-lab walkthrough on the handset §17 already funds**,
+producing a written per-screen and per-modal list — an artefact no other unit produces and which
+regresses on its own.
+
+**The appetite and the instrument.** The box is unchanged at 3–4, but only because the verification
+instrument changed. Of the Tech Lead's two alternatives, Head of Product took the device-lab
+checklist over the harness **on capability rather than cost**: the failures Cycle 3 is most exposed to
+are the keyboard, collapsing chrome, and rotation, and a fixed-position element resolves against a
+layout viewport the Android keyboard does not shrink — so a headless harness buys the half least
+likely to fail. Two criteria that appeared to need it do not. Re-priced with the shell prerequisite
+and the markup rewrite made visible, Cycle 3 lands at **3.5–4.0 with nothing hidden inside it**. The
+recut lever moved from the modals — measured as the cheapest, highest-value item in the cycle — to
+Slice 14's width matrix, and the kill threshold moved to the entry gate because it was evaluable
+before any code is written.
+
+**Cycle 2's appetite.** Both reviewers were right and the claim was false. The remedy is Head of
+Product's split rather than either single option: the filled-control invariant, the `nav` landmark and
+`aria-current` **move to Slice 14**, whose markup rewrite already pays for them; the first-item title
+and duration fields **move to Cycle 1's Slice 8 contract**, on the same extract-while-open precedent
+as round 1's enrollment write. **Cycle 2 loses four criteria and gains no build.**
+
+**The code-segment rule.** Tech Lead upheld and extended by Head of Product. Six segments overflow the
+narrow content box by roughly 116px today, so the control does fail — but a compliant single-row fit
+exists well above the target-size floor, and reducing the modal's narrow-width padding clears even the
+enhanced AAA target size. The prohibition on shrinking asserted a standard its own numbers disprove
+and forced the worse layout. Restated as a floor plus ordered remedies.
+
+### Closing verdict — round 2
+
+**Approved subject to the nine changes, all of which are applied above.** In order of consequence:
+`account_linked` and metric 5.4's two events added to the schema; the device-class threshold
+reconciled to the 768px breakpoint; the no-reopening claim made true by migration rather than
+defended; §6.2 given a shell-prerequisite line and an explicit verification choice; the code-segment
+rule corrected against arithmetic; the navigation default given a buildable treatment; the validation
+gate corrected to two claims and given one that can fail; the `Achievements` destination reconciled
+with §14; and the first-learning-action view recorded in §11. Plus one small build: hiding the
+decorative icons from the accessible name, before any Bahasa measurement is taken against them.
+
+**The single most important next step:** emit `account_linked` and fix the device-class threshold in
+one edit, then open the metric 5.8 and 5.9 baseline window on the corrected definitions. Entry
+condition 2 requires a pre-Cycle-3 baseline, and a baseline taken against a missing numerator and a
+mis-bucketed population cannot be recomputed later. It is the only irreversible item in the cycle,
+and it is the same failure mode as round 1's `interstitial_viewed` finding: a measurement that
+reports a result rather than reporting that it has no data.
+
+### Principal Designer, Mode S (2026-07-30)
+
+**Verdict: revise** — four must-fixes and five should-fixes, all applied. It found the coverage work
+sound (25 findings across three studies, set-complete and arithmetically correct, verified row by row
+against all three syntheses), the two standards claims stated at their true levels including the
+inconvenient AAA one, and the F8 divergence from its source honestly declared. What it failed the
+document on was **stale cross-references left by the Cycle 3 renumbering** — six §11.1 rows still
+assigning screens to a slice the stakeholder review had deleted, three broken entry-condition
+ordinals, and a claim count corrected in two places out of four — plus the kill gate having no
+instrument. Its diagnosis of the cause is recorded here because it is the durable lesson: **a
+document that states each fact once cannot drift against itself; this one stated several facts four
+times and did.**
+
+### Independent verification pass (2026-07-30)
+
+A separate agent re-checked every measured claim in this document against the source files rather
+than against the review chain that asserted them. Twelve claims: **eight confirmed exactly**
+(including the modal overflow arithmetic to the pixel), **three partly true**, **one refuted in its
+stated mechanism**. It also **refuted three factual premises this document had asserted**, all now
+corrected above: the inline-style count was a whole-file figure attached to a content-column
+criterion; the country listbox was described as in-flow when it is absolutely positioned; and the
+claim that no browser automation exists anywhere in the workspace was false, which mattered because
+it was the stated ground for downgrading two guardrails. **The guardrail downgrade survives on its
+capability argument, which never depended on the false premise** — but the premise was stated as
+measured fact and was not, and in this workspace that is the same defect class as an invented
+finding. Four smaller errors were corrected in the same pass: a source listed as cited but invoked
+nowhere, a string-expansion band that did not fit our own longest label, an incomplete second remedy
+in the code-segment arithmetic, and a fixed-viewport-unit problem that exists in two rules rather
+than one.
+
+**The pass is recorded rather than summarised away because its result is the argument for running
+it.** Three of this document's own measured claims were wrong after a three-persona review chain had
+read it, and two of those three had been *introduced* by that chain. Verification against files is
+not redundant with review by role.
 
