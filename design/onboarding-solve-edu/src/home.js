@@ -30,6 +30,24 @@
      being expressible at all before Cycle 3. */
   function show(id, on) { var el = $(id); if (el) el.classList.toggle('is-hidden', !on); }
 
+  /* The out-of-scope note lives in every view, and the one that matters is the
+     one in the card currently on screen. Previously a single node sat inside
+     the Learning Home, so on the skill screen and in the error state every
+     destination wrote its message into a hidden element and said nothing. */
+  function noteEl() { return document.querySelector('.home-card.active .home-nav-note'); }
+  function say(message) {
+    var n = noteEl();
+    if (!n) return;
+    /* Unhide before writing: a mutation inside a display:none live region is
+       unreliably announced. */
+    n.classList.remove('is-hidden');
+    n.textContent = message;
+  }
+  function hideNote() {
+    var n = noteEl();
+    if (n) n.classList.add('is-hidden');
+  }
+
   function load() {
     var raw = null;
     try { raw = sessionStorage.getItem('se_handoff'); } catch (e) {}
@@ -82,6 +100,11 @@
       var el = $(s);
       if (el) el.classList.toggle('active', s === id);
     });
+    /* A transient note belongs to the moment, not to the session. Leaving one
+       up across a view change made "Evidence is out of scope" follow the
+       learner home. */
+    var notes = document.querySelectorAll('.home-nav-note');
+    Array.prototype.forEach.call(notes, function (n) { n.classList.add('is-hidden'); });
     window.scrollTo(0, 0);
   }
 
@@ -189,6 +212,10 @@
       });
     }
 
+    /* Arriving home means Home is where the learner is. Without this the top
+       bar kept marking whichever family they last opened, which is the same
+       lie the Home handler used to tell from the other direction. */
+    markLocation(null, null);
     showScreen('learning_home');
   }
 
@@ -200,6 +227,10 @@
     setText('skill_title', (state.skillsDone === 0 && state.firstSkillTitle)
       ? state.firstSkillTitle
       : 'Skill ' + (state.skillsDone + 1));
+    /* A lesson lives under Learn, so that is the family the bar marks while the
+       learner is in one. Without this the bar kept whichever family they had
+       opened on the way out. */
+    markLocation('learn', null);
     showScreen('skill_screen');
   }
 
@@ -274,7 +305,7 @@
     var savedTheme = null, savedLang = null;
     try { savedTheme = localStorage.getItem('se_theme'); savedLang = localStorage.getItem('se_lang'); } catch (e) {}
     if (savedTheme === 'dark') applyTheme(true);
-    if (savedLang === 'id') { document.documentElement.setAttribute('lang', 'id'); }
+    if (savedLang === 'id') { applyLang('id'); hideNote(); }
 
     /* A learner returning to an account that already has history skips the
        labelled wait: there is nothing to prepare. */
@@ -285,14 +316,14 @@
 
   /* ---- family panels ----
      Four top-level families stand in for eleven production destinations. A top
-     bar cannot keep all eleven visible the way the old sidebar could, so seven
+     bar cannot keep all eleven visible the way the old sidebar could, so eight
      sit one level down — and a panel shows its whole family at once rather than
      nesting further, which is the difference between one level of depth and the
      push-depth-down arm the cited study rejects. */
   function closeAllPanels() {
     var panels = document.querySelectorAll('.home-nav-panel');
     Array.prototype.forEach.call(panels, function (p) { p.classList.add('is-hidden'); });
-    var triggers = document.querySelectorAll('.home-nav-item[data-family]');
+    var triggers = document.querySelectorAll('[data-family]');
     Array.prototype.forEach.call(triggers, function (t) { t.setAttribute('aria-expanded', 'false'); });
   }
 
@@ -351,12 +382,11 @@
     Array.prototype.forEach.call(btns, function (b) {
       b.setAttribute('aria-label', 'Change language, current language ' + name);
     });
-    document.documentElement.setAttribute('lang', code);
-    var note = $('home_nav_note');
-    if (note) {
-      setText('home_nav_note', name + ' selected. Interface strings are out of scope for this prototype.');
-      show('home_nav_note', true);
-    }
+    /* The document's lang attribute is deliberately NOT changed. Declaring
+       lang="id" over English copy is a WCAG 3.1.1 falsehood: a screen reader
+       would voice English strings with Indonesian phonemes. The preference is
+       recorded; the interface has not translated, and the message says so. */
+    say(name + ' selected. Interface strings are out of scope for this prototype.');
   }
 
   /* ---- where the learner is ----
@@ -406,7 +436,11 @@
       window.location.href = window.location.pathname;
     });
 
-    var famTriggers = document.querySelectorAll('.home-nav-item[data-family]');
+    /* Every [data-family] control, not just the ones styled as nav items. The
+       language switch is a .home-icon-btn, so a .home-nav-item selector left it
+       unbound: its panel never opened and the two language choices inside it
+       were unreachable. Five panels per view, not four. */
+    var famTriggers = document.querySelectorAll('[data-family]');
     Array.prototype.forEach.call(famTriggers, function (t) {
       t.addEventListener('click', function (e) { e.stopPropagation(); openFamily(t); });
     });
@@ -434,19 +468,20 @@
        members and the profile menu too, not only the top row. A control that
        takes focus and does nothing is a dead end; these say why they do nothing
        instead of swallowing the click. */
-    var note = $('home_nav_note');
     var stubs = document.querySelectorAll('[data-stub]');
     Array.prototype.forEach.call(stubs, function (b) {
       b.addEventListener('click', function () {
         var name = b.getAttribute('data-stub');
-        if (name === 'Home') { markLocation(null, null); return; }
+        /* Home navigates. Marking it current without changing the view made the
+           one signal this whole change exists to add tell a lie: on the skill
+           screen it claimed the learner was on Home while the skill screen was
+           still rendered. */
+        if (name === 'Home') { hideNote(); renderHome(); return; }
         /* The family is marked even though the destination is a stub: marking
            is what the top bar owes the learner, and it is demonstrable without
            building the ten pages behind it. */
         markLocation(familyOf(name), name);
-        if (!note) return;
-        setText('home_nav_note', name + ' is out of scope for this prototype.');
-        show('home_nav_note', true);
+        say(name + ' is out of scope for this prototype.');
       });
     });
   }

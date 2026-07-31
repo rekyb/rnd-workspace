@@ -19,7 +19,10 @@
   
   --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --easing-fast: cubic-bezier(0.2, 0, 0, 1);
-  --hair-dark: #d5d5d5;
+  /* Component boundaries (panels, menus) are held to WCAG 2.2 SC 1.4.11's
+     3:1. Measured: 3.36:1 on white, 3.19:1 on the page. The former #d5d5d5
+     was 1.47:1 and did not meet the claim made for it. */
+  --hair-dark: #8c8c8c;
   --purple-dark: #64156d;
   
   --font-head: 'Plus Jakarta Sans', sans-serif;
@@ -30,19 +33,22 @@
    Only the surface and text tokens are re-pointed; the brand hues stay put, so
    nothing downstream needs a second value. This is a tonal variant, not an
    inversion: --ink and --bg swap roles rather than being negated, which keeps
-   the purple readable against both. Contrast is asserted by the guard suite
-   rather than eyeballed, because 1.4.3 is a number. */
+   the purple readable against both. Every pair below is computed by group 20 of
+   the guard suite rather than eyeballed, because 1.4.3 and 1.4.11 are numbers
+   and an unchecked claim about them is a fabrication. */
 :root[data-theme="dark"] {
   --ink: #f2eff7;
   --ink2: #cfc8d8;
   --sub: #a49db2;
   --bg: #171320;
   --surf: #211b2c;
-  /* Lighter than a naive dark-mode hairline. At #362d47 the card boundary
-     measured 1.41:1 against the page, below the 3:1 WCAG 2.2 SC 1.4.11 asks of
-     a component boundary. Measured, not guessed. */
+  /* --hair is the decorative hairline: card edges and dividers, which are
+     containers rather than controls and are not held to 1.4.11. --hair-dark is
+     the component boundary and is: 3.92:1 against the page, 3.59:1 against a
+     panel surface. An earlier revision claimed 3:1 for --hair at #574a70,
+     which measures 2.28:1 and did not meet it. */
   --hair: #574a70;
-  --hair-dark: #6b5c88;
+  --hair-dark: #7d6c9e;
   --purple: #d78ae2;
   --purple-bg: #38204a;
   --purple-hover: #e3a5ec;
@@ -1289,8 +1295,8 @@ body.is-onboarding .card {
   min-width: 200px;
   background: var(--surf);
   /* --hair-dark, not --hair. A panel is a UI component, so its boundary is held
-     to WCAG 2.2 SC 1.4.11's 3:1 rather than to the hairline used for decorative
-     dividers — measured at 1.2:1 on a white surface, which is invisible. */
+     to WCAG 2.2 SC 1.4.11's 3:1 rather than to the decorative hairline, which
+     measures 1.26:1 on a white surface and is invisible. */
   border: 1px solid var(--hair-dark);
   border-radius: 14px;
   box-shadow: 0 12px 32px rgba(0,0,0,0.10);
@@ -1717,7 +1723,9 @@ body.is-onboarding .card {
    home.js delays 400ms before revealing and holds a 500ms minimum, so a
    fast finalization never produces a flash. */
 .home-skel {
-  background: linear-gradient(90deg, var(--hair) 25%, #f3f0f6 37%, var(--hair) 63%);
+  /* Tokenised: a literal here shimmered a near-white band across a dark
+     surface, which is the same defect as a hard-coded shell background. */
+  background: linear-gradient(90deg, var(--hair) 25%, var(--bg) 37%, var(--hair) 63%);
   background-size: 400% 100%;
   animation: home-skel-shimmer 1.4s ease infinite;
   border-radius: 12px;

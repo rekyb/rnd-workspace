@@ -155,8 +155,11 @@ Show-Group 'No prototype scaffolding leaks into the product surface'
 Check ($homeRendered -notmatch 'data-screen=') `
   'home.html carries a state switcher. The prototype is a journey, not a state gallery'
 Check ($homeRendered -notmatch '(?i)lorem ipsum') 'home.html carries placeholder text'
+# Retired 2026-07-31: the top bar IS the design now, so "reinstates the top nav"
+# was both stale and vacuous. What still matters is that the funnel's own header
+# does not leak onto the home, which is a different element.
 Check ($homeRendered -notmatch 'id="global-header"') `
-  'home.html reinstates the top nav. The sidebar already carries the brand and navigation'
+  "home.html carries the funnel's header. The Learning Home has its own top bar" 
 
 # ---------------------------------------------------------------- 8
 Show-Group 'PII and internal specifics stay out'
@@ -604,13 +607,79 @@ Check ($styles -notmatch '(?s)\.home-card\s*\{[^}]*background:\s*(#|white|black)
 Check ($styles -notmatch '(?s)\.home-topbar\s*\{[^}]*background:\s*(#|white|black)') `
   'the top bar hard-codes a background, so dark mode leaves it light'
 Check ($homeCode -match 'function applyLang') 'there is no language switch'
+# The language trigger is a .home-icon-btn, not a .home-nav-item, which is what
+# left it unbound: its panel never opened and the choices inside were
+# unreachable, while the suite passed. Five family triggers per view, not four.
+Check ($homeCode -match "querySelectorAll\('\[data-family\]'\)") `
+  'the family handler is scoped to nav items, so the language switch is a dead control'
+Check ((([regex]::Matches($homeRendered, 'data-family=')).Count) -eq 15) `
+  'expected 15 family triggers (5 per view x 3 views)'
+Check ((([regex]::Matches($homeRendered, 'class="home-nav-note')).Count) -eq 3) `
+  'not every view has its own out-of-scope note, so two views write into a hidden node'
+Check ($homeCode -match 'function noteEl') `
+  'the note is looked up by id rather than scoped to the active card'
+Check ($homeCode -notmatch "documentElement\.setAttribute\('lang'") `
+  'the language switch relabels the document while every string stays English, which is a WCAG 3.1.1 falsehood'
 Check ($homeCode -match 'out of scope for this prototype') `
   'the language switch implies the interface translated when the string catalogue is out of scope'
+
+# ---------------------------------------------------------------- 20
+Show-Group 'Contrast is computed, not claimed'
+
+# This group exists because a comment asserted "contrast is asserted by the
+# guard suite" while the suite computed nothing, and two token values were
+# described as meeting SC 1.4.11's 3:1 when they measured 1.47:1 and 2.28:1.
+# A PRD or a comment asserting a standard nobody checked is the same defect
+# class as an invented finding, so the claim is made true here rather than
+# softened.
+function Get-Luminance([string]$Hex) {
+  $h = $Hex.TrimStart('#')
+  $c = 0..2 | ForEach-Object { [Convert]::ToInt32($h.Substring($_ * 2, 2), 16) / 255 }
+  $l = $c | ForEach-Object { if ($_ -le 0.03928) { $_ / 12.92 } else { [Math]::Pow((($_ + 0.055) / 1.055), 2.4) } }
+  return 0.2126 * $l[0] + 0.7152 * $l[1] + 0.0722 * $l[2]
+}
+function Get-Ratio([string]$A, [string]$B) {
+  $x = Get-Luminance $A; $y = Get-Luminance $B
+  return [Math]::Round((([Math]::Max($x, $y) + 0.05) / ([Math]::Min($x, $y) + 0.05)), 2)
+}
+function Get-Token([string]$Name, [switch]$Dark) {
+  $block = if ($Dark) { [regex]::Match($styles, '(?s):root\[data-theme="dark"\]\s*\{(.*?)\}').Groups[1].Value }
+           else       { [regex]::Match($styles, '(?s)^:root\s*\{(.*?)\}').Groups[1].Value }
+  $m = [regex]::Match($block, [regex]::Escape("--$Name") + ':\s*(#[0-9a-fA-F]{6})')
+  if ($m.Success) { return $m.Groups[1].Value }
+  # dark mode re-points only some tokens; fall back to the light value
+  if ($Dark) { return Get-Token $Name }
+  return $null
+}
+
+foreach ($mode in @('light', 'dark')) {
+  $dark = ($mode -eq 'dark')
+  $bg   = Get-Token 'bg'   -Dark:$dark
+  $surf = Get-Token 'surf' -Dark:$dark
+  $ink  = Get-Token 'ink'  -Dark:$dark
+  $sub  = Get-Token 'sub'  -Dark:$dark
+  $hd   = Get-Token 'hair-dark' -Dark:$dark
+
+  # SC 1.4.3 Contrast (Minimum), AA: 4.5:1 for body text.
+  $r = Get-Ratio $ink $surf
+  Check ($r -ge 4.5) "$mode : body text on a surface is ${r}:1, below WCAG 2.2 SC 1.4.3's 4.5:1"
+  $r = Get-Ratio $sub $surf
+  Check ($r -ge 4.5) "$mode : secondary text on a surface is ${r}:1, below SC 1.4.3's 4.5:1"
+  $r = Get-Ratio $sub $bg
+  Check ($r -ge 4.5) "$mode : secondary text on the page is ${r}:1, below SC 1.4.3's 4.5:1"
+
+  # SC 1.4.11 Non-text Contrast, AA: 3:1 for a UI component boundary. --hair-dark
+  # is the component boundary; --hair is the decorative hairline and is exempt.
+  $r = Get-Ratio $hd $surf
+  Check ($r -ge 3.0) "$mode : a panel boundary is ${r}:1 against its own surface, below SC 1.4.11's 3:1"
+  $r = Get-Ratio $hd $bg
+  Check ($r -ge 3.0) "$mode : a panel boundary is ${r}:1 against the page, below SC 1.4.11's 3:1"
+}
 
 # ---------------------------------------------------------------- report
 Write-Host ''
 if ($script:Failures.Count -eq 0) {
-  Write-Host "src-prototype.test.ps1 PASSED - $($script:Checks) checks, 19 groups"
+  Write-Host "src-prototype.test.ps1 PASSED - $($script:Checks) checks, 20 groups"
   exit 0
 }
 Write-Host "src-prototype.test.ps1 FAILED - $($script:Failures.Count) of $($script:Checks) checks"
