@@ -742,25 +742,51 @@ const progressMap = {
      resolved and STORED now rather than recomputed at render time, so
      changing the course map later cannot silently change this learner's
      first action (PRD Slice 13). */
-  /* firstSkill and firstSkillMinutes are what let the primary action name one
+  /* chapters[0] and firstChapterMinutes are what let the primary action name one
      specific, time-bounded thing instead of offering a course (PRD Slice 13,
-     from layout F6). firstSkillMinutes is deliberately nullable, and
+     from layout F6). firstChapterMinutes is deliberately nullable, and
      'communication' carries null: a duration the content service does not have
      is omitted, never rounded or defaulted. That is the same rule as an
      unmapped goal, applied to time instead of to content, and it is reachable
      here through a real data path rather than a debug switch. */
+  /* CYCLE 6 / SLICE 18: `chapters` is the LIST, not a count.
+     The field was two fields — a count and a separate first-item title — which
+     described one thing and were free to disagree with nothing to notice. The
+     denominator is now `chapters.length` and the first chapter is
+     `chapters[0]`, so that drift is not expressible.
+
+     RENAMED 2026-07-31: this unit was called a "skill" throughout. The product
+     vocabulary is that a course contains CHAPTERS and nothing else, so the copy,
+     the identifiers, the DOM ids and the §13 data-model field all carry that one
+     word. A data model saying `skill` under a UI saying `chapter` is the same
+     two-names-for-one-thing defect this field was just fixed for.
+
+     THE CHAPTER TITLES ARE FIXTURE CONTENT, in the same register and under the
+     same caveat as the teen course titles below: the real course structure is
+     a Program Operations input under the PRD section 15 open decision, not a
+     curriculum claim made here. What must be real is the SHAPE — a list the
+     handoff carries, so the home renders a structure it was given rather than
+     one it declared. */
   const COURSE_MAP = {
-    'data':          { id: 'data-1',    title: 'Data and Analysis Foundations',  skills: 5, firstSkill: 'Read a bar chart',            firstSkillMinutes: 8 },
-    'customer':      { id: 'cust-1',    title: 'Customer Service Essentials',    skills: 4, firstSkill: 'Handle an angry customer',    firstSkillMinutes: 10 },
-    'project':       { id: 'proj-1',    title: 'Project Management Basics',      skills: 6, firstSkill: 'Write a task brief',          firstSkillMinutes: 7 },
-    'marketing':     { id: 'mkt-1',     title: 'Digital Marketing Fundamentals', skills: 5, firstSkill: 'Choose an audience',          firstSkillMinutes: 9 },
-    'communication': { id: 'comm-1',    title: 'Workplace Communication',        skills: 4, firstSkill: 'Ask a clarifying question',   firstSkillMinutes: null },
+    'data':          { id: 'data-1',    title: 'Data and Analysis Foundations',  firstChapterMinutes: 8,
+      chapters: ['Read a bar chart', 'Read a line chart', 'Spot a trend', 'Compare two groups', 'Summarise a finding'] },
+    'customer':      { id: 'cust-1',    title: 'Customer Service Essentials',    firstChapterMinutes: 10,
+      chapters: ['Handle an angry customer', 'Listen and confirm', 'Explain a solution', 'Close a conversation'] },
+    'project':       { id: 'proj-1',    title: 'Project Management Basics',      firstChapterMinutes: 7,
+      chapters: ['Write a task brief', 'Break work into steps', 'Estimate effort', 'Set a deadline', 'Track progress', 'Report status'] },
+    'marketing':     { id: 'mkt-1',     title: 'Digital Marketing Fundamentals', firstChapterMinutes: 9,
+      chapters: ['Choose an audience', 'Write a clear message', 'Pick a channel', 'Set a budget', 'Measure a result'] },
+    'communication': { id: 'comm-1',    title: 'Workplace Communication',        firstChapterMinutes: null,
+      chapters: ['Ask a clarifying question', 'Give a short update', 'Write a clear email', 'Disagree politely'] },
     /* The teen set. Placeholder titles in the same register as the five above:
        the real goal-to-course mapping is a Program Operations input under the
        PRD section 15 open decision, not a curriculum claim made here. */
-    'english':       { id: 'eng-1',     title: 'Everyday English Communication', skills: 5, firstSkill: 'Introduce yourself',          firstSkillMinutes: 6 },
-    'math_science':  { id: 'msci-1',    title: 'Math and Science Foundations',   skills: 6, firstSkill: 'Read a data table',           firstSkillMinutes: 8 },
-    'life_skills':   { id: 'life-1',    title: 'Everyday Life Skills',           skills: 4, firstSkill: 'Plan a weekly budget',        firstSkillMinutes: 7 }
+    'english':       { id: 'eng-1',     title: 'Everyday English Communication', firstChapterMinutes: 6,
+      chapters: ['Introduce yourself', 'Ask for directions', 'Order food', 'Make a phone call', 'Tell a short story'] },
+    'math_science':  { id: 'msci-1',    title: 'Math and Science Foundations',   firstChapterMinutes: 8,
+      chapters: ['Read a data table', 'Work with fractions', 'Read a formula', 'Measure and convert', 'Interpret a graph', 'Check an answer'] },
+    'life_skills':   { id: 'life-1',    title: 'Everyday Life Skills',           firstChapterMinutes: 7,
+      chapters: ['Plan a weekly budget', 'Save for a goal', 'Read a payslip', 'Compare two prices'] }
     /* 'language' is deliberately absent: it is the unmapped case, and the home
        must show an empty state rather than substitute a default course. */
   };
@@ -771,7 +797,7 @@ const progressMap = {
   const PROGRAM_TASKS = [
     { id: 't1', title: 'Complete your registration', done: true },
     { id: 't2', title: 'Start your first course' },
-    { id: 't3', title: 'Finish three skills' },
+    { id: 't3', title: 'Finish three chapters' },
     { id: 't4', title: 'Complete your program' }
   ];
 
@@ -788,11 +814,17 @@ const progressMap = {
       /* null means unmapped. It never means "use a default". */
       initialCourseId: mapped ? mapped.id : null,
       courseTitle: mapped ? mapped.title : null,
-      skillTotal: mapped ? mapped.skills : null,
+      /* Both DERIVED from the one list, never declared beside it. This is what
+         makes a count that disagrees with its contents unrepresentable. */
+      chapterTotal: mapped ? mapped.chapters.length : null,
+      /* The course structure the Slice 18 tracker renders. Carried on the
+         handoff for the same reason the denominator is: a list the view
+         declared for itself would be a client-side constant. */
+      courseChapters: mapped ? mapped.chapters.slice() : null,
       /* The specific first item and its cost. Null minutes means the estimate
          is unknown; the home omits the line rather than inventing one. */
-      firstSkillTitle: mapped ? mapped.firstSkill : null,
-      firstSkillMinutes: mapped ? mapped.firstSkillMinutes : null,
+      firstChapterTitle: mapped ? mapped.chapters[0] : null,
+      firstChapterMinutes: mapped ? mapped.firstChapterMinutes : null,
       programName: isProgram ? 'Digital Heroes' : null,
       /* The assigned-task payload and its denominator are written here, from
          the enrolment, exactly as initialCourseId is. They used to be a
@@ -800,7 +832,16 @@ const progressMap = {
          client-side literal that Slice 12's zero-state criterion forbids. */
       programTasks: isProgram ? PROGRAM_TASKS.slice() : null,
       taskTotal: isProgram ? PROGRAM_TASKS.length : null,
-      skillsDone: 0,
+      /* The enrolment the Slice 16 switcher renders. Written here, from the
+         course finalization actually resolved, for the same reason
+         initialCourseId is: a list the view declared for itself would be a
+         client-side constant, and this one has to be able to read empty.
+         At first run it holds exactly one course, and one is what the strip
+         shows — it is never topped up with suggested or locked courses to
+         make the row look fuller. An unmapped goal yields an empty list and
+         no strip at all. */
+      enrolledCourses: mapped ? [{ id: mapped.id, title: mapped.title }] : [],
+      chaptersDone: 0,
       tasksDone: 0,
       firstActionAt: null
     };

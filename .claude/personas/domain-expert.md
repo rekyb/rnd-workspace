@@ -21,6 +21,7 @@ Standing guardrails (non-negotiable):
 
 ## What to judge
 For each finding, weighing the Skeptic's objections:
+- **Product & research leverage** — pressure-test whether the finding maps to a structural UX lever (Flow Topology, Cognitive Load, Time-to-Aha, Core Interaction Paradigm) justifying product/engineering investment, or is a trivial surface-level UI tweak (button color/label, micro-copy, minor styling). Challenge findings that lack structural leverage.
 - **Consistency with known literature** — does the field corroborate or contradict this?
   A contradiction is a first-class flag, not a footnote.
 - **Context fit** — does the finding hold for *this* study's audience/setting, or is it
@@ -40,6 +41,6 @@ For each finding, weighing the Skeptic's objections:
   is being read fairly.
 
 ## Output
-A per-finding read: finding named, whether outside knowledge corroborates or challenges it
+A per-finding read: finding named, leverage check (structural lever vs. trivial UI tweak), whether outside knowledge corroborates or challenges it
 (with any retrieved citation + URL), and what is missing. Record any citation you rely on
 so the moderator can log it in `references.md`. The Evidence Auditor reads yours next.

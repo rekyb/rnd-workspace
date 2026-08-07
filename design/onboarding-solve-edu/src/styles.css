@@ -24,6 +24,13 @@
      was 1.47:1 and did not meet the claim made for it. */
   --hair-dark: #8c8c8c;
   --purple-dark: #64156d;
+  /* Destructive-action text. NOT --red, which is #ea4134 and measures 3.96:1 on
+     white — below SC 1.4.3's 4.5:1, so it fails as body text however well it
+     works as an error accent beside an icon. This is a separate token because
+     it has to be re-pointed for dark mode: a "darkish red" that reads on white
+     is unreadable on #211b2c, and --red is never re-pointed at all. Both values
+     are computed by group 20 of the guard suite. */
+  --danger: #b3261e;
   
   --font-head: 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Open Sans', sans-serif;
@@ -53,6 +60,11 @@
   --purple-bg: #38204a;
   --purple-hover: #e3a5ec;
   --blue-bg: #1b2c38;
+  /* The light --danger is a dark red and disappears against a dark surface, so
+     this is the one brand-adjacent hue that DOES re-point. It stays
+     unmistakably red rather than becoming pink: the row it colours is the only
+     destructive one in the menu. */
+  --danger: #ff8a80;
 }
 
 * {
@@ -1250,8 +1262,14 @@ body.is-onboarding .card {
   display: flex;
   align-items: center;
 }
+/* 36px, up from 24px on 2026-07-31. The ceiling is 44px, not taste: the
+   navigation items carry min-height: 44px for SC 2.5.8, and they are what sets
+   the bar's row height. Anything at or under that grows the brand without
+   growing the bar or moving the content column down, which matters because
+   Slice 12's ordinal criterion is about what precedes the learner's next
+   action and a taller bar pushes it further away. */
 .home-brand-logo {
-  height: 24px;
+  height: 36px;
   width: auto;
 }
 .home-nav {
@@ -1283,6 +1301,22 @@ body.is-onboarding .card {
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+}
+/* ICON-ONLY NAV ITEM. Profile dropped its visible label on 2026-07-31 at the
+   product owner's direction: an avatar glyph in the top-right utility cluster
+   is the one navigation label a learner does not read, and the word was
+   competing for horizontal room with the four destination families that do
+   need theirs. The button keeps `home-nav-item`, so its panel behaviour and the
+   `[data-family]` binding are untouched, and carries `aria-label="Profile"` in
+   the markup — an icon-only control with no accessible name fails SC 4.1.2, and
+   the label is what the panel's own heading relationship is announced from. */
+.home-nav-item-icon {
+  gap: 0;
+  padding: 10px;
+  /* Square, so the 44px minimum applies on both axes rather than only the one
+     the dropped word used to hold open. SC 2.5.8. */
+  min-width: 44px;
+  justify-content: center;
 }
 .home-nav-family { position: relative; }
 /* A panel shows its whole family at once. It never nests another panel: one
@@ -1334,7 +1368,9 @@ body.is-onboarding .card {
 }
 .home-nav-item:active { background: var(--hair); }
 
-/* Utility cluster: XP, theme, language, inbox, profile. */
+/* Utility cluster: XP, inbox, profile. Theme and language were here and are now
+   rows inside the profile menu — an account preference is not a destination,
+   and a bar row is the scarcest space this layout has. */
 .home-xp {
   display: flex;
   align-items: center;
@@ -1372,12 +1408,153 @@ body.is-onboarding .card {
   outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
   outline-offset: 2px;
 }
-.home-nav-panel-right { left: auto; right: 0; }
+/* The profile menu is the only right-aligned panel, and it is wider than a
+   family panel because it carries a labelled field rather than a list of
+   single-line rows. */
+.home-nav-panel-right { left: auto; right: 0; min-width: 240px; }
 .home-menu-divider {
   display: block;
   height: 1px;
   background: var(--hair);
   margin: 6px 4px;
+}
+
+/* ---- account preferences inside the profile menu ------------------------
+   Theme and language sit below the first divider, with the navigational rows
+   above them and Log out below the second. Both were controls in the top bar;
+   moving them costs one interaction and buys back two bar slots, which is the
+   whole trade.
+
+   Both are ONE line, laid out on the same three-part grid as the rows above
+   them: leading icon, label, trailing control. A row that stacked its control
+   under its label read as a form embedded in a menu and broke the scan line the
+   other rows establish.
+
+   Both are also FLUSH rows. The language control was briefly a bordered pill,
+   on the reasoning that a control which opens something should look unlike one
+   that toggles in place. It did not earn the weight: one bordered element among
+   five flush ones reads as the emphasis of the menu, and the row a learner
+   opens this menu for is a destination or Log out, not the language. The
+   chevron already says it opens something.
+
+   They therefore carry .home-nav-child as well, so the padding, radius, type
+   and hover come from the same rule as every other row rather than from a
+   parallel set that can drift. */
+.home-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Clears SC 2.5.8 Target Size (Minimum, AA) of 24 by 24 CSS px. */
+  min-height: 44px;
+}
+.home-menu-row .material-symbols-rounded {
+  flex: 0 0 auto;
+  font-size: 20px;
+  color: var(--sub);
+}
+.home-menu-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+/* The chevron points RIGHT, not down. A downward chevron promises a list that
+   drops below the control; this one opens a dialog centred over the page. */
+.home-menu-chevron { color: var(--sub); }
+
+/* Log out is the only row in this menu that ends the session, so it is the only
+   one that is not --ink. Colour is the secondary signal here, not the only one:
+   the row is already separated by a divider and sits last, both of which survive
+   for a learner who cannot resolve the hue (SC 1.4.1). */
+.home-menu-logout { color: var(--danger); }
+
+/* ---- the language dialog ------------------------------------------------
+   Built on the funnel's .modal-overlay / .modal-content, which already anchor
+   to the top and scroll within themselves rather than centring — the fix that
+   keeps a list reachable when an on-screen keyboard halves the viewport. */
+.lang-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 24px;
+}
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  min-height: 56px;
+  border: 1px solid var(--hair-dark);
+  border-radius: 14px;
+  background: var(--bg);
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.lang-option-name { flex: 1 1 auto; min-width: 0; }
+/* The white half of the Indonesian flag is invisible on a white modal, so the
+   flag carries its own boundary. --hair-dark rather than the decorative
+   hairline: it is what makes the shape readable, not decoration around it. */
+.lang-option-flag {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 20px;
+  border: 1px solid var(--hair-dark);
+  border-radius: 3px;
+}
+.lang-option:hover { border-color: var(--purple); }
+.lang-option:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  outline-offset: 2px;
+}
+/* The tick is the visible half of aria-current. It is present in the DOM for
+   both options and revealed for one, so the row's height does not change when
+   the selection moves. */
+.lang-option-tick { opacity: 0; color: var(--purple); }
+.lang-option[aria-current="true"] {
+  border-color: var(--purple);
+  background: var(--purple-bg);
+  color: var(--purple);
+}
+.lang-option[aria-current="true"] .lang-option-tick { opacity: 1; }
+
+/* The dark-mode switch. The knob's POSITION carries the state, not just the
+   track colour, so the control does not depend on hue alone (SC 1.4.1). The
+   leading moon is static: an earlier version flipped it to a sun when dark was
+   on, which contradicted the label beside it. The track is --hair-dark rather
+   than the decorative hairline: a switch is a UI component and its boundary is
+   held to SC 1.4.11's 3:1. */
+.home-menu-switch {
+  flex: 0 0 auto;
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: 99px;
+  background: var(--hair-dark);
+  transition: background 0.2s;
+}
+.home-menu-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--surf);
+  transition: transform 0.2s;
+}
+[aria-checked="true"] .home-menu-switch { background: var(--purple); }
+[aria-checked="true"] .home-menu-switch::after { transform: translateX(18px); }
+@media (prefers-reduced-motion: reduce) {
+  .home-menu-switch, .home-menu-switch::after { transition: none; }
 }
 .home-nav-item:hover:not(.active) {
   background: var(--bg);
@@ -1451,7 +1628,76 @@ body.is-onboarding .card {
 
 /* Up Next is a surface, not a filled block. Fill ranks an action only while
    exactly one control owns it, so the filled primary button below is the only
-   filled element on this screen (PRD Slice 14, from layout F4). */
+   filled element on this screen (PRD Slice 14, from layout F4).
+
+   IT NOW FILLS THE COLUMN'S HEIGHT, at the product owner's direction. This is
+   a size change, not a rank change: Slice 16 already names this the dominant
+   object, and the card being short while the viewport ran on beneath it was
+   the one place the composition did not say so. It is scoped with the child
+   combinator to the card sitting DIRECTLY in the content column, because the
+   program card relocates into that column at 360px and only one object can be
+   the one that grows.
+
+   THE COVER ABSORBS THE SPARE HEIGHT, and the text cluster keeps its natural
+   size beneath it. Centring the text was the first attempt and it is worse:
+   the eyebrow, title, position line and action are one tight group, so
+   centring them floats a small block in a large box and the card's top edge
+   reads as an accident. Growing the cover instead gives the extra height to
+   the one element that has no intrinsic size — which is what a cover image is
+   for. The title stays adjacent to the button that opens it at every
+   viewport height. */
+.home-col-content > .up-next {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+/* PLACEHOLDER COVER ART. Full-bleed to the card's inner edge via negative
+   margins rather than by moving the padding onto each sibling — one rule to
+   reverse if the cover goes, instead of four. The radius is 19px against the
+   card's 20px because the 1px border sits between them; matching it exactly
+   leaves a hairline of card colour visible at the curve. */
+.up-next-cover {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -24px -24px 20px;
+  /* The band grows into whatever height the column has spare, but never
+     collapses below this: a cover thinner than its own glyph is a stripe. */
+  flex: 1;
+  min-height: 150px;
+  border-radius: 19px 19px 0 0;
+  overflow: hidden;
+  /* Two stops of the course's own colour over the page background. Mixed
+     rather than hard-coded so the band re-derives itself in dark mode instead
+     of staying a light-mode value on a dark card. */
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--cover-tint, var(--purple)) 22%, var(--bg)),
+      color-mix(in srgb, var(--cover-tint, var(--purple)) 8%, var(--bg)));
+}
+.up-next-cover-icon {
+  font-size: 64px;
+  /* Strong enough to read as art, light enough that it does not compete with
+     the filled primary action below the fold of the card. */
+  color: color-mix(in srgb, var(--cover-tint, var(--purple)) 70%, transparent);
+}
+/* The photograph covers the whole band and sits ABOVE the gradient and glyph
+   rather than replacing them, so the fallback needs no separate teardown — it
+   is simply what is visible when this element is not. */
+.up-next-cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* The `.up-next-cover-tag` rule was removed 2026-07-31 with the tag it styled,
+   at the product owner's direction. The art's placeholder status is recorded in
+   `data.js`, in home.html's comment on the cover, and in the §9 criteria — the
+   search results' "Simulated catalogue" label is untouched, because that one
+   qualifies an assertion of fact rather than decoration. */
 .up-next-eyebrow {
   font-size: 12px;
   font-weight: 700;
@@ -1468,7 +1714,7 @@ body.is-onboarding .card {
   line-height: 1.2;
   margin-bottom: 4px;
 }
-.up-next-unit { font-size: 14px; color: var(--sub); margin-bottom: 16px; }
+.up-next-position { font-size: 14px; color: var(--sub); margin-bottom: 16px; }
 .up-next-progress { display: flex; align-items: center; gap: 12px; }
 .up-next-track {
   flex: 1;
@@ -1503,7 +1749,478 @@ body.is-onboarding .card {
 .home-empty-body { color: var(--sub); font-size: 14px; margin-bottom: 20px; }
 
 .home-primary-action { font-size: 18px; }
+/* The control belongs to the dominant object, so it sits inside that card
+   rather than under it. Slice 16 describes the object as "the learner's next
+   course with its next item named and one filled control" — one thing, not a
+   card plus a loose button beneath it. */
+.up-next .home-primary-action { margin-top: 20px; }
 .home-action-row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* ---- Slice 16: the two-column first-run home ---------------------------
+   A dominant content column and a narrower rail. The ratio is a labelled
+   ASSUMPTION drawn from a Mobbin pattern review, not a finding — see the
+   comment on .home-layout's markup in home.html and PRD section 2. What IS
+   evidenced is what the composition has to satisfy: the learner's own work
+   before company-owned content, exactly one filled control, and every
+   progress affordance at zero against a stated countable condition.
+
+   THE RAIL IS PAINTED LEFT AND READ SECOND (changed 2026-07-31 at the product
+   owner's direction; it was painted right until then). Slice 16's criterion
+   permits this in as many words — "reading order places the content column
+   before the rail *regardless of which side the rail is painted on*" — so the
+   swap is a placement change and nothing else. Source order is untouched: the
+   content column is still first in the markup, and the criterion's actual
+   requirement is about document order, not about which track it lands in.
+
+   THE COST, STATED BECAUSE IT IS REAL. Painted order and focus order now
+   disagree at ≥768px. A sighted keyboard user tabs into the Up Next card on
+   the right, then jumps left to the Ask field and the rail — WCAG 2.2 SC 2.4.3
+   Focus Order is about a *meaningful* sequence rather than a visual one, so
+   this is not a failure, but it is the tradeoff the swap buys. A screen-reader
+   user is unaffected: they get the primary action first either way, which is
+   the thing the criterion was written to protect.
+
+   The placement is explicit `grid-column`, not `order` or `direction: rtl`.
+   All three would paint the same, but `order` on a flex/grid child is the
+   mechanism most likely to be copied onto something where it *does* break
+   reading order, and `rtl` would flip inline alignment inside both columns as
+   a side effect. */
+.home-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
+  /* THE GRID FILLS THE SHELL, and the dominant object fills the grid.
+     Changed 2026-07-31 at the product owner's direction. `.home-main` is
+     already `flex: 1` inside a `100dvh` card, so the height was always there —
+     the grid just was not claiming it, and the Up Next card sat as a short
+     block with the rest of the viewport empty beneath it.
+
+     `align-items: start` is what had to go, and it is worth naming what it was
+     doing: it sized BOTH tracks to their content. Removing it lets the default
+     `stretch` apply, which is what gives the content column a full-height box
+     for the card below to grow into. The rail is unaffected in appearance —
+     its track stretches, but its children are fixed-height cards that do not,
+     so nothing in it changes size. */
+  flex: 1;
+  min-height: 0;
+}
+.home-rail { grid-column: 1; grid-row: 1; }
+.home-col-content { grid-column: 2; grid-row: 1; }
+.home-col-content,
+.home-rail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.home-col-content { gap: 24px; }
+.home-rail { gap: 16px; }
+
+/* The counter is authored once and relocated, so its card treatment is scoped
+   to the rail rather than carried on the node. At 360px the same element sits
+   inside the Up Next card, where a second border and background would render
+   a card inside a card. */
+.home-rail > .home-rail-slot {
+  background: var(--surf);
+  border: 1px solid var(--hair);
+  border-radius: 20px;
+  padding: 20px;
+}
+.home-rail-title { display: none; }
+.home-rail > .home-rail-slot > .home-rail-title {
+  display: block;
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+/* No separate eyebrow rule. The label IS the title now, so it takes the title's
+   treatment — 14px/800 sentence case, not an 11px uppercase kicker. An uppercase
+   micro-label reads as an annotation on the thing below it, and there is no
+   longer a thing below it to annotate. */
+/* Inside the Up Next card it needs separating from the unit line above it;
+   in the rail the card's own padding already does that. */
+.up-next > .home-rail-slot { margin-top: 16px; }
+
+/* THE CHOSEN GOAL, as this slot's headline. A soft chip rather than a plain
+   heading, because it is a different KIND of thing from every other title on
+   this surface: the others are the product naming its own furniture, and this
+   one is the learner's own answer quoted back. A chip is the shape that says
+   "this came from you".
+
+   A LABELLED PAIR, not a bare string. "Customer service" alone at the top of a
+   progress slot reads as the product's name for the slot, which inverts the
+   only thing this element is for.
+
+   THE TINT IS MIXED, NOT A LITERAL. `--pri` is the brand yellow and is a
+   FILL colour, not a text colour: #ffcb1d measures about 1.7:1 on white and
+   would fail SC 1.4.3 badly as type. Mixed into the surface it becomes a pale
+   ground carrying --ink at full strength, which is where the contrast comes
+   from. Mixing against `--surf` rather than hard-coding the result is what
+   makes it re-derive in dark mode instead of staying a light-mode swatch on a
+   dark card. */
+.home-rail-goal {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  /* Hugs its text. The slot is a flex column, so without this the chip would
+     stretch the full width and stop reading as a chip. */
+  align-self: flex-start;
+  max-width: 100%;
+  margin-bottom: 14px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pri) 34%, var(--surf));
+}
+/* THE LABEL IS SEPARATED BY TYPE, NOT BY COLOUR, and that is a fix rather than
+   a preference. It was --ink2, which measures 8.02:1 on the light chip but only
+   **4.26:1 on the dark one** — under SC 1.4.3's 4.5:1, on 10px text, which is
+   the worst place to be short. Measured in-browser, both themes.
+
+   The obvious repair is a theme-conditional colour, and it was rejected: this
+   chip's ground is already derived from two tokens that both re-point in dark
+   mode, and hanging a third conditional off it is how a contrast failure comes
+   back the next time either one moves. Size, weight, case and letter-spacing
+   carry the hierarchy instead, so both lines can sit at full --ink and the
+   chip cannot fall below AA in either theme. */
+.home-rail-goal-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--ink);
+  /* NO `opacity` here, deliberately. A translucent label would put the
+     hierarchy back into colour by the back door AND make the failure
+     invisible: `getComputedStyle().color` still reports the full token, so a
+     contrast check reads the value the text does not actually render at. If
+     this line ever needs to be quieter, it changes size or weight. */
+}
+.home-rail-goal-value {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  min-width: 0;
+}
+/* The generic title is hidden at 360px by the .home-rail-title rule below,
+   because inside the Up Next card the card's own heading already says what the
+   learner is working on. THAT ARGUMENT IS ABOUT THE COURSE and does not reach
+   the goal, which the card never states — so the chip is exempted explicitly
+   rather than by being outside the selector by luck. */
+.up-next > .home-rail-slot > .home-rail-goal { display: inline-flex; }
+
+/* ---- Slice 18: the course tracker --------------------------------------
+   The chapters of the current course, enumerated. It replaces a bare progress
+   bar that users reported not understanding; the bar is kept above the list
+   as the summary, because Slice 12 requires the denominator stated in the
+   slot and the list is the detail under it.
+
+   Quieter than the Up Next card by design. The rail is the secondary column,
+   and a tracker that outweighed the dominant object would falsify Slice 16's
+   "exactly one object" claim by construction. */
+.home-chapter-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 16px;
+}
+.home-chapter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--sub);
+}
+.home-chapter-mark { font-size: 18px; flex-shrink: 0; }
+.home-chapter-name { min-width: 0; }
+/* The state is carried in TEXT as well as by the icon and the weight, so it
+   does not depend on resolving a glyph or a colour. */
+.home-chapter-state {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.home-chapter.is-current {
+  background: var(--purple-bg);
+  color: var(--ink);
+  font-weight: 600;
+}
+.home-chapter.is-current .home-chapter-mark,
+.home-chapter.is-current .home-chapter-state { color: var(--purple); }
+.home-chapter.is-done .home-chapter-mark { color: var(--green); }
+.home-chapter.is-done .home-chapter-name { text-decoration: line-through; }
+
+/* The switcher is a strip of chips, deliberately NOT cards: cards would give
+   the learner's other courses the same weight as the dominant object and the
+   surface would carry two things competing for the same role. None of them is
+   filled — the switcher is not the primary action. */
+.home-switcher { display: flex; flex-direction: column; gap: 12px; }
+.home-switcher-heading {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--sub);
+}
+.home-switcher-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.home-switcher-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  /* Clears WCAG 2.2 SC 2.5.8 Target Size (Minimum, AA) at every width. */
+  min-height: 44px;
+  padding: 10px 16px;
+  background: var(--surf);
+  /* --hair-dark, not --hair: this is a UI component boundary and is held to
+     SC 1.4.11's 3:1, the same rule the nav panels are held to. */
+  border: 1px solid var(--hair-dark);
+  border-radius: 999px;
+  color: var(--ink);
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.home-switcher-item.is-current { border-color: var(--purple); }
+/* The current course is marked in text as well as by the border, so the mark
+   does not depend on resolving a 1px colour difference. */
+.home-switcher-mark {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--purple);
+}
+.home-switcher-item:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  outline-offset: 2px;
+}
+
+/* ---- Slice 17: the Ask entry point -------------------------------------
+   An entry point, not a recommendation surface. It is styled as a field
+   rather than as a card so it reads as something to type into, and it is
+   deliberately quieter than the Up Next card beside it: §2's assumption is
+   that this does not compete with the primary action, and a treatment that
+   outweighed the dominant object would falsify that by construction. */
+.home-ask { display: flex; flex-direction: column; }
+/* THE PILL IS THE FIELD, not a button that opens one. It keeps the pill shape
+   the button had, because the shape was never the problem — what changed is
+   that the thing inside it is now an <input>, so the question the placeholder
+   asks can be answered where it is asked. The focus ring is drawn on this
+   WRAPPER via :focus-within: a ring around the bare input would cut through
+   the icon and the clear control that visually sit inside the same boundary. */
+.home-ask-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  /* Clears WCAG 2.2 SC 2.5.8 Target Size (Minimum, AA). */
+  min-height: 48px;
+  padding: 0 14px;
+  background: var(--surf);
+  /* --hair-dark, not --hair: an input boundary is a UI component boundary and
+     is held to SC 1.4.11's 3:1. */
+  border: 1px solid var(--hair-dark);
+  border-radius: 999px;
+  transition: border-color 0.2s;
+}
+.home-ask-trigger:hover { border-color: var(--purple); }
+.home-ask-trigger:focus-within {
+  border-color: var(--purple);
+  outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  outline-offset: 2px;
+}
+/* The placeholder duplicates the label for sighted users. It is held to the
+   same 4.5:1 as body text rather than left at a browser default, because a
+   placeholder carrying the field's only visible question is content. */
+.home-ask-input::placeholder { color: var(--sub); opacity: 1; }
+/* Expands IN PLACE. Not a modal and not an overlay — Slice 12 forbids an
+   overlay before the first action and Slice 17 does not suspend that. */
+.home-ask-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 16px;
+  background: var(--surf);
+  border: 1px solid var(--hair);
+  border-radius: 20px;
+}
+/* VISUALLY HIDDEN, NOT DISPLAY:NONE. The placeholder shows these words to
+   sighted users, so a second visible copy above the field would be the
+   duplication Slice 16 forbids — but a placeholder is not an accessible name,
+   and display:none would take the name away from the screen reader too. This
+   is the standard clip technique: off the visual layer, still in the
+   accessibility tree. */
+.home-ask-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.home-ask-field-icon { font-size: 20px; color: var(--sub); flex: none; }
+.home-ask-input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 0;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+/* The wrapper owns the ring; a second one on the input would double it. */
+.home-ask-input:focus-visible { outline: none; }
+/* The browser's own clear glyph would sit beside ours and clear without
+   emptying the result list, so the surface would keep asserting a match for a
+   phrase no longer on screen. */
+.home-ask-input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.home-ask-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* SC 2.5.8 Target Size (Minimum, AA). */
+  min-width: 32px;
+  min-height: 32px;
+  flex: none;
+  border-radius: 999px;
+  color: var(--sub);
+  cursor: pointer;
+}
+.home-ask-clear:hover { background: var(--hair); color: var(--ink); }
+.home-ask-clear:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  outline-offset: 2px;
+}
+.home-ask-clear .material-symbols-rounded { font-size: 18px; }
+
+/* THE STARTERS. Chips, not a list of links: they write into the field rather
+   than navigating, and a chip is the shape that says "this becomes your text".
+   Quieter than the search control beside them — they are an aid, and an aid
+   that outweighed the action would invert the two. */
+.home-ask-starters { display: flex; flex-direction: column; gap: 8px; }
+.home-ask-starters-title { font-size: 12px; color: var(--sub); }
+.home-ask-starters-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.home-ask-starter {
+  padding: 8px 12px;
+  /* SC 2.5.8. Chips are the smallest control on this surface, so the minimum
+     is stated here rather than inherited from anything. */
+  min-height: 32px;
+  background: var(--bg);
+  border: 1px solid var(--hair-dark);
+  border-radius: 999px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.home-ask-starter:hover { border-color: var(--purple); background: var(--surf); }
+.home-ask-starter:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  outline-offset: 2px;
+}
+
+/* THE RESULTS. Placeholder content, labelled as such in the markup — the note
+   below is styled to be legible rather than to disappear, because a caveat
+   nobody reads is not a caveat. */
+.home-ask-results { display: flex; flex-direction: column; gap: 8px; }
+.home-ask-results-head {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.home-ask-results-note { font-size: 12px; color: var(--sub); line-height: 1.5; }
+/* Quieter than the match heading above it, because it introduces a weaker
+   claim: these courses did not match, they share a topic with one that did. */
+.home-ask-results-subhead {
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sub);
+  margin-top: 4px;
+}
+.home-ask-results-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+/* Outlined, never filled. The fill belongs to the primary action on the
+   dominant object, counted across both columns — three filled result cards in
+   the rail would outweigh the one action this surface exists to produce. */
+.home-ask-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--hair-dark);
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.home-ask-result:hover { border-color: var(--purple); }
+.home-ask-result:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  outline-offset: 2px;
+}
+.home-ask-result-icon { font-size: 22px; flex: none; }
+.home-ask-result-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.home-ask-result-title {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.home-ask-result-meta { font-size: 12px; color: var(--sub); }
+
+.home-ask-actions { display: flex; align-items: center; gap: 8px; }
+/* Outlined, never filled. The fill belongs to the primary action on the
+   dominant object, counted across both columns — and `width: auto` matters for
+   the same reason the fill does: .btn stretches to its container by default, and
+   a full-bleed control in the rail reads as the page's action no matter what
+   its treatment says. */
+.home-ask-submit {
+  width: auto;
+  margin-left: auto;
+  padding: 10px 20px;
+  font-size: 14px;
+}
+.home-ask-note { font-size: 13px; color: var(--sub); }
+.home-ask-empty { font-size: 13px; color: var(--sub); }
+.home-ask-recent-title {
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sub);
+  margin-bottom: 8px;
+}
+.home-ask-recent-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.home-ask-recent-item {
+  font-size: 14px;
+  color: var(--ink);
+  padding: 8px 12px;
+  background: var(--bg);
+  border-radius: 12px;
+}
 .home-nav-note {
   font-size: 13px;
   color: var(--sub);
@@ -1514,16 +2231,19 @@ body.is-onboarding .card {
 }
 
 /* Between the breakpoint and roughly a laptop, the bar's own contents are what
-   overflow: brand plus four destinations plus five utilities do not fit at
+   overflow: brand plus four destinations plus the utility cluster do not fit at
    desktop spacing, so the bar wrapped to two rows above the width where the
    narrow layout takes over. Tightening the gaps keeps it one row.
 
-   Measured, not assumed: one row from 820px upward; at exactly 768px the
-   contents still need about 977px, so the bar wraps to two rows there. That is
-   left as it is rather than forced — a tablet-width bar carrying a brand, four
-   destinations and five utilities honestly needs two rows, and it costs no
-   overflow and no target-size failure. Below 768px the destinations become
-   their own full-width row instead. */
+   Measured 2026-07-30, when the cluster carried five controls: one row from
+   820px upward, and at exactly 768px the contents still needed about 977px, so
+   the bar wrapped to two rows there. Theme and language have since moved into
+   the profile menu and the cluster is three controls, so the bar now clears one
+   row somewhere below 820px — the new threshold has NOT been re-measured, and
+   this comment does not claim a number it did not check. The tightening is kept
+   either way: it costs nothing, and a two-row tablet bar costs no overflow and
+   no target-size failure. Below 768px the destinations become their own
+   full-width row instead. */
 @media (min-width: 768px) and (max-width: 1023px) {
   .home-topbar { gap: 10px; padding: 10px 14px; }
   .home-nav { gap: 2px; }
@@ -1531,6 +2251,12 @@ body.is-onboarding .card {
   .home-topbar-utils { gap: 4px; }
   .home-xp { padding: 8px 10px; font-size: 13px; }
   .home-icon-btn { min-width: 40px; padding: 0 6px; }
+  /* The rail narrows before it is dropped. Measured at 768px: the content area
+     is 720px, so a 320px rail leaves 376px of content column and the two are
+     close enough in width that neither reads as dominant. 260px keeps the
+     content column at 436px and the ratio legible, which is the point of the
+     composition rather than a rounding preference. */
+  .home-layout { grid-template-columns: 260px minmax(0, 1fr); }
 }
 
 /* ---- Learning Home at narrow width -------------------------------------
@@ -1556,6 +2282,21 @@ body.is-onboarding .card {
   }
   .home-topbar-brand { order: 1; }
   .home-topbar-utils { order: 2; margin-left: auto; }
+  /* Slice 16's rail is DROPPED as a region here — a rail is a two-column
+     device and there is one column at 360px. Its two slots are disposed of
+     individually in home.js, which relocates the counter back onto the Up Next
+     card and the program card to the top of the content column. Collapsing the
+     grid without those moves would leave both below the fold, which is the
+     "reflowed to the bottom of the scroll" non-disposition PRD 11.1 forbids. */
+  .home-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  /* The explicit placement above is reset, not inherited. `grid-column: 2` on
+     a single-track grid creates an implicit second column and the content
+     column would land beside a track that no longer exists, pushing the whole
+     surface into horizontal scroll at exactly the width that cannot afford
+     it. */
+  .home-rail,
+  .home-col-content { grid-column: 1; }
+  .home-col-content { gap: 20px; }
   /* Icon above label, each destination sharing the width equally.
      Measured 2026-07-30: with the icon beside the label the four destinations
      need 548px and a 360px viewport hid the last one behind a horizontal

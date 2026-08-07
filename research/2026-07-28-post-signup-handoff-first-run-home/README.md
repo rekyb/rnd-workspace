@@ -1,14 +1,11 @@
 # Research: Post-Signup Handoff to the First-Run Learning Home
 
-- **Status:** Active
+- **Status:** Closed
 - **Type:** benchmark
 - **Started:** 2026-07-28
+- **Closed:** 2026-08-07
 - **Researcher:** Claude (acting Senior UI/UX Designer)
-
-*No `Coverage:` line yet, by design. Per `docs/superpowers/specs/2026-07-29-coverage-gates-design.md`
-§4.4, an active study is not backfilled: it gets its real verdict when `/close-research` runs, derived
-from the `## Research questions — coverage` table in `SYNTHESIS.md`. That table reads
-**Q2,Q3,Q5 answered · Q1,Q4 partial · Q6 unanswered**.*
+- **Coverage:** Q2,Q3,Q5 answered · Q1,Q4 partial · Q6 unanswered (deferred to primary research)
 
 ## Goal
 
@@ -179,6 +176,7 @@ zero-state composition (Q4), which gamification mechanics render before the firs
     assumption that predated the two Chrome platforms.
   - Three new `## Gaps & caveats` entries: conditions of use, facilitator co-present use, and the
     second-visit gap. Next: `/close-research`.
+- 2026-08-07 — research closed (type: benchmark).
 
 **Two capture-standard deviations recorded on the Chrome platforms**, both documented in the
 relevant `flow.md`: CodeSignal screens 01–06 needed injected CSS because the app clips its own

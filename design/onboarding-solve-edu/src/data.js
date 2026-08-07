@@ -225,6 +225,185 @@ function goalOptionsFor(band) {
   return goalOptionsByBand[band] || goalOptionsByBand.default;
 }
 
+/* The title a stored goal id was PRESENTED as, looked up across every band.
+   The handoff carries `goalId` but not the band it was chosen under, and the
+   ids are unique across the two sets, so searching both is the honest lookup
+   rather than a guess at which set to read.
+
+   IT RETURNS NULL RATHER THAN A FALLBACK. A learner who reached the home
+   without a goal — the program path, or a replayed handoff written before this
+   field existed — has no goal to show, and the caller hides the row instead of
+   printing a plausible one. Naming a goal nobody chose is the fabrication class
+   this build exists to remove, and it would be worse here than most: it would
+   be putting words in the learner's mouth about their own intent. */
+function goalTitleFor(goalId) {
+  if (!goalId) return null;
+  var bands = Object.keys(goalOptionsByBand);
+  for (var b = 0; b < bands.length; b++) {
+    var options = goalOptionsByBand[bands[b]];
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].id === goalId) return options[i].title;
+    }
+  }
+  return null;
+}
+
+/* ---- Slice 19: the search starters and the placeholder catalogue ----------
+
+   PLACEHOLDER CONTENT, and every surface that renders it says so. Cycle 7
+   ships the SHAPE of a search result list, not a claim that these are the
+   courses or that this is the ranking. §14 still excludes a real retrieval or
+   recommendation service; what changed on 2026-07-31 is that the prototype may
+   now SIMULATE one, provided it is labelled at the point of use. Titles are in
+   the same register as main.js's COURSE_MAP — a Program Operations input under
+   the §15 open decision, not a curriculum claim made here.
+
+   THE THREE STARTERS ARE A CONSTANT, not a ranking and not personalization.
+   They exist because a learner who does not know what to type gets nothing out
+   of an empty field, and each one is written to resolve against the set below,
+   so activating a starter and searching it always produces results. A starter
+   that returned nothing would teach the learner the field is broken. */
+const searchStarters = [
+  'I want to learn English',
+  'I want to get better at math',
+  'I want to manage my money'
+];
+
+/* Each entry carries its own match keywords rather than being scored by a
+   ranker. A ranker is the recommendation model §14 excludes, and relevance a
+   reader cannot check by eye is untestable in a prototype: here the reason a
+   course matched is readable off this list. `chapters` and `minutes` mirror
+   COURSE_MAP so the two never disagree about the same course.
+
+   `topic` IS AN ADJACENCY, NOT A SCORE. It exists because a single-word query
+   often has exactly one keyword match, and one card is too thin a result to
+   test a result list with. Courses sharing a topic can fill the remainder —
+   but they are rendered under their own "related" heading and are NEVER
+   counted as matches, because they did not match. The distinction is the whole
+   point: a fill-in presented as a match is the fabricated relevance this
+   surface is labelled against.
+
+   `cover` IS STOCK PHOTOGRAPHY FROM UNSPLASH, and the surface says so wherever
+   it renders one — the card carries a visible "Placeholder cover" tag. These
+   are not course covers; there is no curriculum for a cover to be *of* while
+   the goal-to-course map is an open §15 decision. Each URL was loaded and each
+   image looked at before it was assigned here, so the subject actually matches
+   the course rather than being inferred from a photo id.
+
+   TWO COSTS, both recorded rather than discovered later. (1) These are
+   EXTERNAL requests, on the same footing as the existing web-font and logo
+   links in this prototype — but a published Artifact's CSP blocks external
+   hosts, so covers will not render there. That degrades to the tinted gradient
+   and glyph behind them rather than to a broken image, which is why the
+   fallback is a real design and not a nicety. (2) A shipped version needs its
+   own licensed art; nothing here is a licence decision. */
+const searchCatalogue = [
+  { id: 'eng-1',  title: 'Everyday English Communication', icon: 'record_voice_over', color: 'var(--blue)',
+    chapters: 5, minutes: 6, topic: 'communication',
+    keywords: ['english', 'inggris', 'speak', 'speaking', 'conversation', 'language', 'grammar', 'vocabulary'],
+    /* books, an apple and alphabet blocks */
+    cover: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1000&q=60' },
+  { id: 'msci-1', title: 'Math and Science Foundations',   icon: 'calculate',         color: 'var(--green)',
+    chapters: 6, minutes: 8, topic: 'numeracy',
+    keywords: ['math', 'maths', 'mathematics', 'matematika', 'science', 'algebra', 'fraction', 'number', 'formula'],
+    /* a board of algebra equations */
+    cover: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=1000&q=60' },
+  { id: 'life-1', title: 'Everyday Life Skills',           icon: 'self_improvement',  color: 'var(--magenta)',
+    chapters: 4, minutes: 7, topic: 'life',
+    keywords: ['life', 'money', 'budget', 'saving', 'save', 'finance', 'financial', 'uang', 'payslip', 'spending'],
+    /* tax forms, a calculator and a phone */
+    cover: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1000&q=60' },
+  { id: 'dig-1',  title: 'Digital Safety and Wellbeing',   icon: 'shield',            color: 'var(--purple)',
+    chapters: 4, minutes: 5, topic: 'life',
+    keywords: ['safety', 'safe', 'online', 'scam', 'password', 'privacy', 'wellbeing', 'digital'],
+    /* a hand touching a screen */
+    cover: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=60' },
+  { id: 'data-1', title: 'Data and Analysis Foundations',  icon: 'bar_chart',         color: 'var(--blue)',
+    chapters: 5, minutes: 8, topic: 'numeracy',
+    keywords: ['data', 'analysis', 'analyse', 'analyze', 'chart', 'graph', 'statistics', 'spreadsheet', 'excel'],
+    /* a laptop showing an analytics dashboard */
+    cover: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=60' },
+  { id: 'comm-1', title: 'Workplace Communication',        icon: 'forum',             color: 'var(--purple)',
+    chapters: 4, minutes: null, topic: 'communication',
+    keywords: ['communication', 'communicate', 'email', 'presentation', 'meeting', 'workplace', 'colleague'],
+    /* three colleagues talking over laptops */
+    cover: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1000&q=60' },
+  { id: 'cust-1', title: 'Customer Service Essentials',    icon: 'support_agent',     color: 'var(--magenta)',
+    chapters: 4, minutes: 10, topic: 'communication',
+    keywords: ['customer', 'service', 'support', 'retail', 'shop', 'sales', 'complaint'],
+    /* a conversation across a desk */
+    cover: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1000&q=60' },
+  { id: 'proj-1', title: 'Project Management Basics',      icon: 'assignment',        color: 'var(--green)',
+    chapters: 6, minutes: 7, topic: 'work',
+    keywords: ['project', 'manager', 'planning', 'deadline', 'team', 'task', 'organise', 'organize'],
+    /* hands planning over notes and laptops */
+    cover: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=60' },
+  { id: 'mkt-1',  title: 'Digital Marketing Fundamentals', icon: 'campaign',          color: 'var(--red)',
+    chapters: 5, minutes: 9, topic: 'work',
+    keywords: ['marketing', 'advertising', 'audience', 'brand', 'promote', 'campaign', 'social'],
+    /* a team at a wall of sticky notes */
+    cover: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1000&q=60' }
+];
+
+/* Words carrying no topic. Stripped before matching so "I want to learn
+   English" does not match every course that happens to use the word "learn" in
+   a keyword. Kept short on purpose: an aggressive list silently swallows real
+   query terms, which is harder to notice than a stray match. */
+const searchStopWords = [
+  'i', 'a', 'an', 'the', 'to', 'of', 'in', 'on', 'at', 'my', 'me', 'is', 'it',
+  'want', 'wanna', 'need', 'like', 'learn', 'learning', 'study', 'studying',
+  'how', 'can', 'do', 'for', 'and', 'with', 'about', 'get', 'better', 'good',
+  'more', 'some', 'help', 'please', 'course', 'courses', 'class', 'be', 'become'
+];
+
+/* A contains-match over declared keywords, ordered by how many query terms hit.
+   NOT a relevance model — the score is a count, and it reaches the screen as a
+   count of matching courses rather than dressed up as a ranking.
+
+   Returns TWO lists, and keeping them separate is the honesty mechanism:
+     `matches` — courses a query term actually hit. Capped at three.
+     `related` — courses sharing a match's topic that did NOT hit. They fill the
+                 list out to three and render under their own heading.
+   An empty query returns two empty lists. Substituting a default set when
+   nothing matched would be the fabrication this document is written against;
+   the caller says so instead. */
+function searchCourses(query) {
+  var q = String(query || '').toLowerCase();
+  var terms = q.split(/[^a-z0-9]+/).filter(function (w) {
+    return w.length > 1 && searchStopWords.indexOf(w) === -1;
+  });
+  if (!terms.length) return { matches: [], related: [] };
+
+  var matches = searchCatalogue.map(function (course) {
+    var haystack = (course.title.toLowerCase() + ' ' + course.keywords.join(' '));
+    var hits = terms.filter(function (t) { return haystack.indexOf(t) !== -1; }).length;
+    return { course: course, hits: hits };
+  }).filter(function (row) {
+    return row.hits > 0;
+  }).sort(function (a, b) {
+    return b.hits - a.hits;
+  }).slice(0, 3).map(function (row) {
+    return row.course;
+  });
+
+  /* Nothing matched means nothing is related either. Topic adjacency hangs off
+     a match, so with no match there is no anchor and offering the topic set
+     anyway would be the substitute-set behaviour ruled out above. */
+  if (!matches.length) return { matches: [], related: [] };
+
+  var topics = matches.map(function (c) { return c.topic; });
+  var chosen = matches.map(function (c) { return c.id; });
+  var related = searchCatalogue.filter(function (course) {
+    return chosen.indexOf(course.id) === -1 && topics.indexOf(course.topic) !== -1;
+  }).slice(0, Math.max(0, 3 - matches.length));
+
+  return { matches: matches, related: related };
+}
+
 window.allCountries = allCountries;
 window.goalOptionsByBand = goalOptionsByBand;
 window.goalOptionsFor = goalOptionsFor;
+window.goalTitleFor = goalTitleFor;
+window.searchStarters = searchStarters;
+window.searchCatalogue = searchCatalogue;
+window.searchCourses = searchCourses;

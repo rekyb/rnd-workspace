@@ -116,16 +116,21 @@ change the row's `Status` yourself, silently or otherwise; a `Status` value is s
 so this is B3's never-edit-substance rule applied to B0's own output, and the human decides
 whether a flagged `Answered` should be downgraded. See `.claude/references/coverage-contract.md`.
 
-### B1. Review the synthesis for quality
+### B1. Review the synthesis for quality and structural leverage
 For each feature, check:
 - all **five required fields** are present and in order (name, short description,
   key findings, rationale, how to validate);
-- every claim is **grounded in captured evidence** — a screenshot filename,
-  `flow.gif`, or a source URL — with **nothing fabricated**;
+- every claim is **grounded in captured evidence** (a screenshot filename,
+  `flow.gif`, or a source URL) with **nothing fabricated**;
+- **Structural UX Lever mapping**: every finding ($F_1..F_n$) MUST map to at least
+  one structural UX lever (Flow Topology, Cognitive Load, Time-to-Aha, Core
+  Interaction Paradigm). Standalone surface-level button, color, or micro-copy tweaks
+  are strictly rejected;
 - the **"how to validate" step is actually testable** (a real experiment/metric,
   not a platitude);
 - **gaps and overlaps** across features are called out.
-Also sanity-check the synthesis against the stated goal: does it answer it?
+Also sanity-check the synthesis against the stated goal: does it answer it with structural leverage?
+If the findings lack structural UX leverage, set the readiness verdict to `Readiness: No-Go (Low Leverage)`.
 
 ### B2. Auto-fix prose (allowed to edit directly)
 Apply the prose rules below to `SYNTHESIS.md` and every `platforms/*/notes.md`
@@ -197,24 +202,26 @@ Input: the three panel reviews (Skeptic, Domain Expert, Evidence Auditor), the f
 You moderate the debate into a *strengthened* set. You do not run the panel (the command
 dispatches them); you synthesize their reviews.
 
-### C1. Adjudicate each finding
-Reading all three panel reviews together, give each finding one verdict:
-- **Robust** — survives the debate, well-grounded as written.
-- **Strengthen** — valuable but flawed; name the **single concrete action**: narrow the
+### C1. Adjudicate each finding (Impact & Leverage Gate)
+Reading all three panel reviews together, evaluate each finding against the **Impact & Leverage Gate**
+(verifying that it maps to a structural UX lever: Flow Topology, Cognitive Load, Time-to-Aha, Core Interaction Paradigm)
+and give each finding one verdict:
+- **Robust** - survives the debate, structural UX lever, well-grounded as written.
+- **Strengthen** - valuable but flawed; name the **single concrete action**: narrow the
   claim / recalibrate confidence / add a caveat / get corroboration. Prefer the Evidence
   Auditor's steelmanned narrower claim over deletion where a real signal exists.
-- **Unsupported** — not grounded enough to stand; drop it, or demote it to an open
-  question in `## Gaps & caveats`.
+- **Unsupported** - not grounded enough to stand, or is a low-leverage surface button, color, or micro-copy tweak; drop it, or demote it to an open question in `## Gaps & caveats`.
 Add a confidence direction (↑ / ↓ / unchanged). For **litreview** this maps to the
 explicit confidence label; for **benchmark/usability** it is expressed as the wording
 change (narrow / caveat / flag), since those findings carry no numeric label.
+If all findings lack structural UX leverage, mandate setting the overall readiness verdict to `Readiness: No-Go (Low Leverage)`.
 
 ### C2. Produce the `## Peer Review` section (do NOT edit findings here)
 Assemble one markdown section titled `## Peer Review` with a dated subheading and:
-- one `###` subsection per panelist (Skeptic, Domain Expert, Evidence Auditor) — a tight
+- one `###` subsection per panelist (Skeptic, Domain Expert, Evidence Auditor) - a tight
   summary of their strongest points, not a transcript;
 - a `### Strengthened findings` table: Finding | Verdict | Confidence Δ | Action;
-- a `### Actions to apply` list — the concrete edit per finding the command will apply on
+- a `### Actions to apply` list - the concrete edit per finding the command will apply on
   approval, each stored with the **original wording** it replaces, so nothing is lost;
 - a `### Legend` defining Robust / Strengthen / Unsupported (canonical reader-facing key).
 
@@ -222,11 +229,12 @@ Assemble one markdown section titled `## Peer Review` with a dated subheading an
 - **Never fabricate.** Every verdict traces to a panel point + the folder's evidence.
 - **Never silently change substance.** You output *proposed* actions; the command applies
   them only after the user approves, and preserves each original wording in the record.
+- **Enforce structural leverage.** Reject surface-level UI/color/button tweaks or mandate setting the verdict to `Readiness: No-Go (Low Leverage)` if the synthesis lacks structural impact.
 - If the Domain Expert cited external sources, fold them into `references.md` (create/extend
   it) so the strengthened findings are traceable.
 
 Report back to the command: the per-finding verdicts, the actions to apply, and a one-line
-readiness note (e.g. "3 Robust, 4 Strengthen, 1 Unsupported; apply on approval").
+readiness note (e.g. "3 Robust, 4 Strengthen, 1 Unsupported; apply on approval" or "Readiness: No-Go (Low Leverage)").
 
 ---
 

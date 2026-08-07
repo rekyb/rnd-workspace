@@ -9,16 +9,11 @@ and close and projects are created. The source of truth is each study's own
 `README.md` (`Status`, `Started`, `Informed by`, `Design system`). The design half has
 no registry by design — see `.claude/references/design-projects.md`.
 
-_Last updated: 2026-07-30_
+_Last updated: 2026-08-07_
 
 ## Active
 
-The currently active studies (several may run in parallel — one line per study in
-`.claude/.active-research`; each terminal focuses on one via `/focus-research`).
-
-| Research | Type | Started | Status |
-|---|---|---|---|
-| [Post-Signup Handoff to the First-Run Learning Home](research/2026-07-28-post-signup-handoff-first-run-home/) | benchmark | 2026-07-28 | Active — peer review recorded; next step `/close-research` |
+No active research — run `/new-research` to start one.
 
 ## Closed &amp; archived
 
@@ -26,6 +21,7 @@ Past studies, most recent first.
 
 | Research | Type | Started | Closed | Status |
 |---|---|---|---|---|
+| [Post-Signup Handoff to the First-Run Learning Home](research/2026-07-28-post-signup-handoff-first-run-home/) | benchmark | 2026-07-28 | 2026-08-07 | Closed — Q2,Q3,Q5 answered · Q1,Q4 partial · Q6 unanswered |
 | [Learning Home Layout & Information Architecture](research/2026-07-29-learning-home-layout-and-ia/) | benchmark | 2026-07-29 | 2026-07-30 | Closed — Q1,Q5 answered · Q2,Q3,Q4 partial · Q6 withdrawn |
 | [Onboarding Strategy & Patterns](research/2026-07-20-unified-onboarding-synthesis-and-patterns/) | litreview | 2026-07-20 | 2026-07-24 | Closed |
 | [Meaningful Youth Onboarding & the Aha Moment (solve.education)](research/2026-07-17-youth-onboarding-aha-moment/) | benchmark | 2026-07-17 | 2026-07-18 | Closed |

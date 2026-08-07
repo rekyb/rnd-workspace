@@ -1,7 +1,7 @@
 # PRD: Solve Education! Learner Acquisition & Onboarding
 
 - **Project:** `design/onboarding-solve-edu`
-- **Status:** Cycles 1–3 reviewed — stakeholder chain approved (round 1 2026-07-29, round 2 2026-07-30); Principal Designer Mode S: **revise**, all items applied 2026-07-30. **Cycle 4 (§6.3, Slice 16) is drafted and has been through neither gate.** It must not be built until the stakeholder chain has vetted its slice and Mode S has passed the document. **Its entry conditions are no longer the blocker** — three of four were discharged on 2026-07-30 when the top-nav IA landed, and the fourth (a production skill denominator) is met only at prototype fidelity. The two gates are what remain
+- **Status:** Cycles 1–3 reviewed — stakeholder chain approved (round 1 2026-07-29, round 2 2026-07-30); Principal Designer Mode S: **revise**, all items applied 2026-07-30. **Cycle 4 (§6.3, Slice 16) is drafted and has been through neither gate.** It must not be built until the stakeholder chain has vetted its slice and Mode S has passed the document. **Its entry conditions are no longer the blocker** — three of four were discharged on 2026-07-30 when the top-nav IA landed, and the fourth (a production chapter denominator) is met only at prototype fidelity. The two gates are what remain
 - **Informed by:**
   - `research/2026-07-20-unified-onboarding-synthesis-and-patterns` (litreview, peer-reviewed 2026-07-20; coverage Q1,Q3 answered · Q2 partial)
   - `research/2026-07-28-post-signup-handoff-first-run-home` (benchmark, peer-reviewed 2026-07-29; coverage Q2,Q3,Q5 answered · Q1,Q4 partial · Q6 unanswered)
@@ -311,6 +311,118 @@ whose navigation set is unsettled.
 *Falsified if:* the two-column composition takes no larger a share of first clicks than the block
 stack, or if the switcher strip is not recognised as a course control by a majority of participants.
 
+### The Ask entry point is an assumption, and the one relevant observation points against it
+
+**The claim.** A natural-language *"What do you want to learn?"* field at the head of the rail, which
+expands into a question box, gives a first-run learner a way to express an intent the six-goal
+intake could not capture, and does so without reading as evidence that the intake was discarded.
+
+**This entry reverses a §14 exclusion, at the product owner's direction on 2026-07-31.** The
+exclusion is not softened or quietly deleted; it is reproduced in §14 with its reasoning intact and
+marked as overturned, because the argument it made is still the argument against this slice and a
+reader who only sees the current text would not know it was ever made.
+
+**No study supports the claim, and one first-party observation contradicts its second half.** The
+2026-07-28 study recorded CodeSignal resolving conversational intake to a named path and then
+serving a home that discarded it, and §2.1 **F3** is adopted in Slice 13 precisely so this funnel
+does not repeat that. **F3's disposition is unchanged and stays Adopted**, because it says the home
+renders the intake result and Up Next still resolves from the stored course identifier: the Ask
+field is an additional entry point, not a replacement for the one the intake produced. What is
+unevidenced is narrower and is the whole of the risk — **that a learner shown a free-text "what do
+you want to learn?" box ninety seconds after answering that question does not read it as the
+product having ignored their answer.** Nothing in either study speaks to that, and the nearest
+observation runs the wrong way.
+
+**Where the pattern was seen, and what that is worth.** `brilliant.org/home/`, 2026-07-30, from a
+single logged-in session on one account: a field at the head of the rail expanding into a question
+box with an attachment affordance, no typeahead, no course suggestions, and the learner's recent
+questions as its zero state. That is an observation of a competitor's shipped interface, not a
+finding — no plan, no peer review, no coverage table — and **the observed platform's user is
+returning and already carries several courses, which is the case our first-run learner is by
+definition not in.** The account's own query history is not reproduced here or anywhere in this
+repository.
+
+**Three costs are carried rather than resolved**, and each is a §15 decision this document does not
+close: answer quality in Bahasa Indonesia, a latency and cost budget for whatever serves the
+answers, and a moderation position for 13-to-17-year-olds. **The prototype answers none of them and
+does not pretend to** — Slice 17 records the question and states that answering is out of scope,
+which is the same treatment the language switch takes, rather than rendering a fabricated answer.
+
+**A SECOND ASSUMPTION ARRIVED WITH CYCLE 7, and it is the sharper of the two.** Slice 19 renders a
+**simulated** result list, so the claim is no longer only *"a learner does not read this box as the
+product having ignored their answer"* — it is now also **that a learner reads a labelled
+placeholder list as a placeholder.** Nothing evidences that. The label is the entire mechanism:
+the list states beside its cards that the catalogue is placeholder content, an empty result says so
+rather than substituting a default set, and a topic fill-in renders under its own heading instead
+of being counted as a match. Those are design decisions with a rationale, not findings. The
+literature on this — that people over-trust a system that looks like it retrieved something — runs
+against us and is exactly why the labels are criteria rather than good practice.
+
+**The costs Cycle 7 does not pay.** Simulating the surface does not resolve any of the three above,
+and it adds none of its own only because nothing is called: no ranker, no retrieval index, no
+activity source. **A shipped version cannot take this route** — it would need the real service and
+all three costs with it. What Cycle 7 buys is a testable surface, not a head start on the backend.
+
+**Validation path for the second assumption:** the same first-click test, plus a post-task question
+asking whether the courses shown were selected *for them* and whether they were real. Owner:
+Design. *Falsified if:* a majority of first-run learners report the shown courses as
+personalized or as the platform's real catalogue. **That is a falsification condition on the label,
+not on the feature** — if it fires, the answer is a stronger label or no result list, not a better
+placeholder catalogue.
+
+**Validation path:** the same **first-click test** §2 already names for the composition, with one
+added measure — the share of first-run learners who use the Ask field *before* the primary action —
+and a follow-up question on whether they believed the product had used their goal answer. **The
+pass condition is deliberately not stated here**, for the reason the other two assumption sections
+give: a threshold invented in this paragraph to look decisive would be the fabrication these
+sections exist to prevent. Owner: Design, jointly with whoever owns the §15 goal-to-course decision.
+
+*Falsified if:* first-run learners who use the Ask field are **less** likely to reach a first
+learning action than those who do not, or if the field measurably lowers the share who believe
+their goal answer was used. Either outcome makes it a re-ask rather than an addition.
+
+### The course tracker is an assumption, prompted by feedback that is not a study
+
+**The claim.** The rail slot should enumerate the current course's chapters and mark the learner's
+position in them, rather than render a bare progress bar. At first run this reframes the slot from
+*how far along are you* — a question with no interesting answer for someone who has done nothing —
+to *what did you sign up for*, which is orientation the learner actually lacks.
+
+**What prompted it, stated at its real strength.** Learners reported not knowing what the "Course
+progress" slot was about. **That is informal feedback, not a finding**: no plan, no method, no
+participant count recorded, and it is not written up in `research/`. It is treated here as a signal
+against the §2 two-column assumption — the first real signal that assumption has received, and a
+negative one — not as evidence for the replacement.
+
+**The mechanism was predicted by this document.** §11.1's Cycle 4 row explains the narrow-width
+relocation by saying the counter "describes the course the dominant object names, and the counter
+and its subject should not be separated when there is one column to hold both." Cycle 4 separated
+them at wide width anyway: the card read *Course progress · 0 of 5 chapters* and never named which
+course, because the course name was in the other column. **The referent gap is a Cycle 4 regression
+against reasoning this PRD had already written down**, which is why naming the subject is the part
+of Slice 18 that is a fix rather than a bet.
+
+**The reframe is the bet, and the repo already blocks the obvious over-claim.**
+`research/PATTERNS.md` supports naming the subject — the 2026-07-29 study's **F6** found
+`Current Lesson: <name>` beside a progress bar on **3 of 7** platforms. But that same entry carries
+a **peer-review retraction dated 2026-07-29**: the claim that stating one progress framing
+outperforms another at low progress is *"confounded and untested"*, because no capture isolates the
+two framings. **So this PRD does not claim the tracker is clearer.** It claims the slot had no
+referent, which is checkable, and that enumerating the denominator is a stronger form of Slice 12's
+criterion than stating it, which is an argument rather than a measurement.
+
+**What is not claimed:** that an enumerated outline raises first-action rate, that it is more
+motivating, or that learners prefer it. None of those has evidence here.
+
+**Validation path:** the §2 first-click test, with a third added measure — comprehension of the rail
+slot, asked as an open question ("what is this part of the screen for?") before any prompted
+question, since the reported defect is comprehension and a prompted question would lead it. Owner:
+Design.
+
+*Falsified if:* learners asked the open question still cannot say what the slot is for, or if the
+enumerated list draws first clicks away from the primary action — the second being the
+browse-surface risk `research/PATTERNS.md` names against the single-recommended-next-step pattern.
+
 ### 2.1 Findings coverage
 
 Every finding of every study in `Informed by:`, accounted for. Silence is not a disposition; see
@@ -322,7 +434,7 @@ Every finding of every study in `Informed by:`, accounted for. Silence is not a 
 |---|---|---|---|
 | F1 | Labelled handoff rendered on the destination | **Adopted** | Slice 12, as its loading state. *(Absorbed from the retired Slice 11; see §8.1.)* |
 | F2 | The honest zero state (the slot rule) | **Adopted** | Slice 12 for the zero-state half, plus the amended Slice 9 criterion. Its **locked league or leaderboard half is deferred** to §14: the study's own peer review ruled that a contested motivational and cross-cultural decision for 13-to-17s, not a cost decision |
-| F3 | The home renders the intake result | **Adopted** | Slice 13 |
+| F3 | The home renders the intake result | **Adopted** | Slice 13. **Re-examined 2026-07-31 by Cycle 5 and left unchanged.** Slice 17 adds an Ask field that re-asks, in free text, what the goal step asked — which is what §14 cited this row to exclude. The disposition still stands because the row says the home *renders the intake result*, and it does: Up Next resolves from the stored course identifier, ahead of the Ask field in the reading order, and Slice 17 is forbidden from altering it. **What is at risk is not F3's substance but a learner's reading of it**, and that risk is carried as a labelled §2 assumption with a falsification condition, not as a silent change to this row |
 | F4 | The first-run primary action is computed from stored intake, not a behavioural ranker | **Adopted** | Slice 13, and a new constraint on the §15 goal-to-course decision |
 | F5 | A default destination with optional refinement | **Deferred** | §14 — baseline assessment stays a non-goal. The "default destination" half is already what the §15 goal-to-course map produces; the *refinement* half is deferred because its content, not its slot, is the cost, and no reading-level budget exists for it |
 | F6 | Stating the reason at the moment of asking | **Adopted** | Slice 5 |
@@ -685,7 +797,7 @@ twice.
 
 1. Cycle 2's Slice 12 has shipped, so there is an honest zero state to recompose. Recomposing an
    unfinished surface would mean the two cycles' criteria could not be evaluated separately.
-   **Met 2026-07-29** — `src/home.js` renders `0 of N skills` with the countable condition in the
+   **Met 2026-07-29** — `src/home.js` renders `0 of N chapters` with the countable condition in the
    same slot, and the four fabricated progress values are gone from the `src/` build.
 2. The Learning Home shell's navigation treatment has settled. **Met 2026-07-30** — the sidebar was
    replaced with a top bar and the eleven destinations reorganized into the four top-level families
@@ -698,10 +810,10 @@ twice.
    `docs/superpowers/specs/2026-07-30-learning-home-top-nav-ia-design.md`. *(Drafted as "has an
    owner", which was the weaker condition available while the decision was open. It is recorded as
    landed rather than owned because it landed the same day.)*
-4. The goal-to-course map returns a **skill denominator** for the first course. Without it the rail's
+4. The goal-to-course map returns a **chapter denominator** for the first course. Without it the rail's
    progress counter has no denominator to state, and Slice 12's countable-condition criterion would
    be discharged by a counter reading `0` against nothing. **Met at prototype fidelity only** — the
-   `src/main.js` course map carries a per-course `skills` count and the funnel stores it at
+   `src/main.js` course map carries a per-course `chapters` count and the funnel stores it at
    finalization. **Whether the production map returns one is unverified**, and it is the production
    answer this condition is about, because a denominator that exists only in a hand-authored
    prototype map is exactly the fabrication the kill threshold below guards against.
@@ -718,7 +830,7 @@ first run a learner has exactly one course, so a switcher renders a strip of one
 only once a second course exists. **Do not recut the two-column split itself** — it is the thing the
 cycle exists to test, and a cycle that ships everything except its hypothesis has no read-out.
 
-**Kill threshold:** if entry condition 4 cannot be met — the map returns no skill denominator —
+**Kill threshold:** if entry condition 4 cannot be met — the map returns no chapter denominator —
 **stop and do not substitute a percentage or a fabricated total.** A progress figure the system
 cannot derive is the fabrication class Cycle 2 exists to remove, and shipping one here would undo
 the cycle immediately preceding this one.
@@ -726,6 +838,116 @@ the cycle immediately preceding this one.
 **Validation gate:** the first-click test named in §2. It is the cycle's read-out, not a
 nice-to-have, because the composition is carried at assumption strength and nothing else in the
 cycle would falsify it.
+
+### 6.4 Cycle 5 — the Ask entry point
+
+**Appetite: 1 iteration.** One slice, one rail slot, no route, no new screen, and **no service**.
+That last exclusion is what keeps the cycle to an iteration: Slice 17 ships the entry point and the
+question record, and §14 keeps the answer out of scope, so nothing here needs a model, a latency
+budget, or a moderation review to be built. **A shipped version needs all three**, and this cycle
+does not pretend to have bought them.
+
+- ~0.7 iterations: **Slice 17**, the Ask field, its expanded state, and the recent-questions zero
+  state.
+- ~0.3 iterations: the Slice 16 criterion amendment the new rail slot forces, and the §11.1
+  disposition row it requires at 360px.
+
+**This cycle runs after Cycle 4**, for the reason Cycle 4 runs before Cycle 3: it adds a slot to a
+slot set that two other tables are written against. Ordering, not preference.
+
+**Entry conditions:**
+
+1. Cycle 4's Slice 16 has shipped, so there is a rail to put the field at the head of.
+   **Met 2026-07-31.**
+2. §14's overturn is recorded with its original reasoning intact, so the design argument against
+   the slice survives its own reversal. **Met 2026-07-31.**
+3. The §2 assumption is written with a falsification condition. **Met 2026-07-31.**
+
+**What this cycle must not do**, because each would convert an entry point into the recommendation
+surface §14 still excludes: return an answer, suggest courses, offer typeahead, rank anything, or
+change what Up Next resolves to. **The last is the load-bearing one** — if the Ask field can
+re-point the primary action, Slice 13's determinism criterion is dead and §2.1 F3's disposition
+really would have to change.
+
+**Kill threshold:** if the field cannot be built without either fabricating an answer or altering
+the primary action, **stop and ship neither**. Both failure modes undo Cycles 2 and 4 rather than
+adding to them.
+
+**Validation gate:** the first-click test in §2, extended with the two Ask measures that section
+names. Cycle 5 has no read-out of its own without them, because its whole claim is about how the
+field is *read* rather than what it does.
+
+### 6.5 Cycle 6 — the course tracker
+
+**Appetite: 1 iteration**, roughly half of it the data restructure.
+
+- ~0.5 iterations: `COURSE_MAP` and the handoff move from a chapter *count* plus a first-chapter title to
+  a chapter **list**. This is an integrity fix that stands on its own — two fields describing one thing
+  could disagree with nothing to notice — and it is what makes the tracker renderable from given data
+  rather than declared data.
+- ~0.5 iterations: the tracker itself, its three row states, and the §9 criteria.
+
+**Entry condition:** Cycle 4 has shipped, so there is a rail slot to replace. **Met 2026-07-31.**
+
+**What this cycle must not do:** make the rows interactive, mark completion from anything but stored
+progress, or let the tracker outweigh the dominant object. The first is the browse-surface
+anti-pattern `research/PATTERNS.md` names; the second is the fabricated-progress defect Cycle 2
+exists to remove; the third would falsify Slice 16's "exactly one object" claim by construction.
+
+**Kill threshold:** if the chapter list cannot be supplied by the handoff and would have to be
+declared in the view, **stop**. A client-side course structure is the same defect class as a
+client-side denominator, and shipping one here would undo Cycle 2.
+
+**Validation gate:** the §2 first-click test, with the added open comprehension question that
+section names. The cycle answers a comprehension complaint, so a prompted question would lead the
+answer and prove nothing.
+
+---
+
+### 6.6 Cycle 7 — the search field, its starters, and a simulated result list
+
+**Appetite: 1 iteration.** Three quarters of it is the result list and the honesty machinery around
+it; the rest is the field itself.
+
+- ~0.2 iterations: the pill becomes an **input**. Slice 17 shipped a *button* labelled with a
+  question, so a learner who read *"What do you want to learn?"* and started typing produced
+  nothing. This is a defect fix, not a feature: the affordance and the copy disagreed.
+- ~0.2 iterations: the **three starters**, a declared constant in `data.js`, which fill the field
+  and do not submit.
+- ~0.6 iterations: the **simulated result list** — the placeholder catalogue, the keyword match, the
+  match/related split, the empty result, and the labels that keep all of it from reading as real.
+
+**Entry condition:** Cycle 5 has shipped, so there is a field to revise. **Met 2026-07-31.**
+
+**What this cycle overturns, and what it does not.** Slice 17 carried three prohibitions. The
+product owner overturned the first two on 2026-07-31; §14 records the overturn with the original
+reasoning intact, as it did for the Slice 17 overturn before it.
+
+| Slice 17 prohibition | Cycle 7 |
+|---|---|
+| No typeahead, completion, or suggestion | **Overturned in part.** Three declared starters ship. Completion *while typing* stays excluded — results come from an explicit ask |
+| No answer or result list | **Overturned.** A result list ships, **simulated and labelled as such** |
+| No change to the primary action | **Untouched.** Still an acceptance criterion and still a test |
+
+**The third one is why this cycle is affordable at all.** Searching cannot re-point Up Next, a
+result card cannot open a course, and nothing in the search path writes a field the primary action
+reads. If that stopped being true, Slice 13's determinism criterion would be dead and §2.1 F3's
+disposition would be wrong rather than merely re-examined.
+
+**What this cycle must not do:** render a result that a learner could mistake for the real
+catalogue, substitute a default set when nothing matched, count a topic fill-in as a match, or
+compute results while typing. **The first is the load-bearing one** — §14 still excludes the real
+retrieval service, and an unlabelled plausible result is exactly the fabrication this whole document
+is written against. The price of the overturn is paid in labels at the point of use, not in a
+caveat somewhere else.
+
+**Kill threshold:** if the placeholder catalogue cannot be labelled where it renders — if the label
+has to live in a footnote, a tooltip, or this document — **stop and ship the field without the
+result list.** A caveat a learner does not see is not a caveat.
+
+**Validation gate:** the §2 first-click test, extended with one measure this cycle adds: the share
+of learners who, after using the field, believe the courses shown were selected for them. The whole
+risk of simulating a service is that it is read as a real one.
 
 ---
 
@@ -905,6 +1127,49 @@ vertical space — is not something four native iOS screens can settle. This PRD
 object, detail off the home) and routes the **mechanism** to a §15 decision informed by the
 moderated 360px session. A PRD that named the mechanism here would be asserting as settled the one
 thing its evidence explicitly cannot reach.
+
+### 7.6 The N-of-one rule
+
+**Every element on the first-run home must justify itself at the count it will actually hold there
+— zero or one — and not at the count it will hold six months later.** Added 2026-07-31 after two
+comprehension complaints in a row turned out to be the same defect wearing different clothes.
+
+| Element | Steady state | First run | What the learner got |
+|---|---|---|---|
+| Course-progress bar | `62%` against a course in flight | `0%` | A number that says only what they already know |
+| Course switcher | a row of enrolments to choose between | one chip | A plural heading over a duplicate of the card above it |
+
+Both were **steady-state furniture rendered into an empty room.** Neither was a labelling problem,
+which is why neither would have been fixed by renaming it: the progress bar needed reframing to an
+outline, and the switcher needed not rendering. **Both defects also had their own counter-argument
+already written in this document** — §11.1's reason for relocating the counter at 360px, and
+§11.1's reason for sub-levelling the switcher at 360px — each scoped to narrow width when neither
+argument was ever about width. That is the specific failure mode this rule exists to catch: a
+correct argument filed under the wrong condition.
+
+**The rule, stated so it can fail:** for each element on this surface, name the value it carries
+when the learner has done nothing. If that value is *"the same thing another element already
+says"*, or *"nothing they do not already know"*, the element does not ship in that state — it is
+reframed, or it is not rendered until its data exists. §14's exclusions are the same rule applied
+to gamification; this generalises it to everything else.
+
+**Applied to what is on the surface today**, two elements are on notice rather than clean:
+
+- **The XP counter** reads `0 XP` at first run. It is derived from durable data and is honest, and
+  it was added at the product owner's direction — but by this rule it is the same shape as the
+  other two, and it is the next thing predicted to draw a comprehension complaint. **Not changed
+  here**, because it was a deliberate product decision and reversing it is the owner's call, not a
+  consequence of this rule.
+- **The search field** does not duplicate anything and its zero state is honest, so it passes the
+  rule — but §2 already records the separate risk that it reads as the product having ignored the
+  goal answer. Different failure mode, same surface, and the same instrument would detect it.
+  **Cycle 7 puts it on notice against this rule for a second reason.** Its result list can now name
+  a course, and at wide width the Up Next card one column over names one too. They are not
+  duplicates — one is the learner's enrolment and the other is a placeholder catalogue — but *"two
+  blocks naming courses"* is what a learner sees, and this rule exists because that reading is the
+  one that produces the complaint. The comprehension question §6.6 adds is what would detect it,
+  and the first-click test is what would show whether the result list is taking clicks from the
+  primary action.
 
 ---
 
@@ -1105,6 +1370,118 @@ Slice 12 already gates, which must all still pass.
 
 ---
 
+## 8.4 Cycle 5 — the Ask entry point
+
+**One slice**, run after Cycle 4, governed by the separate appetite in §6.4.
+
+### Slice 17 — The Ask entry point
+
+> **REVISED 2026-07-31 by Cycle 7 / Slice 19.** Two of the three prohibitions below were overturned
+> at the product owner's direction: the field now offers starters and renders a simulated result
+> list. The third — no change to the primary action — is untouched. **This slice is kept as
+> written**, rather than edited into agreement with its successor, because its prohibitions are the
+> argument Slice 19 had to answer and a reader who saw only the current text would not know it was
+> made. Read this slice for what was decided in Cycle 5 and Slice 19 for what is built now.
+
+A field reading *"What do you want to learn?"* sits at the head of the rail. Activating it expands
+an inline question box with a multi-line input, an attachment affordance, and a submit control.
+Submitting records the question and states that answering it is out of scope; **nothing is
+returned, nothing is suggested, and nothing about the primary action changes.** The learner's own
+previously asked questions are the box's zero state; before they have asked one it says so rather
+than seeding examples.
+
+**What this slice adds, stated plainly because §14 excluded it until 2026-07-31.** It is the first
+block on this surface that is neither the learner's own work nor a description of it, and the first
+rail slot that is not a relocation. That makes it the exception to two things Cycle 4 was careful
+about, and both are handled by amendment rather than by silence: Slice 16's rail closed list gains
+a third named member, and §11.1 gains a disposition row for it at 360px.
+
+**The attachment affordance is a labelled stub.** It is rendered because the observed pattern has
+one and its absence would misrepresent the pattern being tested, and it is inert because a working
+uploader on a surface serving 13-to-17-year-olds needs the moderation position §14 records as
+still unspecified. It says so when activated rather than opening a file picker.
+
+**Demoable on its own:** create an account, open the Ask field, submit a question, and confirm it
+appears in the recent list on return while Up Next still names the same chapter it named before.
+
+---
+
+## 8.5 Cycle 6 — the course tracker
+
+**One slice**, run after Cycle 5. Appetite: **1 iteration**, of which roughly half is the data
+restructure below and half the rendering.
+
+### Slice 18 — The course tracker
+
+The rail's progress slot names the course it describes and enumerates that course's chapters, marking
+each as done, current, or not started. The bar and the `N of M` count stay above the list, because
+Slice 12 requires the denominator stated in the slot; the list is the detail beneath the summary.
+Rows are **not interactive**.
+
+**The data restructure is the load-bearing half, and it is an integrity fix independent of the
+tracker.** `COURSE_MAP` carried a **count** field and a separate **first-item title** field — two fields
+describing one thing, free to disagree with no way to notice. `chapters` becomes the **list**; the denominator is
+`chapters.length` and the first chapter is `chapters[0]`. A count that contradicts its contents stops
+being expressible. The handoff carries the list, for the same reason it carries the denominator: a
+structure the view declared for itself would be a client-side constant.
+
+**A defect this slice exposed rather than caused.** With only `firstChapterTitle` on the handoff, the
+primary action named `chapters[0]` for every learner while `openChapter()` opened the chapter at their
+actual position — so a learner two chapters in saw *"Continue: Read a bar chart"* on a button that
+opened chapter 3. **The label and the destination disagreed, and nothing on screen could reveal it.**
+Putting the outline beside the button made it visible in one glance. Both now read the same list.
+This is recorded here rather than filed quietly because it is evidence for a general claim this
+document keeps making: a surface that states its own structure catches errors a surface that
+summarises it cannot.
+
+**Demoable on its own:** create an account, confirm the slot lists your chapters with the first
+marked as current, complete a chapter, and confirm the list advances and the primary action names
+the new current chapter rather than the old one.
+
+---
+
+## 8.6 Cycle 7 — the search field, its starters, and a simulated result list
+
+**One slice**, run after Cycle 6, governed by the separate appetite in §6.6.
+
+### Slice 19 — The search field and its simulated results
+
+**The pill becomes the input.** The field at the head of the rail is an `<input type="search">`
+whose placeholder asks *"What do you want to learn?"*, rather than a button carrying that question
+as a label. Focusing it opens a panel below holding three starters, an **Ask** control, the result
+list, and the learner's recent queries.
+
+**Three starters, from a declared constant, identical for every learner.** Activating one **fills
+the field and does not submit**, so the learner keeps the edit the starter exists to make cheap.
+They are a writing aid for someone facing an empty field — not personalization, not a ranking, and
+not derived from the goal answer or the enrolment.
+
+**A simulated result list, labelled where it renders.** Asking matches the query against a
+placeholder catalogue by declared keywords and shows up to three courses. The list states, beside
+the results themselves, that the catalogue is placeholder content and not the real course list or
+its ranking. **A query that matches nothing says so and offers no substitute set.**
+
+**Matches and related courses are separated, and the separation is the honesty mechanism.** A
+course whose keyword the query hit is a *match* and is counted. A course that merely shares a
+match's topic is *related*, renders under its own heading, and is **never** added to the count. A
+fill-in presented as a match is fabricated relevance, which is the failure this slot is labelled
+against.
+
+**Nothing here touches the primary action.** Asking does not re-point Up Next. A result card is
+inert and says so when activated: opening a course would need the catalogue and lesson player §14
+excludes, and re-pointing Up Next instead would break Slice 13.
+
+**Two removals, both at the product owner's direction.** The **attachment affordance** is gone
+rather than kept as a stub — §14's moderation position for 13-to-17-year-olds is still unspecified,
+and not shipping the affordance is the cheapest way to hold that line. The **multi-line question
+box** is gone too: the shape of an input is the promise it makes, and this slot now answers a
+phrase.
+
+**Demoable on its own:** create an account, type into the field at the head of the rail, activate a
+starter, ask, confirm the results carry their placeholder label and that related courses are not
+counted as matches, activate a result and confirm it says nothing was started — then confirm Up
+Next still names the same chapter it named before.
+
 ## 9. Acceptance Criteria per Slice
 
 ### Slice 1 — Public landing and entry selection
@@ -1270,13 +1647,17 @@ Slice 12 already gates, which must all still pass.
 **Zero state:**
 
 - [ ] Given a learner with no completed activity, when the Learning Home renders, then **every numeric progress value on the surface reads zero or is absent**, and no value is populated from a client-side constant.
-- [ ] Given a progress affordance renders at zero, when the learner reads it, then the condition that would change it is stated **in the same slot**, in countable terms naming its denominator (for example "0 of 1 skill"), not as open-ended encouragement.
+- [ ] Given a progress affordance renders at zero, when the learner reads it, then the condition that would change it is stated **in the same slot**, in countable terms naming its denominator (for example "Finish 1 of 5 chapters to see progress here"), not as open-ended encouragement.
+
+  > **Amended 2026-07-31. The criterion is unchanged; which line satisfies it moved.** The course affordance's headline number became a **percentage** at the product owner's direction, and `0%` names no denominator — so read against the count alone this criterion would simply fail. The denominator now lives in the **condition line**, which is the sentence that says what would move the number and is arguably where it always belonged. **What is not permitted is dropping it**: a bare `0%` with open-ended encouragement beneath it is the exact state F2 was adopted to prevent, and the enumerated chapter list added by Slice 18 does not substitute for it either — a learner who counts rows has done the system's work.
+  >
+  > **This PRD does not claim either framing is clearer.** `research/PATTERNS.md`'s peer review on 2026-07-29 retracted the comparable claim — that stating remaining cost outperforms percentage complete at low progress — as *"confounded and untested"*, because no capture isolates the two framings. The percentage is a product decision recorded as such; the denominator requirement is the evidenced part and it survives intact.
 - [ ] Given a content slot has nothing to show, when it renders, then it shows a neutral empty state naming what is missing **and** a recovery action, and it is not replaced by promotional or cross-sell content.
 - [ ] **Rendering invariant, tested with two fixtures:** the slot's markup and layout box are identical between an empty payload and a populated fixture payload. *(Restated after stakeholder review. The original criterion described a learner returning after completing an action, which cannot be observed inside this PRD: lesson delivery and task completion are §14 non-goals, so no learner can complete anything. The intent, no layout jump that makes the returning home read as a different page, survives as a two-fixture component test needing no lesson player.)*
 - [ ] Given the learner reaches the Learning Home, when the screens between finalization and the first learning action are counted, then that count is **at most one**, matching the §5.3 guardrail on authenticated views between finalization and the first learning action.
 - [ ] No first-run tour, coach-mark sequence, or feature walkthrough is presented before the first learning action. *(§14.)*
 - [ ] Empty, loading, and error states are specified and reachable for every slot on the surface, not only the populated state.
-- [ ] **The affordances this criterion governs are named, not inferred**: the course-progress affordance on the Up Next card (denominator: skills in the first course) and, for program learners, the assigned-task checklist (denominator: tasks in the enrollment). Both denominators arrive on the §16.2 handoff response. *(Points, streaks, and achievements are §14 non-goals, so without naming what remains, "every progress affordance renders at zero" would be vacuously true and would gate nothing.)*
+- [ ] **The affordances this criterion governs are named, not inferred**: the course-progress affordance on the Up Next card (denominator: chapters in the first course) and, for program learners, the assigned-task checklist (denominator: tasks in the enrollment). Both denominators arrive on the §16.2 handoff response. *(Points, streaks, and achievements are §14 non-goals, so without naming what remains, "every progress affordance renders at zero" would be vacuously true and would gate nothing.)*
 - [ ] **The greeting is true on first run.** A newly created account is not greeted as a returning one. *(The reference implementation currently renders "Welcome back!" to an account created seconds earlier.)*
 
 **Block order** *(added 2026-07-30 from §2.1 layout F3)*:
@@ -1300,7 +1681,7 @@ Slice 12 already gates, which must all still pass.
 - [ ] **Determinism test:** given a fixed stored `initial_course_id`, the first-run home renders an identical primary action against two different synthetic activity histories, one empty and one fabricated.
 - [ ] **Structural test:** rendering the first-run home issues no call to the recommendation or activity service, asserted with a network spy. *(These two replace an earlier criterion forbidding "any behavioural ranker, recency list, or popularity ordering". Stakeholder review noted that a negative existential over an unbounded set of implementations is not dischargeable by any test; these are.)*
 - [ ] Given the goal-to-course map returns more than one candidate, when the primary action is rendered, then exactly one is presented as primary and the rest are not shown as co-equal actions.
-- [ ] Given the stored first-course identifier is missing or unresolvable, when the Learning Home renders, then the surface shows the Slice 12 empty state with a recovery action and **does not** substitute a default, popular, or arbitrary course. The **handoff contract distinguishes "unmapped" from "default"**, and the client does not collapse that distinction with a fallback operator. *(The reference implementation currently resolves an unmapped goal with `|| 'General Skills Mastery'`, which is exactly the substituted default this forbids.)*
+- [ ] Given the stored first-course identifier is missing or unresolvable, when the Learning Home renders, then the surface shows the Slice 12 empty state with a recovery action and **does not** substitute a default, popular, or arbitrary course. The **handoff contract distinguishes "unmapped" from "default"**, and the client does not collapse that distinction with a fallback operator. *(The reference implementation currently resolves an unmapped goal with `|| 'General Chapters Mastery'`, which is exactly the substituted default this forbids.)*
 - [ ] The stored identifier used by the Learning Home is the same value written at finalization; the binding is covered by a test.
 - [ ] **The primary action names the specific first item and bounds its cost**, not the course it belongs to — the item's own title plus a duration estimate, both **read from** the §16.2 handoff response and neither hard-coded. *(§2.1 layout F6. Adopted on the finding's narrow half: three of seven benchmarked platforms name the next item by title and three state a time cost. The finding's stronger sub-claim, that remaining-cost framing beats percentage-complete framing, was **retracted at that study's peer review as confounded** and is not adopted here.)*
 - [ ] **A stated duration is a claim the product is held to.** Where the handoff response carries **no duration value — whether the key is null or absent entirely** — the cost line is omitted rather than filled with a default or a rounded guess. *(This is the same rule as "unmapped is not default": a fabricated estimate is the fabrication class this cycle exists to remove, and an estimate the learner learns to distrust devalues every later one. **Absent and null must be treated identically** because §13 replays a stored `finalization_result`, so sessions finalized before the field existed replay a payload where the key is missing, not null.)*
@@ -1398,19 +1779,168 @@ Account wall, and the program-code modal.
 
 **Relocated slots:**
 
-- [ ] Given the rail renders, then it carries the program card (program learners) and the course-progress counter, and **nothing else**. No streak, no points, no achievement value, no league, no promotional slot. *(§14. This criterion is the enforceable form of the §14 exclusions on this surface, and it is stated as a closed list because an open one would permit additions without a decision.)*
+- [ ] Given the rail renders, then it carries the Ask field (Slice 17), the program card (program learners) and the course-progress counter, and **nothing else**. No streak, no points, no achievement value, no league, no promotional slot. *(§14. This criterion is the enforceable form of the §14 exclusions on this surface, and it is stated as a closed list because an open one would permit additions without a decision.)* **Amended 2026-07-31 by Cycle 5, from two members to three.** The closed list did its job: adding the Ask field required overturning a §14 entry, writing a §2 assumption, and editing this line, which is exactly the decision an open list would have let someone skip. **The list is still closed** — a fourth member costs the same three edits. **Re-run 2026-07-31 by Cycle 7 and still three.** Slice 19 grows what the first member *contains* — starters, a result list, a related set — without adding a member, and the distinction is the one this criterion is about: the closed list governs what occupies the rail, not how much each slot holds. What Cycle 7 does owe this line is the §11.1 note that the expanded slot can push the dominant object below the fold at 360px, which is a Slice 16 ordinal risk rather than a membership one.
 - [ ] Given the course-progress counter has relocated to the rail, when it renders, then it still states its denominator in its own slot per Slice 12, and the Up Next card **no longer renders a second copy of it**. Stated as a count of one, so a relocation that leaves the original in place fails.
 - [ ] Given an **organic** learner with no program, when the rail renders, then it shows the course-progress counter and the program slot is **not rendered** rather than rendered empty. The rail's own layout box therefore differs between organic and program learners, which is permitted; **Slice 12's rendering invariant applies per slot, not to the rail as a whole**, and this criterion names that reading so the two do not contradict each other on the same build.
 
 **Course switcher:**
 
-- [ ] Given the learner has exactly one enrolled course, when the switcher renders, then it either shows that one course or is not rendered, and in neither case does it show placeholder, locked, or suggested courses to fill the row. *(A strip padded with courses the learner is not enrolled in is promotional content in a structural slot.)*
+- [ ] Given the learner has exactly one enrolled course, then the switcher is **not rendered**, and in no case does it show placeholder, locked, or suggested courses to fill the row. *(A strip padded with courses the learner is not enrolled in is promotional content in a structural slot.)*
+
+  > **Resolved 2026-07-31. This criterion offered two arms — "either shows that one course or is not rendered" — and the build took the first; learners then reported not knowing what the section was for.** With one enrolment it was a plural heading over a single chip naming the course already titled in the card directly above it, and every click answered "you are already in it". **A control with one option is not a control, it is a duplicate label.** The arm is now fixed rather than left open, because an either/or in an acceptance criterion is a decision deferred to whoever writes the code.
+  >
+  > The condition is on the **data**, not on first run: a returning learner with one enrolment has nothing to switch between either. §11.1 had already written the argument — *"at first run it holds one course, so it earns no vertical space"* — and scoped it to 360px, but **nothing in that sentence is about width**. It is about N=1.
 - [ ] Given the switcher renders more than one course, then each entry is reachable by keyboard, exposes an accessible name naming its course, and the current course is marked programmatically as well as visually.
 - [ ] The switcher is **not** the primary action and carries no filled control.
 
 **Regression:**
 
 - [ ] Every Slice 12 and Slice 13 criterion passes unchanged against the recomposed surface. **Enumerated in the slice's test run rather than asserted**, because this slice moves the elements those criteria govern and a passing suite is the only evidence the move preserved them.
+
+### Slice 17 — The Ask entry point
+
+**The field and its states:**
+
+- [ ] Given the first-run home renders at 1024px or wider, then the Ask field is the **first** element in the rail, above the program card and the course-progress counter.
+- [ ] Given the field is activated by pointer or keyboard, then an inline question box expands in place, containing a multi-line input, an attachment control, and a submit control. It does not open a modal, a route, or an overlay. *(Slice 12 forbids an overlay before the first action, and that criterion is not suspended by this slice.)*
+- [ ] Given the box is expanded, then the input carries a programmatic label and the expansion is exposed via `aria-expanded` on the control that triggered it.
+- [ ] Given the box is expanded and Escape is pressed, or focus leaves it with an empty input, then it collapses and focus returns to the field. **A control that expands with no way back is a trap**, which is the same defect the navigation panels were fixed for.
+
+**What it must not do:**
+
+> **The first two criteria below were OVERTURNED 2026-07-31 by Slice 19** and are struck rather than
+> deleted, so the argument they made stays legible. The third stands unchanged and is now the whole
+> of what this slot may not do.
+
+- [ ] ~~Given any input, then **no typeahead, completion, course suggestion, or result list renders**. *(§14 keeps the recommendation surface excluded; this criterion is its enforceable form on this slot.)*~~ **Superseded by Slice 19**, which permits three declared starters and an explicit-ask result list. Completion *while typing* is still excluded and is re-stated there.
+- [ ] ~~Given a question is submitted, then **no answer is rendered**. The surface states that answering is out of scope and records the question. *(A plausible-looking fabricated answer is the failure class this whole document is written against.)*~~ **Superseded by Slice 19**, which permits a **simulated, labelled** result list. The parenthetical is not superseded — it is why Slice 19 pays for the overturn in labels at the point of use.
+- [ ] Given a question is submitted, when Up Next is re-read, then **it names the same course and the same chapter it named before**. *(Determinism test. This is the criterion that keeps §2.1 F3 Adopted; if it fails, F3's disposition is wrong and Slice 13 is broken.)*
+- [ ] Rendering or submitting through the Ask field issues **no call to a recommendation, ranking, or activity source**. *(Structural test, the same one Slice 13 carries.)*
+- [ ] ~~Given the attachment control is activated, then it states that attachments are out of scope and **does not open a file picker**.~~ **Superseded by Slice 19, which removes the control entirely.** The moderation position for 13-to-17-year-olds is still an open §15 decision, and not shipping the affordance holds that line more cheaply than an inert control does. *(Slice 19 replaces this with the stronger criterion that no file input reaches the surface at all.)*
+
+**The zero state:**
+
+- [ ] Given the learner has asked no questions, when the box expands, then it says so in its own words and **shows no example, suggested, or seeded question**. *(A seeded example is a suggestion, and suggestions are excluded above.)*
+- [ ] Given the learner has asked one or more questions, then the box lists their **own** previous questions, most recent first, and each is derived from stored input rather than from a constant.
+
+**Ordinal and invariant:**
+
+- [ ] Given the surface is read in document order, then the Ask field still follows the content column, so the primary action is reached first. **Slice 16's reading-order criterion is re-run against the new slot, not assumed to survive it.**
+- [ ] The one-filled-control invariant still holds across both columns: the Ask field's submit control **is not filled**, and the primary action on the dominant object remains the only filled control on the surface.
+
+### Slice 18 — The course tracker
+
+**The heading, which is where the reported defect was answered:**
+
+> **Superseded 2026-07-31.** This group originally required the tracker to name **the course it describes, from data**, in its own heading — the fix for the "what is this section about" report. The product owner replaced that with a **function label**: the slot no longer names the course at all. The original criterion is recorded here rather than deleted, so a later reader does not mistake its absence for the referent regression returning.
+>
+> **The argument for the change.** The referent was never absent from the *screen*, only from this slot. At wide width the Up Next card one column over is titled with the same course, so the rail was repeating a string the dominant object already carried. Slice 18 closed the gap by duplicating; this closes it by labelling.
+>
+> **The cost, stated.** The slot now depends on the Up Next card for its subject, and "learning path" is a word this data model does not have — there is no path entity, only a course and its chapters. Both are §2 assumptions, not findings.
+
+> **Superseded a second time, later the same day.** The **learner's chosen goal** is now this slot's headline, rendered as a soft yellow chip, and "Your current learning path" is demoted to a **fallback**. Recorded rather than rewritten, for the same reason as above.
+>
+> **Why the goal earns the headline.** It is the only thing on this surface the learner supplied in their own words. Everything else — the course, the chapters, the counter — is the system's resolution of it, and §2.1 **F3** ("the home renders the intake result") was until now satisfied only by implication, through a course title the learner never typed. The chip is the direct form of that claim. It also passes §7.6's N-of-one rule on its own terms: the goal is *what was asked for* and the course is *what it resolved to*, which are two facts rather than one said twice.
+>
+> **Why the fallback is not caution.** A **program learner has no goal**. With only the chip, that learner's slot would carry no label at all — reproducing exactly the complaint that put a heading here in the first place. So one of the two always renders, and never both.
+
+- [ ] Given the learner chose a goal, then the tracker's **headline is that goal**, from the stored `goalId`, and the generic label does **not** render.
+- [ ] Given the learner has **no** goal — a program arrival, or a replayed handoff predating the field — then the **function label "Your current learning path" renders instead**, and no raw id, default, or placeholder goal appears anywhere. *(Printing a plausible goal is a claim about the learner's own intent: a worse fabrication than the invented progress values Cycle 2 removed, because those misstated their data and this would misstate them.)*
+- [ ] **Exactly one of the two renders**, never both and never neither.
+- [ ] The goal title is resolved through the **same lookup the intake screen presented from**, so a re-worded goal set moves both together and the home can never print a title no learner was shown.
+- [ ] The chip uses the brand yellow as a **mixed ground with full-strength ink over it, never as text.** *(`--pri` is #ffcb1d and measures about 1.7:1 on white — a fill colour that fails SC 1.4.3 outright as type.)*
+- [ ] The chip clears **4.5:1 in both themes**, and its hierarchy is carried by **type rather than colour**. *(Measured: 14.9:1 light, 6.09:1 dark. The label was previously `--ink2`, which came in at **4.26:1 on the dark chip** — under AA, on 10px text. No `opacity` on either line: a translucent label lowers real contrast while `getComputedStyle` still reports the full token, which is a failure no contrast check can see.)*
+- [ ] Given the tracker has relocated onto the Up Next card at 360px, then the **generic label** does not render, but the **goal chip does**. *(The old rule's reason — the card's own heading already establishes what the learner is working on — is about the **course**. The card never states the goal, so hiding the chip would drop the one fact on the surface the learner supplied.)*
+- [ ] The course is still named **once on the surface**, from data, on the Up Next card. *(This is what the tracker now depends on. Remove it and the chapters belong to no stated course anywhere.)*
+- [ ] No generic "Course progress" heading remains anywhere on the surface.
+- [ ] The heading does not promise learning **outcomes** ("What you'll learn") over rows that are chapter **titles**.
+
+**Falsification for the label** *(it is an assumption, so it carries a way to be wrong)*: a first-click test, plus a comprehension check asking learners **which course the rail is describing**. If they cannot say, the referent belongs back in the slot and this decision reverts.
+
+**One list, one denominator:**
+
+- [ ] `COURSE_MAP` carries a chapter **list**, not a list plus a count. The denominator is `chapters.length` and the first chapter is `chapters[0]`, so a count that disagrees with its contents is **not expressible**.
+- [ ] The handoff carries the chapter list. A list the view declared for itself would be the client-side constant Slice 12 removed progress values for.
+- [ ] Given a replayed handoff written before the list existed, then positions with no title render as their position ("Chapter 3") and **not** as an invented name.
+
+**Derived, never declared:**
+
+- [ ] Given a learner with no completed chapters, then every row renders as not-started and none is marked done. *(No fabricated completion — Slice 12's rule applied to the new affordance.)*
+- [ ] Given a learner with N completed chapters, then exactly the first N rows are marked done and row N+1 is marked current, computed from stored progress rather than from markup.
+- [ ] The current row is marked **programmatically** (`aria-current="step"`).
+- [ ] **Completion** is carried in **text**, not by icon and colour alone.
+- [ ] The current row carries **no "Next" label**. *(Amended 2026-07-31 at the product owner's direction. The chip restated what the primary action already says in full a few pixels away — "Start: Introduce yourself" — and a second, weaker label for the same chapter is the two-names-for-one-thing defect this list was restructured to remove.)*
+- [ ] The three row states differ by **glyph**, not by colour. *(This is what carries SC 1.4.1 now that the current row has no text label of its own. It is stated as its own criterion because without it, a later change to a single shared icon would silently reduce the list to colour alone.)*
+
+**Not a browse surface, and not a second dominant object:**
+
+- [ ] The rows are **not interactive**: no control, no handler, no route. *(`research/PATTERNS.md` names routing the learner into "another browse surface" as the anti-pattern beside the single-recommended-next-step pattern this surface is built on.)*
+- [ ] The tracker carries no filled control, and the one-filled-control invariant still holds across both columns.
+
+**Agreement with the primary action:**
+
+- [ ] Given a learner at any position, then the primary action's **label** names the same chapter `openChapter()` **opens**, both resolved from the same list. *(This failed silently before Slice 18: the label read `chapters[0]` for every learner while the destination tracked their real position.)*
+- [ ] Given a chapter whose duration the handoff does not carry, then the action states **no** duration rather than an estimated one.
+
+### Slice 19 — The search field and its simulated results
+
+**The field is the field:**
+
+- [ ] Given the first-run home renders, then the pill at the head of the rail is an **input**, not a button. Given a learner reads its question and begins typing, then their text lands in it. *(This is the defect Slice 17 shipped: the affordance and the copy disagreed.)*
+- [ ] The input carries a programmatic label. **A placeholder is not a label** — it disappears at the first keystroke, which is when a screen-reader user re-reading the field needs its name.
+- [ ] Given the input takes focus by pointer **or by keyboard**, then the panel below it opens. *(Tab-only reach is not enough: a keyboard learner who never sees the starters cannot use them.)*
+- [ ] Given the panel is open and Escape is pressed **from the field or from the panel**, then it closes and focus stays in the field. **A control that expands with no way back is a trap.**
+- [ ] Given the panel was closed by Escape and the field **still holds focus**, then clicking the field **or resuming typing** re-opens it, and asking opens it before rendering. *(A `focus` event cannot fire again on an element that never lost focus, so without an explicit path the collapse is one-way for a keyboard learner — the trap above, reintroduced by its own fix.)*
+- [ ] Given the field holds text, then a labelled clear control is offered; given it is empty, then no clear control renders. *(A permanently visible control that does nothing is the dead end this build removes elsewhere.)*
+- [ ] Given the query is cleared, then the result list is cleared with it. *(Otherwise the surface keeps asserting a match for a phrase no longer on screen.)*
+
+**The starters:**
+
+- [ ] Exactly **three** starters render, from a **declared constant**, identical for every learner. They are not derived from the goal answer, the enrolment, the display name, or anything typed. *(Deriving them would make this the ranking surface §14 still excludes, and would make this criterion untestable.)*
+- [ ] Given a starter is activated, then it **fills the field and does not ask**. *(A control that writes the phrase and submits it denies the learner the edit the starter exists to make cheap.)*
+- [ ] Every starter resolves to at least one course in the placeholder set. *(A starter that returns nothing teaches the learner the field is broken.)*
+
+**The results, and the honesty they are bought with:**
+
+- [ ] Results render **only on an explicit ask** — the control or Enter. Given the learner is typing, then nothing is computed beyond the clear control's visibility. *(Live results are the typeahead Slice 17 excluded and Cycle 7 did not reinstate.)*
+- [ ] Given any result renders, then the surface states **beside the results themselves** that the catalogue is placeholder content and not the real course list or its ranking. **The label renders with the results, not once at the top of the page** — a reader who scrolled to a card must be able to see from there that the card is simulated.
+- [ ] Given a query matches nothing, then the surface **says so** and renders **no courses at all**. *(No substitute set. Returning the catalogue when nothing matched presents non-matches as answers.)*
+- [ ] Given a query matches nothing, then **no related courses render either**. *(Topic adjacency hangs off a match; with no anchor, offering the topic set is the substitute set by another route.)*
+- [ ] Given related courses render, then they appear under **their own heading**, are **disjoint** from the matches, and are **excluded from the stated count**. *(A fill-in presented as a match is fabricated relevance — the failure this slot is labelled against.)*
+
+**What it still must not do — the prohibition Cycle 7 did not overturn:**
+
+- [ ] Given a query is asked, when Up Next is re-read, then **it names the same course and the same chapter it named before**. *(Determinism test, carried over verbatim from Slice 17. This is the criterion that keeps §2.1 F3 Adopted; if it fails, F3's disposition is wrong and Slice 13 is broken.)*
+- [ ] Neither asking nor rendering a result writes `initialCourseId`, `courseTitle`, `firstChapterTitle`, `chapterTotal`, or `chaptersDone`. *(Structural test, asserted per function rather than per behaviour.)*
+- [ ] Given a result card is activated, then it states that opening a course is out of scope and **does not navigate**. *(Routing needs the catalogue and lesson player §14 excludes; re-pointing Up Next instead would break the criterion above.)*
+- [ ] Asking issues **no call to a recommendation, ranking, retrieval, or activity source.** *(§14 still excludes the real service. What ships is a simulation of the surface, not of the backend.)*
+
+**The zero state, and the removals:**
+
+- [ ] Given the learner has asked nothing, then the recent list says so and **does not fall back to the starters**. *(The starters are a constant and this list is the learner's own input; merging them makes the slot a lie for anyone who has asked nothing.)*
+- [ ] Given the learner has asked, then the list shows their **own** queries, most recent first, each derived from stored input rather than a constant.
+- [ ] Given the same query is asked twice, then it appears **once**, in its newest position. *(A repeat is one thing the learner wants; a list that says so twice spends its height pushing their earlier, different queries out of view.)*
+- [ ] **No attachment control and no file input** reach the surface. *(Stronger than Slice 17's inert stub, and for the same open §15 reason: the moderation position for 13-to-17-year-olds is still unspecified.)*
+- [ ] No multi-line question box remains. The slot asks for a phrase and its input says so.
+
+**The dominant object fills its column, and its cover says what it is:**
+
+*(Added 2026-07-31 at the product owner's direction. Slice 16 already names Up Next the dominant object; this is the composition finally saying so, plus the cover art the card had no room for while it was short.)*
+
+- [ ] Given the home renders at 1024px or wider, then the Up Next card **fills the height of the content column**. *(`.home-main` was already `flex: 1` inside a `100dvh` card — the height existed and the grid was not claiming it.)*
+- [ ] The growth rule is scoped to the card **directly in the content column**. *(The program card relocates into that column at 360px, and only one object can be the one that grows.)*
+- [ ] The spare height goes to the **cover**, not to whitespace between the title and the action. *(Centring the text cluster floats a small block in a large box; the two nodes a learner reads before pressing the button must stay adjacent to it.)*
+- [ ] The cover art is **stock photography and not final art**, recorded as such in `data.js`, in the markup, and here. ~~It states this on itself.~~ **The on-screen tag was removed 2026-07-31 at the product owner's direction**, and the removal is scoped: **the search results' "Simulated catalogue" label is not affected and must stay.** The distinction is the one this document keeps drawing — *a result list asserts a fact* (these courses match your query) and an unlabelled fabricated fact is the failure class this PRD is written against, whereas *cover art asserts nothing* and is chrome every product ships stock imagery for. What the tag protected was a **reviewer** mistaking the art for licensed final art, which this criterion now carries instead of the surface. **What it costs:** a stakeholder seeing a demo has no on-screen cue, so anyone circulating a screenshot should say it. Licensing for shipped art is untouched and still nobody's decision yet.
+- [ ] The cover is **`aria-hidden`** and its image carries an empty `alt`. *(It duplicates the course title at best, and it sits in the two nodes before the primary action.)*
+- [ ] Cover art is resolved from the **same catalogue the search results read**, by course id. *(One source, so the card and a result card cannot disagree about the same course.)*
+- [ ] Given a course the catalogue carries no art for, **or** an environment where the external host is unreachable, then the card renders a tinted band with the course glyph and **no broken image**. *(A published Artifact's CSP blocks external hosts, so this fallback is the state that renders there — it is a design, not a nicety.)*
+- [ ] The cover image is **not lazy-loaded**. *(It starts hidden and is revealed on load, and a browser will not load a lazy image that is not being rendered — the two together deadlock. It is also the largest image on the first screen.)*
+
+**Ordinal and invariant:**
+
+- [ ] Given the surface is read in document order, then the field still follows the content column, so the primary action is reached first. **Slice 16's reading-order criterion is re-run against the revised slot, not assumed to survive it.**
+- [ ] The one-filled-control invariant holds across both columns **and across the result list**: neither the Ask control nor any result card is filled, and the primary action on the dominant object remains the only filled control on the surface. *(Three filled result cards in the rail would outweigh the one action this surface exists to produce.)*
+- [ ] The Ask control does not stretch to the width of the rail. *(A full-bleed control reads as the page's action whatever its treatment says.)*
 
 ---
 
@@ -1443,7 +1973,7 @@ are required columns, not optional polish.
 | Goal | Choose one learning goal (organic only). **The presented option set is conditioned on the declared age band**: three categories for 13–17, six for 18 and over | Age or Gender | 6 | **Empty:** Continue disabled with the requirement in its label. **Loading:** goal config for the resolved band. **Error:** config failure blocks rather than showing an arbitrary set. **Success:** stable goal id stored |
 | Account wall | Explain why an account is needed and collect it | Goal or Program preview | 7 | **Empty:** submit disabled until shape valid. **Loading:** prevents duplicate submission. **Error:** provider cancellation returns to the intact wall. **Success:** identity verified |
 | Finalization handoff | Show the destination while finalization resolves. **This is Slice 8's only user-visible surface**, and Slice 12's loading state | Account wall | **8, 12** | **Empty:** not applicable. **Loading:** the primary state, shell rendered with the content region skeletonised and labelled. **Error:** recoverable error on the same surface, never a permanent skeleton. **Success:** content resolves in place |
-| Learning Home (first run, organic) | Orient the learner and route them into their first action. **First-run progress affordances: the Up Next course-progress counter only** (denominator: skills in the first course, **in the rail from Slice 16**). Points, streaks, and achievements are not rendered | Finalization handoff | **12, 13, 16** | **Empty:** every progress affordance at zero with its countable condition in the slot; content slots show a neutral empty state plus recovery action; **no slot given to promotion**. **Loading:** per Slice 12's loading state. **Error:** unresolvable first course shows the empty state, never a substituted course. **Success:** primary action emits `lesson_started` |
+| Learning Home (first run, organic) | Orient the learner and route them into their first action. **First-run progress affordances: the Up Next course-progress counter only** (denominator: chapters in the first course, **in the rail from Slice 16**). Points, streaks, and achievements are not rendered | Finalization handoff | **12, 13, 16** | **Empty:** every progress affordance at zero with its countable condition in the slot; content slots show a neutral empty state plus recovery action; **no slot given to promotion**. **Loading:** per Slice 12's loading state. **Error:** unresolvable first course shows the empty state, never a substituted course. **Success:** primary action emits `lesson_started` |
 | Learning Home (first run, program) | As above, plus the **assigned-task checklist** (denominator: tasks in the enrollment), carrying program identity, **which moves to the rail at Slice 16** | Finalization handoff | **12, 13, 16** | As above, plus: tasks fetched from the enrollment, never hard-coded. **Empty:** a program with no assigned tasks yet shows a stated empty state, not a fabricated task. **Success:** primary action emits `assigned_task_opened` |
 | First learning action *(prototype-only stub)* | Give the primary action a real destination so the handoff can be demonstrated end to end | Learning Home | **none — see below** | Not specified as a production screen. The lesson player is a §14 non-goal, so this row exists to record the stub rather than to require it |
 
@@ -1493,8 +2023,10 @@ requires each one to name which of the three it takes:
 |---|---|---|
 | Brand lockup in the shell | **Kept**, inside the top bar's `banner` landmark at both widths | *(Revised 2026-07-30 with the top bar.)* Under the sidebar the brand had to be removed at narrow width, because it was a product-owned block preceding the learner's next action in document order. A `banner` landmark is the exemption Slice 12's block-order criterion names, so it no longer needs removing — the criterion is satisfied by the landmark rather than by hiding the element |
 | Navigation destinations | **Kept** as four top-level families; the eight members move one level into their family panel | Four labelled destinations fit a 360px row with headroom, in English and against plausible Bahasa labels. Nothing is traded for an icon and nothing hides behind a hamburger, both of which §6.2's kill path forbids |
-| Utility cluster (XP, theme, language, Inbox, profile) | **Kept**, wrapping to its own row below 768px | XP reads zero from durable data. Theme and language are learner choices that persist. Referral lives in the profile menu rather than the navigation |
-| Greeting and subtitle | **Kept**, above the dominant object | It is the learner's own content, which is the block order F3 supports, and it costs one line |
+| Utility cluster (XP, Inbox, profile) | **Kept**, wrapping to its own row below 768px | XP reads zero from durable data. Referral lives in the profile menu rather than the navigation |
+| Theme and language controls | **Sub-levelled** into the profile menu at both widths | *(Revised 2026-07-31.)* They were their own controls in the bar. Both are account preferences a learner sets once, and a bar slot is the scarcest space this layout has — at 360px the cluster is three controls instead of five. **Sub-levelled, not dropped:** each is one interaction deeper and neither is hidden. Language resolves in the §12 dialog rather than a second panel, because a panel opening out of the profile panel would be the second level of depth the top bar exists to avoid, and its list would sit back inside the stacking context that buried the family panels |
+| Greeting and subtitle | **Dropped** at every width *(revised 2026-07-31)* | Previously Kept, on the reasoning that it is the learner's own content and costs one line. It cost two, and neither carried information the primary action does not: the action already names the item and already reads `Start:` or `Continue:`. F3 supports putting the learner's own content first, not putting a restatement of it above the thing it restates. **The first-run branch is not dropped with it** — it moved onto the action verb, which is the control the learner presses rather than a sentence above it |
+| Sample-learner notice | **Relocated** into the status region at the top of the content column | It rode in the greeting subtitle and is not a greeting: it is the disclosure that `home.html`, opened without walking the funnel, is showing a sample rather than the learner's own data. Dropping it with the greeting would make a prototype holding no data look like one holding real data |
 | Up Next card (organic) | **Kept** — this *is* the dominant object | The primary action; disposing of it would defeat the surface |
 | Up Next card (program) | **Sub-levelled** below the assigned-task block | A program learner's assigned work outranks a goal-derived suggestion, and both cannot be dominant |
 | Assigned-task checklist | **Kept** for program learners; not rendered for organic | Already conditional in the wide layout; no change of kind |
@@ -1503,7 +2035,8 @@ requires each one to name which of the three it takes:
 | Rail as a region *(Cycle 4)* | **Dropped as a region.** Its two slots are disposed of individually below | A rail is a two-column device and there is one column at 360px. Dropping the region without disposing of its contents would be the reflow this table forbids, which is why the next two rows exist |
 | Course-progress counter *(Cycle 4)* | **Relocated** back onto the Up Next card, in its Cycle 2 position | It has a natural home: it describes the course the dominant object names, and the counter and its subject should not be separated when there is one column to hold both. **This is a return, not a new placement**, which is what makes the disposition cheap |
 | Program card *(Cycle 4)* | **Relocated** into the assigned-task block, which §11.1 already makes the dominant object for program learners | Program identity is the header of the work it identifies. Rendering it as a separate stacked card above the tasks would put a second program-owned block ahead of the learner's work, failing Slice 12's ordinal criterion |
-| Course switcher *(Cycle 4)* | **Sub-levelled** behind the navigation's `Courses` destination | At first run it holds one course, so it earns no vertical space in a single column. **Not dropped**, because a learner with a second course must still be able to reach it, and `Courses` is where that already leads |
+| Course switcher *(Cycle 4)* | **Not applicable at first run** — with one enrolment it is not rendered at any width. Where a learner has two or more, it is **sub-levelled** behind the navigation's `Courses` destination at 360px | *(Revised 2026-07-31.)* This row used to read "at first run it holds one course, so it earns no vertical space in a single column", which was the right argument scoped to the wrong thing: **it is an N=1 argument, not a width argument**, and applying it only at 360px left a single-course switcher rendering at desktop width where learners reported not understanding it. The narrow-width half stands unchanged for the multi-course case; `Courses` is where that already leads |
+| Search field *(Cycle 5, revised Cycle 7)* | **Kept**, relocated to the top of the content column, above the dominant object | The only slot on this surface that is **kept above** the learner's own work at narrow width, and the reason is stated rather than assumed: it is an input, not a signal, and an input pushed below a card and a task list is one the learner never finds on a phone. **Cycle 7 strengthens this row rather than changing it** — the slot is now literally an `<input>` rather than a button that opens one, so "it is an input" stopped being an argument about its role and became a statement about its markup. **What Cycle 7 adds is a risk this row must now carry:** the expanded panel holds three starters and up to three result cards, so at 360px the slot can push the dominant object well below the fold. It is collapsed on every arrival, which is what keeps that cost opt-in; if the first-click test shows learners reaching the results before the primary action, this row reverses before anything else. **This is a deliberate exception to Slice 12's ordinal criterion**, which permits only the shell's landmarks and the greeting ahead of the dominant object. Cycle 5 takes the exception knowingly, and §2's assumption section carries the risk: if the first-click test shows the field taking clicks *from* the primary action, this row is the first thing to reverse — moving it below the dominant object at narrow width costs one line and no rebuild. **Sub-levelling it behind a navigation destination was considered and rejected**: there is no destination it belongs to, and inventing one would be the depth trade §6.2's kill path forbids |
 | Points, streaks, achievements | **Not applicable** — never rendered at any width | §14 non-goals. Recorded so the row is not read as an omission |
 
 > **A shipped Cycle 1 defect surfaced while writing this table, and it is charged to the §6.2 shell
@@ -1552,9 +2085,21 @@ close, and focus restored to the trigger.
 | **Program preview / join confirmation** | A valid code response | Let the learner confirm a **resolved program identity**, and disclose what the facilitator will be able to do | **Confirm and continue** / Back to code entry | Escape, Back | Returns to code entry with the code preserved. No enrollment is created until finalization revalidates the code |
 | **Login** | "Login" in the header, or the account wall | Authenticate a returning learner | **Log in** / provider buttons / Cancel | Escape, Cancel, backdrop | An active onboarding session is preserved for linking, never discarded. Provider cancellation returns here with a localized recovery message |
 | **Eligibility blocked** | A policy evaluation that blocks self-service registration | Explain the outcome and offer an approved safe next action | Approved next action only; no retry that would re-submit the same band | Escape returns to the age step | Entered data is retained in the temporary session; it is **not** silently discarded, and no parental-consent route is promised where none exists |
+| **Language picker** *(added 2026-07-31)* | The language pill in the profile menu | Change the interface language from a list that names each language in its own script, so a learner who cannot read the current interface can still recognise theirs | A choice applies immediately and closes; there is no confirm step, because the change is reversible from the same place | Escape, Close, backdrop | Nothing is in progress. The preference is written on selection and nowhere else, so a dismissal leaves the previous language set |
 
-**No modal is introduced on the first-run Learning Home.** Slice 12 forbids a first-run tour or
-coach-mark sequence before the first learning action, so the Learning Home has no overlay of its own.
+**No modal interrupts the first-run Learning Home.** Slice 12 forbids a first-run tour or coach-mark
+sequence before the first learning action, and that still holds: nothing opens on arrival. The
+language picker is **learner-invoked** and is a different class of overlay — it appears only when the
+learner asks for it, from a control they went looking for. *(This paragraph previously read "no modal
+is introduced on the first-run Learning Home", which the language picker would have contradicted. The
+rule it was stating was about uninvited overlays, so it is restated rather than relaxed.)*
+
+**One exception to the shared baseline above, and it is deliberate.** The baseline says focus is
+restored *to the trigger*. The language picker restores focus to the **profile control in the active
+view** instead, because its trigger lives inside the profile menu, and opening the dialog closes that
+menu — restoring focus to a `display: none` element makes the browser drop focus to `<body>`, which
+is the failure the baseline exists to prevent. The profile control is visible, is one keystroke from
+reopening the menu, and is where the learner started.
 
 **Constraint on modal copy.** A modal that carries a legal or capability disclosure (program preview,
 eligibility blocked) is subject to the same plain-language reading-level requirement as Slice 5's
@@ -1685,7 +2230,10 @@ All identifiers in client-visible analytics or URLs must follow the platform's e
 - **Separating the daily progress signal from a detailed progress record** (§2.1 layout F5). The benchmarked pattern is a small persistent counter on the home with the detailed record on a destination visited deliberately. It does not apply yet, for a structural reason rather than a cost one: **points, streaks, and achievements are already non-goals above, so the first-run home has exactly one progress affordance and there is no detailed record to separate it from.** The finding's own clean-fit rate is 3 of 7, and its second half — running a behavioural goal horizon alongside an outcome horizon, modelled on one platform — needs a steady-state home to sit in. Revisit when a steady-state Learning Home is specified, alongside the deferred F1 device decision
 - **The migrate-or-delete rule for signals losing a navigation rail** (§2.1 layout F8, second half). The structural half of that finding *is* adopted, in Slice 14. The rule for deciding whether a signal that loses its rail should move inward or be dropped is not, because the study derives it from its only two web-and-phone pairs, which produced **opposite** outcomes, and labels it hypothesis-generating rather than a finding. **Amended 2026-07-30 by Cycle 4.** This entry previously added "this PRD also has nothing for it to govern: its rail carries navigation and nothing else", and Slice 16 makes that false by putting two content slots in a rail. The disposition is unchanged and the reason is now the only reason: **an unadopted rule stays unadopted whether or not there is something for it to govern.** §11.1 therefore disposes of the two new slots by naming a destination for each from first principles, and records why, rather than deriving them from a rule the evidence does not support. Revisit if the study's two opposite cases are ever resolved by a third
 
-- **A natural-language "Ask" or smart-search entry point on the first-run Learning Home.** Observed directly on `brilliant.org/home/` on 2026-07-30: a field reading *"What do you want to learn?"* at the head of the rail, which expands into a question box with an attachment affordance, offers **no** typeahead or course suggestions, and uses the learner's recent questions as its zero state. **It is excluded on a design ground before a cost one.** A free-text "what do you want to learn?" box on the first-run home asks the learner the question the goal step asked ninety seconds earlier, which is the intake-discarding failure §2.1 F3 is adopted in Slice 13 to prevent, and which the 2026-07-28 study recorded against CodeSignal — conversational intake resolving to a named path, and a home that discards it. The observed platform can afford the box because its user is *returning* and already carries several courses. **The cost ground is separate and also disqualifying at this appetite:** it is a recommendation surface, which the entry above already excludes; and it would need answer quality in Bahasa Indonesia, a latency and cost budget, and a moderation position for 13-to-17-year-olds, none of which this document specifies. **Revisit when a steady-state Learning Home is specified**, alongside the deferred F1 device decision and F5's daily-signal separation, which are held for the same structural reason. *(Recorded from a single logged-in session on one account. That is an observation of a competitor's shipped interface, not a finding: it has no study behind it, and the account's own query history is not reproduced here or anywhere in this repository.)*
+- ~~**A natural-language "Ask" or smart-search entry point on the first-run Learning Home.**~~ **OVERTURNED 2026-07-31 at the product owner's direction. It is now Cycle 5, Slice 17.** The entry is kept rather than deleted, because the argument it made is still the argument against the slice, and a reader who saw only the current text would not know it was ever made. **The reasoning, verbatim as it stood:** *Observed directly on `brilliant.org/home/` on 2026-07-30: a field reading "What do you want to learn?" at the head of the rail, which expands into a question box with an attachment affordance, offers no typeahead or course suggestions, and uses the learner's recent questions as its zero state. It is excluded on a design ground before a cost one. A free-text "what do you want to learn?" box on the first-run home asks the learner the question the goal step asked ninety seconds earlier, which is the intake-discarding failure §2.1 F3 is adopted in Slice 13 to prevent, and which the 2026-07-28 study recorded against CodeSignal — conversational intake resolving to a named path, and a home that discards it. The observed platform can afford the box because its user is returning and already carries several courses. The cost ground is separate and also disqualifying at this appetite: it is a recommendation surface, which the entry above already excludes; and it would need answer quality in Bahasa Indonesia, a latency and cost budget, and a moderation position for 13-to-17-year-olds, none of which this document specifies. Revisit when a steady-state Learning Home is specified, alongside the deferred F1 device decision and F5's daily-signal separation, which are held for the same structural reason.* **What the overturn does and does not settle.** It settles that the field ships. It settles **nothing** about the three costs: answer quality in Bahasa Indonesia, the latency and cost budget, and the moderation position for 13-to-17-year-olds are all still unspecified, and are now carried as open §15 decisions rather than avoided by exclusion. Slice 17 is buildable in spite of them only because the prototype **records the question and answers nothing** — a shipped version cannot take that route. The design argument above is not answered by the overturn either; it is recorded as a labelled assumption in §2, *"The Ask entry point is an assumption, and the one relevant observation points against it"*, with a falsification condition. *(The observation remains a single logged-in session on one account: a competitor's shipped interface, not a finding. It has no study behind it, and the account's own query history is not reproduced here or anywhere in this repository.)*
+- **An answer, recommendation, or retrieval SERVICE behind the search field.** **Amended 2026-07-31 by Cycle 7, and the amendment is narrower than it looks.** The entry previously read: *"Slice 17 ships the entry point and the question record. What comes back is out of scope at this appetite and stays a §14 non-goal, for the reason the recommendation-surface entry above gives. A prototype that rendered a plausible answer would be fabricating the one thing this document has no way to stand behind."* **The service is still excluded.** Nothing in Cycle 7 calls a ranker, a retrieval index, or an activity source, and Slice 19 carries that as a structural criterion. What the product owner overturned is the second sentence's consequence for the PROTOTYPE: it may now render a **simulated** result list. **The last sentence is not overturned and is the reason the overturn was affordable** — a *plausible* fabricated result is still the failure class, so Slice 19 buys the difference with a label at the point of use. The list says, beside the cards themselves, that the catalogue is placeholder content and not the real course list or its ranking; a query matching nothing says so rather than substituting a default set; and a topic fill-in renders under its own heading rather than being counted as a match. **If those labels ever come off, this entry excludes the result list again.** The three costs the Slice 17 overturn left open — answer quality in Bahasa Indonesia, a latency and cost budget, a moderation position for 13-to-17-year-olds — are still open §15 decisions, and a shipped version cannot take the route the prototype takes here
+- ~~**Typeahead, completion, or suggested prompts on the search field.**~~ **OVERTURNED 2026-07-31 at the product owner's direction. It is now Cycle 7, Slice 19.** Kept rather than deleted, on the same principle as the entry above it. **The reasoning as it stood, in Slice 17's own words:** *no typeahead, completion, course suggestion, or result list renders; §14 keeps the recommendation surface excluded and this criterion is its enforceable form on this slot.* **What the overturn settles.** Three **declared, constant** starter prompts ship — identical for every learner, written into `data.js`, and forbidden by §9 from being derived from the goal answer, the enrolment, or anything typed. That is what keeps them a writing aid rather than the ranking surface the entry above still excludes. **What it does not settle:** completion *while typing* stays excluded, and Slice 19 restates it as a criterion and a test. The distinction is not cosmetic — a constant three anyone can read off a file is inspectable, and a suggestion computed from a partial query is the recommendation model §14 has no way to stand behind
+- **The attachment affordance on the search field.** *(New 2026-07-31.)* Slice 17 shipped it as a labelled inert stub, on the ground that the observed pattern has one and its absence would misrepresent the pattern being tested. Slice 19 **removes it** at the product owner's direction. The reason it was inert is unchanged and is now the reason it is gone: a working uploader on a surface serving 13-to-17-year-olds needs the moderation position this section still records as unspecified, and not shipping the affordance holds that line more cheaply than an inert control does. Revisit when Legal/Privacy supplies the moderation position named in §15
 - Translation beyond English and Bahasa Indonesia
 - A CMS for landing-page content
 
@@ -1728,7 +2276,7 @@ All identifiers in client-visible analytics or URLs must follow the platform's e
 | Temporary-session data retention and deletion schedule | Privacy + Backend | Before Slice 8 implementation | Expire incomplete sessions after 24 hours and delete consumed sessions promptly |
 | ~~**Which navigation the production first-run Learning Home inherits**~~ (§2.1 layout F1) | Product + Design | **Settled 2026-07-30** | **The real eleven, reorganized into four top-level families: Home, Learn, Portfolio, Work.** Eight destinations move one level into a family panel, Referral into the profile menu, Inbox becomes an icon control. Nothing is deleted and maximum depth is two. This also **partially reopens the deferred layout F1**: a purpose-based grouping *is* the structural device that finding recommends, so §14's deferral now covers only the steady-state home's full device decision, not the first-run navigation |
 | **Whether the four families and their membership match how learners actually cluster the destinations** | Design/Research + Product | Before any claim that this IA is validated | **Treat as unvalidated.** The names and the assignment are a judgement from destination labels. The cited study **declined to recommend any mapping** because ten of the eleven destinations were never opened: *"Assigning them on their names alone would be a content judgement made without the content."* Gate, in order: content inventory of the ten; **open card sort, n≈15, in Bahasa Indonesia**, stratified by facilitated versus self-directed arrival; first-click test. **Falsified if** the card sort produces clusters matching neither a purpose split nor a scope split, or a first-click test shows the grouped variant no faster than the flat eleven on a majority of tasks |
-| **Whether an XP counter belongs on the first-run home at all** — it is rendered but §14 excludes points as a mechanic | Product + Design | Before Cycle 3 release review | **Ships reading zero, derived from durable data.** Added at the product owner's direction 2026-07-30. It does **not** reopen the points mechanic: no points are awarded, spent, or compared, and the counter is a projection of skills completed. If §14's exclusion is meant to cover the *display* as well as the mechanic, the counter comes out rather than being filled with a literal |
+| **Whether an XP counter belongs on the first-run home at all** — it is rendered but §14 excludes points as a mechanic | Product + Design | Before Cycle 3 release review | **Ships reading zero, derived from durable data.** Added at the product owner's direction 2026-07-30. It does **not** reopen the points mechanic: no points are awarded, spent, or compared, and the counter is a projection of chapters completed. If §14's exclusion is meant to cover the *display* as well as the mechanic, the counter comes out rather than being filled with a literal |
 | **The narrow-width navigation mechanism** — §7.5 fixes the structure and leaves this open deliberately | Design + Engineering, informed by the 360px session | Before Slice 14 build, and **together with** the shell-prerequisite work, not after it | **A destination row directly beneath the page header, in normal flow, scrolling with the content** — all four destinations visible and labelled, no fixed vertical occupancy, no overflow control. Named as a concrete buildable treatment rather than as a property, because the prior wording ("keeps every destination visible without occupying fixed vertical space") was a constraint plus an adjective and left the artefact to whoever was at the keyboard. **Two alternatives are blocked until the shell prerequisite lands** and must not be chosen before it: a fixed bottom bar and any pinned or sticky row both depend on positioning that the shell's persistent entry-animation transform and its clipping currently defeat. **A fixed bottom bar remains disfavoured on its own merits** — in an Android browser it competes with collapsing URL chrome for scarce vertical height, precisely the condition native-iOS evidence cannot speak to |
 | **Approved Bahasa Indonesia navigation label set, measured at 360px** | Localization + Design | **Before Cycle 3 iteration 1** — this is a §6.2 entry condition | Block Cycle 3. A destination budget validated on English has not been validated |
 | **Moderated usability session on a real Android device at 360px**, against the Slice 14 build. **The instrument is designed via `/plan-usability`, not improvised here** — this PRD names what the session must settle and the threshold that fires the kill; the task set, script, and counterbalancing belong in a `test-plan.md` | Design/Research + Product | **Instrument approved before Slice 14 build; session run before Slice 14 is called done** | Block the slice's done call. The **two** mobile claims (layout F7 and F9) are labelled hypotheses, and a hypothesis nobody tests becomes a fact by default, which is the specific failure §2's labelling exists to prevent |
@@ -1779,9 +2327,9 @@ Additional contract requirements, added after stakeholder review:
   error, so a reload or a backgrounded tab replays the outcome instead of re-running it.
 - **A client finalization timeout is stated, and retry reuses the same idempotency key.** On metered,
   intermittent connectivity the failure mode is no response rather than an error response.
-- **The handoff response carries a denominator for every countable first-run affordance** (skills in
+- **The handoff response carries a denominator for every countable first-run affordance** (chapters in
   the first course; tasks in the enrollment) and the **assigned-task payload shape**. Without these,
-  the only way to render "0 of 1 skill" is hard-coded text, which Slice 12's first criterion forbids.
+  the only way to render "0 of 1 chapter" is hard-coded text, which Slice 12's first criterion forbids.
 - **The handoff response carries the first item's title and its duration estimate**, as separate
   fields, so Slice 13's primary action can name one specific time-bounded thing by interpolation
   rather than by hard-coded copy. **The duration field is nullable and its absence is meaningful:**
@@ -1953,7 +2501,7 @@ Prohibited analytics properties include display name, email, password, raw progr
 | Primary content | First course read from `LearnerProfile.initial_course_id` | Assigned program content from the enrollment |
 | Program task list | Hidden | Visible from enrollment payload |
 | First action | `lesson_started` | `assigned_task_opened` |
-| **Course-progress affordance (Up Next card)** | Renders **at zero with its denominator in the slot**, e.g. "0 of N skills". Denominator source: skills in the first course, on the §16.2 handoff response | As organic |
+| **Course-progress affordance (rail, from Slice 16)** | Renders **at zero with its denominator in the slot**: the headline number is a percentage (`0%`) and the denominator is carried by the condition line, e.g. "Finish 1 of N chapters to see progress here". Denominator source: chapters in the first course, on the §16.2 handoff response | As organic |
 | **Assigned-task checklist** | Not present | Renders **at zero with its denominator in the slot**. Denominator source: tasks in the enrollment payload |
 | Points, streaks, achievements | **Not rendered.** §14 non-goals; no placeholder, no locked slot | As organic |
 
@@ -1979,6 +2527,10 @@ dictionary is what an implementer follows**. An appendix silent on narrow width 
 | Home navigation destinations | **Four top-level families** — Home, Learn, Portfolio, Work — icon above label at narrow width, **every one keeping its text label**, the active family marked visibly and with `aria-current="page"` inside a named `nav` landmark, each meeting the 24 by 24 CSS px target-size floor | Become icon-only; collapse behind a hamburger that hides the whole navigation; drop the current-location marking |
 | Family panel | Opens on its trigger, lists **every member of that family at once**, closes on Escape or an outside click. Border held to SC 1.4.11's 3:1 rather than the decorative hairline | Nest a further level; hide a member behind a scroll; be clipped by the bar that contains it |
 | Active-family marking | When the learner is on a family member, **both** the family in the top bar and the member in the panel carry `aria-current="page"` | Mark only the member, which leaves a row of families saying nothing about where the learner is |
+| Utility cluster | **Three controls** — XP, Inbox, profile — wrapping to its own row below 768px. The profile control is **icon-only**, with an `aria-label` | Carry a control that is a preference rather than a destination. Render the profile control with a visible text label. *(Revised 2026-07-31 twice: theme and language moved into the profile menu, §11.1; and the profile control dropped its "Profile" word at the product owner's direction — an avatar glyph in the top-right is the one navigation label a learner does not need read to them, and the word was competing for horizontal room with the four destination families that do need theirs. **The accessible name is not optional and is the criterion here:** an icon-only control with no `aria-label` fails SC 4.1.2, and it is what the profile panel's relationship is announced from.)* |
+| Profile menu | Carries the account destinations, then a divider, then the **language pill** and the **dark-mode switch**, then a divider, then Log out. Both preferences are one line: leading icon, label, trailing control | Nest a `.home-nav-panel` inside itself for language — that is the second level of depth the top bar exists to avoid, and it re-enters the stacking context that buried the family panels |
+| Dark-mode switch | `role="switch"` with `aria-checked`, visible label "Dark mode", and the knob's **position** carrying the state as well as the track colour (SC 1.4.1) | Label the switch with an action ("Switch to dark mode"), which against on/off announces the opposite of the state half the time. Flip the leading moon to a sun when on, which contradicts the label beside it. Carry an `aria-label` alongside visible text, which lets the two drift apart (SC 2.5.3) |
+| Language row | A **flush** row showing `[globe] [current language] [chevron]`, opening the §12 language picker. `aria-haspopup="dialog"`, and an accessible name that supplies what the row is while still containing the visible language string (SC 2.5.3) | Point the chevron **down**, which promises a list dropping below a control whose list opens centred. Show only the globe, which leaves the current language unstated. Give it a bordered pill treatment: one bordered element among five flush rows reads as the emphasis of the menu, and the language row is not what a learner opens this menu for |
 | Destination icons | **`aria-hidden="true"`**, so each destination's accessible name is its label alone | Contribute ligature text to the accessible name, or render that text visibly before the icon font loads. *(Both are true of the reference implementation today, and both corrupt the Bahasa width measurement this appendix's next row depends on.)* |
 | Up Next card | The dominant object for organic learners, first in the content column | Share the first screenful with a second card competing for the same role |
 | Assigned-task checklist | The dominant object for program learners; Up Next sub-levels below it | Render both as co-equal dominant objects |
