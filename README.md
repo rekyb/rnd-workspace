@@ -14,18 +14,18 @@ flowchart TD
     classDef design fill:#1f2937,stroke:#10b981,stroke-width:2px,color:#fff;
     classDef gate fill:#374151,stroke:#f59e0b,stroke-width:2px,color:#fff;
 
-    subgraph RTrack ["🔍 Track 1: Strategic R&D (research/YYYY-MM-DD-slug/)"]
-        R1["`/new-research <slug>`<br/>Scaffold study (Benchmark/Usability/Litreview)"] :::research --> R2["**Capture Evidence**<br/>Screenshots, Flows & Notes<br/>*(Mobbin default / Chrome C1-C5)*"] :::research
-        R2 --> R3["`/synth-findings`<br/>Synthesize into `SYNTHESIS.md`"] :::research
-        R3 --> R4["`/review-research`<br/>Peer Review Debate<br/>*(Skeptic, Domain Expert, Auditor)*"] :::gate
-        R4 --> R5["`/close-research`<br/>Merge findings into `PATTERNS.md`"] :::research
+    subgraph RTrack ["Track 1: Strategic R&D (research/YYYY-MM-DD-slug/)"]
+        R1["/new-research [slug]<br/>Scaffold study (Benchmark/Usability/Litreview)"] :::research --> R2["Capture Evidence<br/>Screenshots, Flows & Notes<br/>(Mobbin default / Chrome C1-C5)"] :::research
+        R2 --> R3["/synth-findings<br/>Synthesize into SYNTHESIS.md"] :::research
+        R3 --> R4["/review-research<br/>Peer Review Debate<br/>(Skeptic, Domain Expert, Auditor)"] :::gate
+        R4 --> R5["/close-research<br/>Merge findings into PATTERNS.md"] :::research
     end
 
-    subgraph DTrack ["🎨 Track 2: Direct Design & Prototyping (design/project/)"]
-        D1["`/new-design <project>`<br/>Scaffold design container"] :::design --> D2["`/draft-prd`<br/>Draft `PRD.md` Shape-Up Doc<br/>*(Jobs, Appetite, Slices, Criteria)*"] :::design
-        D2 --> D3["**Stakeholder Review**<br/>*(PM, Tech Lead, Head of Product)*<br/>& Principal Designer Gate (Mode S)"] :::gate
-        D3 --> D4["`/design-prototype`<br/>Author multi-file source in `src/`<br/>*(using ui-library/ design system)*"] :::design
-        D4 --> D5["`/export-prototype`<br/>Build `build/standalone.html`<br/>& run design gate checks"] :::gate
+    subgraph DTrack ["Track 2: Direct Design & Prototyping (design/project/)"]
+        D1["/new-design [project]<br/>Scaffold design container"] :::design --> D2["/draft-prd<br/>Draft PRD.md Shape-Up Doc<br/>(Jobs, Appetite, Slices, Criteria)"] :::design
+        D2 --> D3["Stakeholder Review<br/>(PM, Tech Lead, Head of Product)<br/>& Principal Designer Gate (Mode S)"] :::gate
+        D3 --> D4["/design-prototype<br/>Author multi-file source in src/<br/>(using ui-library/ design system)"] :::design
+        D4 --> D5["/export-prototype<br/>Build build/standalone.html<br/>& run design gate checks"] :::gate
     end
 
     %% Cross-track evidence flow
