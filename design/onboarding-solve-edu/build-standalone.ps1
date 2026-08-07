@@ -1,9 +1,10 @@
 $ErrorActionPreference = 'Stop'
 
-$prototypePath = Join-Path $PSScriptRoot 'prototype-web.html'
-$stylesPath = Join-Path $PSScriptRoot 'styles.css'
-$dataPath = Join-Path $PSScriptRoot 'data.js'
-$mainPath = Join-Path $PSScriptRoot 'main.js'
+$srcDir = Join-Path $PSScriptRoot 'src'
+$prototypePath = Join-Path $srcDir 'onboarding.html'
+$stylesPath = Join-Path $srcDir 'styles.css'
+$dataPath = Join-Path $srcDir 'data.js'
+$mainPath = Join-Path $srcDir 'main.js'
 $outputPath = Join-Path $PSScriptRoot 'standalone.html'
 
 $html = Get-Content -LiteralPath $prototypePath -Raw -Encoding UTF8
@@ -29,7 +30,7 @@ $html = [regex]::Replace($html, $assetPattern, {
   param($match)
 
   $relativePath = $match.Groups['path'].Value
-  $assetPath = Join-Path $PSScriptRoot ($relativePath -replace '/', '\')
+  $assetPath = Join-Path $srcDir ($relativePath -replace '/', '\')
   if (-not (Test-Path -LiteralPath $assetPath -PathType Leaf)) {
     throw "Local asset not found: $relativePath"
   }
