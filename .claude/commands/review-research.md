@@ -54,14 +54,21 @@ invent evidence, metrics, findings, or citations.**
       threat per finding; fatal or fixable.
    2. **Domain Expert / Contextualist** — `.claude/personas/domain-expert.md`. Corroborate
       or challenge against known literature/context (scoped scholarly web-search allowed);
-      what is missing. Has read the Skeptic.
+      evaluate product & research leverage (rejecting trivial button/color/copy recommendations); what is missing. Has read the Skeptic.
    3. **Evidence Auditor / Steelman** — `.claude/personas/evidence-auditor.md`. Grounding +
-      confidence honesty; steelman weak-but-important findings. Has read both prior reviews.
+      confidence honesty; evaluate product & research leverage (explicitly asking: "Does this finding justify a full PRD and engineering investment, or is it a low-leverage tweak that should be dropped?"); steelman weak-but-important findings. Has read both prior reviews.
 
 4. **Moderate with the Principal Researcher (Mode C).** Dispatch the Principal Researcher
    (`general-purpose`) with `.claude/personas/principal-researcher.md`, the three panel
    reviews, `SYNTHESIS.md`, the `README.md` (goal + type), and the type's evidence. Tell it
-   the **type** so it calibrates confidence correctly. It returns the `## Peer Review`
+   the **type** so it calibrates confidence correctly.
+
+   The Principal Researcher applies the **Impact & Leverage Gate** during moderation:
+   - Verifies all findings map to a Structural UX Lever (Flow Topology, Cognitive Load, Time-to-Aha, Core Interaction Paradigm);
+   - Marks standalone surface-level UI/color/button tweaks as `Unsupported` (moving them to `## Gaps & caveats`);
+   - If the synthesis lacks structural UX leverage, issues or confirms the `Readiness: No-Go (Low Leverage)` verdict.
+
+   It returns the `## Peer Review`
    section content (per-panelist summary, a `### Strengthened findings` table [Finding |
    Verdict | Confidence Δ | Action], a `### Actions to apply` list with each original
    wording preserved, and a `### Legend`) plus a one-line readiness note.
@@ -104,5 +111,5 @@ invent evidence, metrics, findings, or citations.**
 7. **Update the log** in the research `README.md` with a dated "peer review recorded" entry
    (verdict counts, actions applied).
 
-8. **Report** to the user: the per-finding verdicts in one line each, which strengthenings
+8. **Report** to the user: the per-finding verdicts in one line each (including leverage assessments and any `No-Go (Low Leverage)` verdict), which strengthenings
    were applied, the file(s) updated, and any finding ruled Unsupported.

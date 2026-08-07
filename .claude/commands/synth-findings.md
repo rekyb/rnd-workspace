@@ -43,7 +43,17 @@ Steps:
 
 3. **Write `SYNTHESIS.md`** in the research folder, using the template for the type.
 
-   **First, for every type: the coverage table.** Before writing a single finding, write
+   **First, High-Impact Finding Mandate (Structural UX Levers):** Every finding (`F1..Fn`) MUST articulate at least one **Structural UX Lever**:
+   1. **System Architecture & Flow Topology:** Eliminating unnecessary steps, re-ordering user journeys, changing navigation hierarchies or state transitions.
+   2. **Cognitive Load & Mental Models:** Transforming how concepts, status, or progress are presented to reduce learner friction and drop-off.
+   3. **Value Delivery & Time-to-Aha:** Accelerating first-value friction points in onboarding or core workflows.
+   4. **Core Interaction Paradigm:** Re-imagining interaction mechanisms (e.g., replacing multi-page modal forms with inline canvas controls).
+
+   **Prohibition of Surface-Level Findings:** Standalone recommendations for trivial surface-level UI changes (e.g., button colors, font sizes, button label renaming, micro-copy, or padding adjustments) are **strictly prohibited** as valid research findings. Surface-level observations may only be included as incidental context within a broader structural finding. Minor UI tweaks belong in the Direct Design Track (`design/<project>/`).
+
+   **Mandatory "No-Go: Low Research Leverage" Verdict:** If research or benchmarking reveals no structural UX opportunities, or demonstrates that existing platforms solve the flow optimally, the researcher MUST record an explicit **`No-Go: Low Research Leverage`** verdict in `SYNTHESIS.md` under `## Overview` (e.g. `- **Verdict:** No-Go (Low Research Leverage)`). This halts downstream PRD creation (`/draft-prd` will reject PRDs citing a No-Go study) to protect build appetite and engineering bandwidth.
+
+   **Then, for every type: the coverage table.** Before writing a single finding, write
    the `## Research questions — coverage` section, placed immediately after the
    overview/TL;DR and *before* the findings. One row per `Q#` in `PLAN.md` — every one,
    including the ones the study failed to answer.
@@ -131,13 +141,13 @@ Steps:
    tracing to a source in `evidence.md`, honest confidence labels, refuted claims
    excluded from findings, and no over-generalization). It will:
    - **review** each entry for its required fields, evidence grounding (no
-     fabrication), testable/actionable next steps, and gaps/overlaps;
+      fabrication), structural UX lever mapping (verifying findings map to structural levers and rejecting standalone surface-level UI tweaks, or issuing `Readiness: No-Go (Low Leverage)` if structural leverage is lacking), testable/actionable next steps, and gaps/overlaps;
    - **auto-fix prose** directly in `SYNTHESIS.md` and the source notes — rewrite
      AI-slop and remove em-dashes, changing no findings, numbers, or citations;
    - **flag content problems as inline `> [Principal Researcher] …` annotations**
      (never silently editing substance) and append a dated
      `## Principal Researcher QA (<date>)` record to `SYNTHESIS.md`. The prose rules
-     apply to its own annotations and QA record too, not just the synthesis prose.
+   apply to its own annotations and QA record too, not just the synthesis prose.
 
    Do this **before** the docx export so the cleaned, annotated version is what gets
    exported. Relay the agent's readiness verdict and flagged items to the user.
@@ -171,5 +181,5 @@ Steps:
 8. **Report** to the user: the type, the coverage line (how many questions answered /
    partial / unanswered, naming the unanswered ones), how many features/findings/themes
    were synthesized, the
-   file path(s), the Principal Researcher's readiness verdict, the content items it
+   file path(s), the Principal Researcher's readiness verdict (including any `No-Go (Low Leverage)` verdict), the content items it
    flagged for resolution, and any gaps you noticed (thin evidence, few participants).

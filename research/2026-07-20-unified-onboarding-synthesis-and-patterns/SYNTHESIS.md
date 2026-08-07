@@ -8,6 +8,29 @@ This document outlines the onboarding strategy and reusable UX patterns for solv
 - **Indonesian Teacher EdTech Literature [S2]**: Highlights that upfront registration creates massive drop-off for teachers due to structural/regulatory friction (e.g., belajar.id SSO issues). Found that professional artifacts act as strong endowment objects for loss-aversion registration triggers.
 - **Youth Onboarding Strategy [S3]**: Focuses on a job-readiness audience where the onboarding must satisfy the "winnable-yet-credible trilemma"—a first task that is simple enough to guarantee success but realistic enough to simulate real employment and build credible self-efficacy.
 
+## Research questions — coverage
+
+Retrofitted **2026-07-29** under `.claude/references/coverage-contract.md`, at the moment
+`/draft-prd` first cited this study. The study closed 2026-07-24, before the contract existed.
+Question IDs are assigned in the order the questions appear in `PLAN.md`; finding IDs `F1` to `F7`
+are the seven numbered entries under `## Design implications`, which is the unit a litreview
+exposes to a PRD.
+
+| Q# | Question | Status | Where answered | Confidence |
+|---|---|---|---|---|
+| Q1 | What are the universal onboarding principles that apply across the target audiences (youth, teachers) and industry benchmarks? | **Answered** | Themes 1 to 4, carried into F1, F2, F4. The cross-domain conclusion is deferred registration plus loss-aversion framing at the wall. | Medium. Three provided corpus documents, no new external search, and three claims quarantined in `## Refuted / weak claims`. |
+| Q2 | Where do the findings diverge based on the specific audience or context? | **Partial** | F5 (low-literacy reading burden), F7 (Southeast Asian labour law), and the `## Overview` notes on teacher SSO friction and the youth winnable-yet-credible trilemma. **Missing:** no systematic cross-corpus contradiction analysis. The five themes are presented as unified rather than compared source by source, so where the three corpora actually disagree is not established. | Low |
+| Q3 | What is the recommended list of proven, reusable UX patterns for onboarding? | **Answered** | F1 to F7 collectively, which is the list `PLAN.md` asked for as ready to enter `research/PATTERNS.md`. | Medium |
+
+**Summary:** Q1, Q3 answered · Q2 partial.
+
+**What this means for a citing PRD.** Q1 and Q3 carry their findings normally. A claim resting on
+Q2, which is any claim about how a pattern behaves differently for youth versus teachers, or in
+Indonesia specifically, carries the `Partial` qualifier or is labelled an assumption. It may not be
+stated flat.
+
+---
+
 ## Synthesized Themes & Benchmark Teardown
 
 ### Theme 1: Defer Registration to Establish Value
@@ -65,13 +88,13 @@ This document outlines the onboarding strategy and reusable UX patterns for solv
 | **6: Code-first linked entry that routes to assigned content** | A dedicated, distraction-free entry where a learner who arrives via a class or program link enters a code and is routed straight to their assigned content, bypassing the full catalogue. | Khan's `/join` page is a single-task screen: "Join your class on Khan Academy" with a segmented, fixed-length code input and nothing else: no nav, no catalogue. A valid code routes the learner to their assigned class; an invalid code is rejected inline.<br><br>![A chrome-free page with one task and a segmented code input](../2026-07-13-onboarding-activation-education-apps/platforms/khan-academy/screenshots/04-classcode-entry.png)<br><br>By contrast, an un-routed learner faces the full catalogue organized by grade and must self-locate, the exact "which course is mine?" burden the code path removes.<br><br>![Without a code, the learner self-navigates a long grade-organized catalogue](../2026-07-13-onboarding-activation-education-apps/platforms/khan-academy/screenshots/06-catalogue-grade-organized.png) | For learners who join through a facilitator, teacher, or program link, a code-first entry collapses the hardest navigation problem (finding the right course among many) into a single deterministic step. Stripping the page of all other UI keeps a low-context user focused on the one action, and a segmented input makes the code format self-evident and reduces entry errors. [ref: Hick 1952 on choice reduction and Sweller 1988 on cognitive load](https://scholar.google.com/scholar?q=Hick%201952%20on%20choice%20reduction%20and%20Sweller%201988%20on%20cognitive%20load) |
 
 ## Design implications
-1. **Architecture**: Shift the global onboarding architecture to a "Try-first" model. The registration wall must sit *after* the primary value-delivery mechanism.
-2. **Copywriting**: Rewrite all registration CTAs from "Sign Up / Create Account" to loss-aversion framing like "Save your progress" or "Claim your certificate."
-3. **UX Components**: Implement an optional placement fork and use a recognition-based UI (showing actual content snippets) rather than asking users to self-rate.
-4. **Scaffolding**: Ensure the guest experience includes bounded progress bars, a single dominant CTA per screen, and immediate positive feedback.
-5. **Localization & Recovery**: Apply deep UI localization and use icon-first intake forms to lower the reading burden for low-literacy users. Ensure all OS permission requests (like microphones) are primed beforehand with graceful fallbacks if denied.
-6. **Program Code Integration (Code-first linked entry)**: To support solve.education's cohort tracking, implement a dedicated, distraction-free code entry screen (benchmarked from Khan Academy's `/join` page) for users arriving via program links. By capturing this code upfront and tagging it to a shadow profile, users bypass catalogue navigation and reach their "first win" faster without violating the "Try-first" architecture. The code is then permanently locked to their identity at the eventual registration wall.
-7. **Compliance & Age Gating**: Add a 15+ age gate immediately after the landing screen. This aligns with the legal minimum working age across Southeast Asia (Indonesia, Philippines, Vietnam, Thailand) and ensures that users building job-readiness profiles are legally eligible to enter the workforce.
+1. **F1 — Architecture**: Shift the global onboarding architecture to a "Try-first" model. The registration wall must sit *after* the primary value-delivery mechanism.
+2. **F2 — Copywriting**: Rewrite all registration CTAs from "Sign Up / Create Account" to loss-aversion framing like "Save your progress" or "Claim your certificate."
+3. **F3 — UX Components**: Implement an optional placement fork and use a recognition-based UI (showing actual content snippets) rather than asking users to self-rate.
+4. **F4 — Scaffolding**: Ensure the guest experience includes bounded progress bars, a single dominant CTA per screen, and immediate positive feedback.
+5. **F5 — Localization & Recovery**: Apply deep UI localization and use icon-first intake forms to lower the reading burden for low-literacy users. Ensure all OS permission requests (like microphones) are primed beforehand with graceful fallbacks if denied.
+6. **F6 — Program Code Integration (Code-first linked entry)**: To support solve.education's cohort tracking, implement a dedicated, distraction-free code entry screen (benchmarked from Khan Academy's `/join` page) for users arriving via program links. By capturing this code upfront and tagging it to a shadow profile, users bypass catalogue navigation and reach their "first win" faster without violating the "Try-first" architecture. The code is then permanently locked to their identity at the eventual registration wall.
+7. **F7 — Compliance & Age Gating**: Add a 15+ age gate immediately after the landing screen. This aligns with the legal minimum working age across Southeast Asia (Indonesia, Philippines, Vietnam, Thailand) and ensures that users building job-readiness profiles are legally eligible to enter the workforce.
 
 ## Conclusion
 In summary, solving the onboarding challenge for solve.education requires a careful balance between lowering initial friction and meeting the strict credibility requirements of a job-readiness platform. By deferring the creation of a shadow profile until after a user achieves a "win", and framing the eventual sign-up as saving their progress, we can maximize early-funnel engagement. However, unlike purely recreational apps, we must maintain mandatory baseline assessments and a verified identity wall to ensure the integrity of the credentials generated. Additionally, to support seamless cohort tracking, program routing must be handled through a distraction-free, code-first entry that tags the user's shadow profile immediately, preserving the low-friction flow. Finally, because this is a workforce tool, an upfront 15+ age gate is required to comply with Southeast Asian labor laws before any onboarding begins.

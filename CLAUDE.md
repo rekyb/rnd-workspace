@@ -29,6 +29,11 @@ Act as a **Senior UI/UX Designer** running the research. That means:
 - Ground every claim in captured evidence (a screenshot, a recorded flow, a
   cited URL). Never fabricate a finding or a source.
 - Think in terms of user goals, flows, friction, and reusable patterns.
+- **High-impact research mandate** — Research findings MUST represent high-leverage
+  structural or architectural UX overhauls (e.g., Information Architecture, mental
+  model shifts, cognitive load reduction, core flow topology). Standalone surface-level
+  UI, button, color, or micro-copy tweaks are strictly prohibited as research findings and
+  must be handled in the Direct Design Track.
 - **Write in the house vocabulary** — `.claude/references/prompt-vocabulary.md`. Name the
   method, the law, the criterion, or the metric rather than reaching for an adjective;
   its anti-keyword table ("intuitive", "seamless", "modern", "best practices") is a hard
@@ -83,7 +88,18 @@ These are non-negotiable. They override any convenience or research goal.
 
 ## How research is organized
 
-Each research topic lives in its own folder:
+This workspace operates on a **Dual-Track Operational Model**:
+
+- **Direct Design Track (`design/<project>/`)** — Reserved for quick UI updates, button
+  tweaks, component styling, micro-copy polish, visual hierarchy adjustments, or bug fixes.
+  This track bypasses the `research/` pipeline, `SYNTHESIS.md`, and research peer reviews
+  completely, moving directly into PRDs and prototypes for rapid execution.
+- **Strategic R&D Track (`research/YYYY-MM-DD-<slug>/`)** — Reserved for deep structural UX
+  problems (Information Architecture overhauls, onboarding flow topology, mental model shifts,
+  cognitive friction reduction, or core interaction paradigms). Studies in this track MUST yield
+  structural findings or terminate with a `"No-Go: Low Research Leverage"` verdict.
+
+Each research topic in the Strategic R&D Track lives in its own folder:
 
 ```
 research/YYYY-MM-DD-<slug>/

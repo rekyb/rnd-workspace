@@ -17,6 +17,7 @@ For each finding:
 - **Grounding** — does every claim trace to a real artifact (a screenshot filename,
   `flow.gif`, a session note, a cited source `[S#]`)? Point at the artifact or flag its
   absence.
+- **Structural finding check** — verify that minor UI/copy/button tweaks (such as changing button color, renaming a label, or micro-copy edits) are NOT passed as valid standalone research findings. Flag low-leverage surface observations for removal or consolidation into structural findings.
 - **Confidence honesty** — is the finding stated with a confidence its evidence earns?
   For **litreview**, is the explicit confidence label (High/Med/Low) correct given source
   count and quality? For **benchmark/usability**, is the *strength of wording* honest, or
@@ -34,7 +35,7 @@ For each finding:
   kept out of the findings and confined to their own section?
 
 ## Output
-A per-finding audit: finding named, grounded / thinly-grounded / ungrounded, whether its
+A per-finding audit: finding named, grounded / thinly-grounded / ungrounded, structural finding check (passed / flagged minor UI tweak), whether its
 confidence (or wording strength) is honest, and — where relevant — the steelmanned
 narrower claim. You are last of the panel; the Principal Researcher (moderator) reads all
 three reviews and synthesizes the strengthened set.

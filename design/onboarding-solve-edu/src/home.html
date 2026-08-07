@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solve Education! - Learning Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- The navigation is a top bar carrying four families: Home, Learn,
+       Portfolio, Work. Between them they reach all eleven production
+       destinations. Home and Inbox stay at the top level; eight sit one level
+       down in a family panel and Referral sits one level down in the profile
+       menu.
+
+       That is the trade a top bar makes. The sidebar this replaced could have
+       kept all eleven visible under static headings, which is what the cited
+       study recommends and what Uxcel does with thirteen; a row cannot, because
+       horizontal space is finite where sidebar height is not. One level of
+       depth, with each panel showing its whole family at once, is the smallest
+       version of that cost. Recorded here because the comment this replaced
+       claimed a top bar would "repeat the brand and push the first action
+       down" — true of the nav that then existed, and not of this one.
+
+       The utility cluster carries three controls: XP, Inbox, Profile. Theme and
+       language used to sit beside them and now sit inside the profile menu.
+       They are account preferences rather than destinations, and a bar row
+       spends the scarcest space this layout has on a control most learners set
+       once. Both remain one interaction deeper than they were, which is the
+       trade; neither is hidden, and at 360px the cluster is three controls
+       instead of five.
+
+       The family names and the item assignment are UNVALIDATED. They are a
+       judgement from destination labels; the study declined to recommend any
+       mapping because ten of the eleven destinations were never opened. The
+       gate is a content inventory, then an open card sort in Bahasa, then a
+       first-click test.
+
+       CYCLE 3 (narrow width). Three things changed here, each traceable:
+        - The navigation is a real <nav> landmark of <button> elements, and the
+          current destination carries aria-current="page". PRD Slice 14, from
+          layout F2: every benchmarked platform marks where the learner is; our
+          own home marked it visually and told assistive technology nothing.
+        - Every icon is aria-hidden. Without it the accessible name of a
+          destination is "emoji_events Achievements", and the visible label
+          renders as that literal text until the icon font loads.
+        - The content column is authored in classes, not inline styles. That is
+          not tidying: a media query cannot reach an inline style, so this was
+          the precondition for the surface working at 360px at all.
+       =================================================================== -->
+
+  <div class="app-container">
+
+    <!-- ===================================================================
+         LOADING — the labelled handoff.
+         The shell is the destination: the learner is already home, and only
+         the content region is pending. No separate interstitial screen.
+         Delayed 400ms before showing, held a minimum of 500ms once shown, so
+         it can never flash.
+         =================================================================== -->
+    <div id="home_loading" class="card home-card active">
+      <header class="home-topbar" role="banner">
+        <div class="home-topbar-brand">
+          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="Solve Education!" class="home-brand-logo">
+        </div>
+        <nav class="home-nav" aria-label="Main">
+          <button type="button" class="home-nav-item active" aria-current="page" data-stub="Home"><span class="material-symbols-rounded" aria-hidden="true">home</span> Home</button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="learn" aria-expanded="false" aria-controls="panel_learn"><span class="material-symbols-rounded" aria-hidden="true">school</span> Learn</button>
+            <div class="home-nav-panel is-hidden" id="panel_learn">
+              <button type="button" class="home-nav-child" data-stub="Catalog">Catalog</button>
+              <button type="button" class="home-nav-child" data-stub="Ladders">Ladders</button>
+              <button type="button" class="home-nav-child" data-stub="Practice">Practice</button>
+              <button type="button" class="home-nav-child" data-stub="Challenges">Challenges</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="portfolio" aria-expanded="false" aria-controls="panel_portfolio"><span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span> Portfolio</button>
+            <div class="home-nav-panel is-hidden" id="panel_portfolio">
+              <button type="button" class="home-nav-child" data-stub="Evidence">Evidence</button>
+              <button type="button" class="home-nav-child" data-stub="Credentials">Credentials</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="work" aria-expanded="false" aria-controls="panel_work"><span class="material-symbols-rounded" aria-hidden="true">work</span> Work</button>
+            <div class="home-nav-panel is-hidden" id="panel_work">
+              <button type="button" class="home-nav-child" data-stub="Opportunities">Opportunities</button>
+              <button type="button" class="home-nav-child" data-stub="Applications">Applications</button>
+            </div>
+          </div>
+        </nav>
+        <div class="home-topbar-utils">
+          <p class="home-xp" id="home_xp"><span class="material-symbols-rounded" aria-hidden="true">bolt</span> <span id="home_xp_value">0</span> XP</p>
+          <button type="button" class="home-icon-btn" id="inbox_btn" aria-label="Inbox" data-stub="Inbox"><span class="material-symbols-rounded" aria-hidden="true">notifications</span></button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item home-nav-item-icon" data-family="profile" aria-expanded="false" aria-controls="panel_profile" id="profile_btn" aria-label="Profile"><span class="material-symbols-rounded" aria-hidden="true">account_circle</span></button>
+            <!-- Theme and language are account preferences, so they sit with the
+                 other account rows rather than as their own controls in the bar.
+                 Language opens the page-level dialog at the end of this file:
+                 a second nav panel opening out of this one would be the nested
+                 tree the one-level rule forbids, and its list would sit back
+                 inside this panel's stacking context. -->
+            <div class="home-nav-panel home-nav-panel-right is-hidden" id="panel_profile">
+              <button type="button" class="home-nav-child" data-stub="Your profile">Your profile</button>
+              <button type="button" class="home-nav-child" data-stub="Settings">Settings</button>
+              <button type="button" class="home-nav-child" data-stub="Referral">Referral</button>
+              <span class="home-menu-divider"></span>
+              <button type="button" class="home-nav-child home-menu-row" id="lang_btn" aria-haspopup="dialog" aria-label="Change language, currently English">
+                <span class="material-symbols-rounded" aria-hidden="true">language</span>
+                <span class="home-menu-label" id="lang_name">English</span>
+                <span class="material-symbols-rounded home-menu-chevron" aria-hidden="true">chevron_right</span>
+              </button>
+              <button type="button" class="home-nav-child home-menu-row" id="theme_btn" role="switch" aria-checked="false"><span class="material-symbols-rounded" aria-hidden="true">dark_mode</span> <span class="home-menu-label">Dark mode</span><span class="home-menu-switch" aria-hidden="true"></span></button>
+              <span class="home-menu-divider"></span>
+              <!-- Log out actually navigates, like Home. It keeps data-stub so
+                   it stays in the one handler that owns every destination, and
+                   that handler special-cases it — the same shape Home uses. -->
+              <button type="button" class="home-nav-child home-menu-logout" data-stub="Log out">Log out</button>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="home-main">
+        <p class="home-nav-note is-hidden" role="status" aria-live="polite"></p>
+        <div role="status" aria-live="polite">
+          <h1 class="title home-loading-title" id="loading_greeting">Setting up your account</h1>
+          <p class="subtitle" id="loading_sub">Preparing your first course</p>
+        </div>
+        <!-- The skeleton starts hidden and home.js reveals it only if the wait
+             outlasts 400ms, then holds it 500ms from the moment it was actually
+             revealed. Shipping it visible made the delay suppress nothing. -->
+        <div id="home_skeleton" class="is-hidden">
+          <div class="home-skel home-skel-title"></div>
+          <div class="home-skel home-skel-line"></div>
+          <div class="home-skel home-skel-line"></div>
+        </div>
+        <!-- Finalization failure is recoverable on this surface. The shell stays,
+             the skeleton stops, and the learner is told the cause and given a
+             retry rather than being left on a skeleton that never resolves. -->
+        <section id="home_error" class="home-panel home-empty is-hidden" role="alert" aria-labelledby="home_error_title">
+          <span class="material-symbols-rounded home-empty-icon" aria-hidden="true">cloud_off</span>
+          <h2 class="home-empty-title" id="home_error_title">We could not finish setting up your account</h2>
+          <p class="home-empty-body" id="home_error_body">The connection dropped before your profile was saved. Nothing was lost.</p>
+          <button class="btn btn-primary" id="home_retry_btn">Try again</button>
+        </section>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         LEARNING HOME
+         One screen, two data states. At first run every counter reads zero
+         with its condition in the same slot; after the first chapter the same
+         slots carry real values. Identical markup either way.
+
+         Cycle 3 block order (layout F3, stated ordinally): the learner's own
+         content comes first and nothing product-owned precedes their next
+         action. The brand sits inside the top bar's banner landmark, which is
+         the exemption Slice 12's criterion names, so it stays visible at both
+         widths rather than being removed at narrow. Under the old sidebar it
+         had to be hidden at 360px; a banner does not.
+         =================================================================== -->
+    <div id="learning_home" class="card home-card">
+      <header class="home-topbar" role="banner">
+        <div class="home-topbar-brand">
+          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="Solve Education!" class="home-brand-logo">
+        </div>
+        <nav class="home-nav" aria-label="Main">
+          <button type="button" class="home-nav-item active" aria-current="page" data-stub="Home"><span class="material-symbols-rounded" aria-hidden="true">home</span> Home</button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="learn" aria-expanded="false" aria-controls="panel_learn_2"><span class="material-symbols-rounded" aria-hidden="true">school</span> Learn</button>
+            <div class="home-nav-panel is-hidden" id="panel_learn_2">
+              <button type="button" class="home-nav-child" data-stub="Catalog">Catalog</button>
+              <button type="button" class="home-nav-child" data-stub="Ladders">Ladders</button>
+              <button type="button" class="home-nav-child" data-stub="Practice">Practice</button>
+              <button type="button" class="home-nav-child" data-stub="Challenges">Challenges</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="portfolio" aria-expanded="false" aria-controls="panel_portfolio_2"><span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span> Portfolio</button>
+            <div class="home-nav-panel is-hidden" id="panel_portfolio_2">
+              <button type="button" class="home-nav-child" data-stub="Evidence">Evidence</button>
+              <button type="button" class="home-nav-child" data-stub="Credentials">Credentials</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="work" aria-expanded="false" aria-controls="panel_work_2"><span class="material-symbols-rounded" aria-hidden="true">work</span> Work</button>
+            <div class="home-nav-panel is-hidden" id="panel_work_2">
+              <button type="button" class="home-nav-child" data-stub="Opportunities">Opportunities</button>
+              <button type="button" class="home-nav-child" data-stub="Applications">Applications</button>
+            </div>
+          </div>
+        </nav>
+        <div class="home-topbar-utils">
+          <p class="home-xp" id="home_xp_2"><span class="material-symbols-rounded" aria-hidden="true">bolt</span> <span id="home_xp_value_2">0</span> XP</p>
+          <button type="button" class="home-icon-btn" id="inbox_btn_2" aria-label="Inbox" data-stub="Inbox"><span class="material-symbols-rounded" aria-hidden="true">notifications</span></button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item home-nav-item-icon" data-family="profile" aria-expanded="false" aria-controls="panel_profile_2" id="profile_btn_2" aria-label="Profile"><span class="material-symbols-rounded" aria-hidden="true">account_circle</span></button>
+            <div class="home-nav-panel home-nav-panel-right is-hidden" id="panel_profile_2">
+              <button type="button" class="home-nav-child" data-stub="Your profile">Your profile</button>
+              <button type="button" class="home-nav-child" data-stub="Settings">Settings</button>
+              <button type="button" class="home-nav-child" data-stub="Referral">Referral</button>
+              <span class="home-menu-divider"></span>
+              <button type="button" class="home-nav-child home-menu-row" id="lang_btn_2" aria-haspopup="dialog" aria-label="Change language, currently English">
+                <span class="material-symbols-rounded" aria-hidden="true">language</span>
+                <span class="home-menu-label" id="lang_name_2">English</span>
+                <span class="material-symbols-rounded home-menu-chevron" aria-hidden="true">chevron_right</span>
+              </button>
+              <button type="button" class="home-nav-child home-menu-row" id="theme_btn_2" role="switch" aria-checked="false"><span class="material-symbols-rounded" aria-hidden="true">dark_mode</span> <span class="home-menu-label">Dark mode</span><span class="home-menu-switch" aria-hidden="true"></span></button>
+              <span class="home-menu-divider"></span>
+              <!-- Log out actually navigates, like Home. It keeps data-stub so
+                   it stays in the one handler that owns every destination, and
+                   that handler special-cases it — the same shape Home uses. -->
+              <button type="button" class="home-nav-child home-menu-logout" data-stub="Log out">Log out</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="home-main">
+        <!-- Where an out-of-scope destination reports itself. A control that is
+             focusable and silent is a dead end; this one says why. -->
+        <p class="home-nav-note is-hidden" role="status" aria-live="polite"></p>
+        <!-- REMOVED 2026-07-31: the greeting and its subtitle. Two lines of
+             product-owned copy sat between the learner and their next action,
+             and neither carried information the action does not. First run
+             versus returning is still a real branch and still visible — the
+             primary action reads "Start:" or "Continue:" — so what went was the
+             restatement, not the distinction.
+
+             The one line here that was NOT a greeting has moved: the notice
+             that says this is a sample learner when home.html is opened without
+             walking the funnel. It now goes to the status region above, which is
+             where the surface already puts things it needs to tell the learner.
+             Dropping it silently would have made a prototype with no data look
+             like a prototype with real data. -->
+        <!-- =================================================================
+             CYCLE 4 / SLICE 16 — the two-column composition.
+
+             A dominant content column carrying exactly one object, and a
+             narrower rail carrying the program card and the course-progress
+             counter and NOTHING ELSE. That closed list is the enforceable
+             form of the PRD's section 14 exclusions on this surface: no
+             streak, no points, no achievement value, no league, no
+             promotional slot. An open list would let those return without a
+             decision.
+
+             Slice 16 MOVES rather than adds. Both rail slots already existed
+             on this surface in Cycle 2; neither is a new affordance, which is
+             why the rail acquires content without acquiring a gamification
+             mechanic.
+
+             THE CONTENT COLUMN IS FIRST IN DOCUMENT ORDER, at both widths and
+             whichever side the rail is painted on, so a keyboard or
+             screen-reader user reaches the primary action before the
+             secondary signals.
+
+             THE COMPOSITION IS A LABELLED ASSUMPTION, NOT A FINDING. PRD
+             section 2, "The two-column first-run home is an assumption":
+             three parts of the shape are evidenced and adopted elsewhere in
+             that document (the learner's own work first, exactly one filled
+             control, every progress affordance at zero against a stated
+             condition), but the two-column split, the column ratio and the
+             switcher strip come from a Mobbin pattern review conducted on
+             2026-07-30 against Brilliant, Uxcel, Coursera and Duolingo. That
+             review is not a study: no plan, no peer review, no coverage
+             table, and library stills carry no first-party observation. It
+             shows these compositions exist. It does not show a learner
+             succeeding with one. The validation path is a first-click test
+             against the block stack this replaces.
+             ================================================================= -->
+        <div class="home-layout">
+          <div class="home-col-content" id="home_content_col">
+
+            <!-- UP NEXT: the one dominant object, resolved from the stored
+                 course id.
+
+                 CYCLE 3: this card used to be a filled purple block sitting
+                 directly above a filled purple button. Fill is a ranking
+                 signal only while exactly one control owns it (layout F4) — a
+                 second filled element turns a parallel visual search into a
+                 serial one, so the signal stops ranking anything. The card is
+                 a surface, and the button inside it is the only filled control
+                 on the screen. Slice 16 counts that invariant ACROSS BOTH
+                 COLUMNS, not within each: a per-column reading would permit
+                 one filled button here and another in the rail, which is the
+                 precise defect F4 is adopted to prevent.
+
+                 CYCLE 4: the course-progress counter is no longer here. It
+                 lives in the rail below and returns to this card at 360px,
+                 where there is one column to hold both it and its subject. -->
+            <section id="home_up_next" class="home-panel up-next" aria-labelledby="home_up_next_heading">
+
+              <!-- PLACEHOLDER COVER ART — Cycle 7, added 2026-07-31 at the
+                   product owner's direction.
+
+                   THE ART IS STOCK PHOTOGRAPHY, NOT FINAL ART, and it no
+                   longer says so on screen — the visible "Placeholder cover"
+                   tag was removed 2026-07-31 at the product owner's direction.
+                   The status is still recorded, in `data.js` beside each URL,
+                   in this comment, and in the §9 criteria; what is gone is the
+                   on-screen tag.
+
+                   WHY THAT IS A DIFFERENT CALL FROM THE SEARCH RESULTS' LABEL,
+                   which stays. A result list asserts a FACT — that these
+                   courses match what you asked — and a fabricated fact is the
+                   failure class this document is written against. Cover art
+                   asserts nothing; it is chrome, and every product ships stock
+                   art behind real courses. What the tag protected was a
+                   REVIEWER mistaking the art for licensed final art, which the
+                   PRD and `data.js` now carry instead.
+
+                   IT CARRIES NO INFORMATION, so it is `aria-hidden`. The
+                   course name is the h2 below it and the glyph is a duplicate
+                   of that at best. Decorative art that announces itself is
+                   noise in the one place this surface cannot afford it — the
+                   two nodes before the primary action.
+
+                   It also absorbs the card's spare height (see
+                   `.home-col-content > .up-next` in styles.css), which is why
+                   it sits at the top of the card rather than beside the title:
+                   a band that grows is a cover, a square that grows is a
+                   mistake. -->
+              <div class="up-next-cover" id="home_course_cover" aria-hidden="true">
+                <!-- The glyph and the tinted gradient behind it are not a
+                     loading state; they are the cover this card falls back to
+                     when the photograph does not arrive. That happens for real
+                     in two cases worth designing for rather than ignoring: a
+                     course the catalogue carries no art for, and a published
+                     Artifact, whose CSP blocks every external host. -->
+                <!-- `aria-hidden` here is redundant with the wrapper's and is
+                     kept anyway: the suite asserts it on every icon span
+                     without exception, and an exception is how the next icon
+                     added inside some other hidden container gets missed. -->
+                <span class="material-symbols-rounded up-next-cover-icon" id="home_course_cover_icon" aria-hidden="true"></span>
+                <!-- NOT `loading="lazy"`, and that is load-bearing rather than
+                     a preference. This element starts `display: none` and is
+                     revealed on load — and Chrome does not load a lazy image
+                     that is not being rendered, so the two together deadlock:
+                     it stays hidden waiting for a load that never starts. It is
+                     also the wrong attribute on its own terms, since this is
+                     the largest image on the first screen. -->
+                <img class="up-next-cover-img is-hidden" id="home_course_cover_img" alt="" decoding="async">
+              </div>
+
+              <p class="up-next-eyebrow" id="home_up_next_heading">Up Next</p>
+              <h2 id="home_course_title" class="up-next-title"></h2>
+              <p id="home_course_position" class="up-next-position"></p>
+              <button class="btn btn-primary home-primary-action" id="start-lesson-btn"></button>
+            </section>
+
+            <!-- UNMAPPED GOAL: substitute nothing.
+                 In this data state this panel is the dominant object, at the
+                 same weight as the card it replaces. An empty state demoted at
+                 narrow width would reintroduce the silent substitution from
+                 the other side. -->
+            <section id="home_unmapped" class="home-panel home-empty is-hidden" aria-labelledby="home_unmapped_heading">
+              <span class="material-symbols-rounded home-empty-icon" aria-hidden="true">help</span>
+              <h2 class="home-empty-title" id="home_unmapped_heading">We could not match your goal to a course yet</h2>
+              <p class="home-empty-body">
+                Your goal was saved, but no course is mapped to it. Nothing has been picked for you,
+                because a course you did not choose is not a starting point.
+              </p>
+              <button class="btn btn-primary" id="unmapped_choose_btn">Choose a starting point</button>
+            </section>
+
+            <!-- COURSE SWITCHER: the learner's enrolled courses, below the
+                 dominant object, as a compact strip rather than as cards.
+
+                 Populated ONLY from the enrolment. At first run that is one
+                 course, and one course is what it shows: it is never padded
+                 with locked, suggested or popular courses to fill the row,
+                 because a strip padded with courses the learner is not
+                 enrolled in is promotional content occupying a structural
+                 slot. It is not the primary action and carries no filled
+                 control. Sub-levelled behind the navigation at 360px. -->
+            <section id="home_switcher" class="home-switcher is-hidden" aria-labelledby="home_switcher_heading">
+              <h2 class="home-switcher-heading" id="home_switcher_heading">Your courses</h2>
+              <div class="home-switcher-row" id="home_switcher_row"></div>
+            </section>
+          </div>
+
+          <!-- THE RAIL. Painted right, read second. Its two slots are authored
+               here in their wide-width positions; home.js relocates both out of
+               it at 360px and drops the region, because a rail is a two-column
+               device and there is one column at that width. Dropping the region
+               without disposing of its contents would be the "reflowed to the
+               bottom of the scroll" non-disposition PRD 11.1 forbids. -->
+          <aside class="home-rail" id="home_rail" aria-label="Your course and program summary">
+
+            <!-- ASK ENTRY POINT — CYCLE 5 / SLICE 17.
+
+                 §14 excluded this until 2026-07-31, when the product owner
+                 overturned the exclusion. The original entry is kept in §14
+                 with its reasoning intact rather than deleted, because that
+                 reasoning is still the argument against this slot: a free-text
+                 "what do you want to learn?" box asks the learner what the
+                 goal step asked ninety seconds earlier, and the 2026-07-28
+                 study recorded exactly that failure against CodeSignal.
+
+                 §2.1 F3 stays ADOPTED and that is load-bearing, not a
+                 technicality. F3 says the home renders the intake result, and
+                 it still does: Up Next resolves from the stored course id,
+                 sits in the content column ahead of this field in reading
+                 order, and Slice 17 is forbidden from changing what it
+                 resolves to. What is unevidenced is narrower — that a learner
+                 does not READ this box as the product having ignored their
+                 answer — and that is carried as a labelled §2 assumption with
+                 a falsification condition, not smuggled in as a finding.
+
+                 REVISED 2026-07-31 BY CYCLE 7 / SLICE 19. Two of Slice 17's
+                 three prohibitions were overturned at the product owner's
+                 direction: the field may now offer starter prompts and may
+                 render a SIMULATED result list. The third — that nothing here
+                 alters the primary action — is untouched and is the one that
+                 would break Slice 13 outright, so it remains an acceptance
+                 criterion and a test.
+
+                 WHAT MAKES THE SIMULATION HONEST RATHER THAN FABRICATED. §14
+                 still excludes a real retrieval or recommendation service, and
+                 a prototype that rendered results indistinguishable from real
+                 ones would be fabricating the one thing this document cannot
+                 stand behind. Cycle 7 buys the difference with a label at the
+                 point of use: the result list states that the catalogue is
+                 placeholder content, and activating a result says that opening
+                 a course is out of scope rather than routing anywhere. The
+                 SHAPE is under test; the content is not a claim. -->
+            <section class="home-ask" id="home_ask" aria-label="Search for something to learn">
+
+              <!-- THE PILL IS THE FIELD. Changed 2026-07-31 at the product
+                   owner's direction, and it is a real correction rather than a
+                   restyle: Slice 17's pill was a BUTTON labelled with a
+                   question, so a learner who read "What do you want to learn?"
+                   and started typing produced nothing, and had to click, wait
+                   for a box to open, and find a second input to answer the
+                   question they had already been asked. The affordance and the
+                   copy disagreed. The pill now IS the input, so the question is
+                   answered where it is asked.
+
+                   THE LABEL IS VISUALLY HIDDEN, NOT ABSENT. The placeholder
+                   carries the same words, and a placeholder is not a label — it
+                   disappears at the first keystroke, which is exactly when a
+                   screen-reader user re-reading the field needs its name. The
+                   <label> is what `for="home_ask_input"` binds; the placeholder
+                   is a duplicate for sighted users only.
+
+                   `autocomplete="off"` turns the browser's own history dropdown
+                   OFF. The starters below are the only completion offered, and
+                   they are a declared constant rather than anything derived
+                   from what is typed. -->
+              <label class="home-ask-label" for="home_ask_input">What do you want to learn?</label>
+              <div class="home-ask-trigger">
+                <span class="material-symbols-rounded home-ask-field-icon" aria-hidden="true">search</span>
+                <input type="search" class="home-ask-input" id="home_ask_input"
+                       placeholder="What do you want to learn?"
+                       autocomplete="off" enterkeyhint="search"
+                       aria-expanded="false" aria-controls="home_ask_box">
+                <button type="button" class="home-ask-clear is-hidden" id="home_ask_clear"
+                        aria-label="Clear the search field">
+                  <span class="material-symbols-rounded" aria-hidden="true">close</span>
+                </button>
+              </div>
+
+              <!-- Everything the field produces hangs below it and is hidden
+                   until the field is engaged. Focusing the input opens this;
+                   Escape closes it and leaves the focus where the learner put
+                   it, in the field. -->
+              <div class="home-ask-box is-hidden" id="home_ask_box">
+
+                <!-- THE STARTERS — Slice 19's first half. Three of them, from a
+                     constant in data.js, identical for every learner: they are
+                     a writing aid for someone facing an empty field, not
+                     personalization and not a ranking. Activating one FILLS the
+                     field and does not search, because a control that both
+                     writes and submits gives the learner no chance to edit the
+                     phrase it wrote for them. -->
+                <div class="home-ask-starters" id="home_ask_starters"></div>
+
+                <div class="home-ask-actions">
+                  <!-- Not filled. The one-filled-control invariant is counted
+                       across both columns, and the primary action on the
+                       dominant object owns the fill. -->
+                  <button type="button" class="btn btn-secondary home-ask-submit" id="home_ask_submit">Ask</button>
+                </div>
+                <p class="home-ask-note" id="home_ask_note" role="status" aria-live="polite"></p>
+
+                <!-- THE RESULTS — Slice 19's second half. Rendered only on an
+                     explicit search, never while typing: live results would be
+                     the typeahead Slice 17 excluded and Cycle 7 did not
+                     reinstate. The list carries its own placeholder label, and
+                     a search that matches nothing says so rather than falling
+                     back to a default set. -->
+                <div class="home-ask-results" id="home_ask_results"></div>
+
+                <!-- Zero state: the learner's OWN previous searches, and when
+                     there are none it says so. Distinct from the starters
+                     above, which are the same for everyone — this list is
+                     replayed input and is empty until they produce some. -->
+                <div class="home-ask-recent" id="home_ask_recent"></div>
+              </div>
+            </section>
+
+
+            <!-- PROGRAM CARD: identity and assigned tasks, from the enrolment,
+                 never hard-coded. Not rendered at all for an organic learner
+                 rather than rendered empty — so the rail's own layout box
+                 differs between the two, which is permitted: Slice 12's
+                 rendering invariant applies per slot, not to the rail as a
+                 whole.
+
+                 At 360px this relocates to the TOP of the content column,
+                 where it is the dominant object: a learner sent by a
+                 facilitator has assigned work, and a goal-derived suggestion
+                 does not outrank it. Program identity travels with it as the
+                 heading of the work it identifies, rather than as a second
+                 program-owned card stacked above the learner's tasks. -->
+            <section id="home_program_tasks" class="home-panel is-hidden" aria-labelledby="home_program_heading">
+              <h2 class="home-panel-title" id="home_program_heading"><span id="home_program_name"></span> tasks</h2>
+              <p id="home_program_count" class="home-panel-count"></p>
+              <p id="home_program_condition" class="home-panel-condition"></p>
+              <div id="home_task_list" class="home-task-list"></div>
+            </section>
+
+            <!-- COURSE-PROGRESS COUNTER: authored once, relocated, never
+                 copied. Slice 16 states the relocation as a count of one, so a
+                 move that leaves the original behind on the Up Next card fails
+                 it. Wherever it renders it still states its denominator in its
+                 own slot, which is Slice 12's rule and is what makes the zero
+                 actionable rather than merely honest. -->
+            <!-- CYCLE 6 / SLICE 18 — the course tracker, formerly "Course
+                 progress".
+
+                 WHY IT CHANGED. Users reported not knowing what the slot was
+                 about. The mechanism was predicted by PRD §11.1's own reason
+                 for relocating this node back at 360px: it "describes the
+                 course the dominant object names, and the counter and its
+                 subject should not be separated". Cycle 4 separated them at
+                 wide width anyway — the card read "Course progress · 0 of 5
+                 chapters" and never said WHICH course, because the course name
+                 was in the other column. So the heading is now the course
+                 itself, which is the referent that was missing.
+
+                 THE DEEPER CHANGE IS THE FRAMING. A progress affordance tells a
+                 first-run learner nothing they do not already know: they know
+                 they have done nothing. Enumerating the chapters answers the
+                 question they actually have — what did I sign up for. On Slice
+                 12's own logic this is the stronger form of the criterion,
+                 which asks that a zero state the condition that would change it
+                 with its denominator named: the list does not just name the
+                 denominator, it enumerates it.
+
+                 IT IS AN ASSUMPTION, NOT A FINDING. `research/PATTERNS.md`
+                 supports naming the subject — the 2026-07-29 study's F6 found
+                 `Current Lesson: <name>` beside a bar on 3 of 7 platforms — but
+                 that same entry carries a peer-review retraction from
+                 2026-07-29: the claim that one progress framing beats another
+                 at low progress is "confounded and untested". So this ships as
+                 a labelled §2 assumption with a falsification condition, not as
+                 an evidenced improvement.
+
+                 THE ROWS ARE NOT INTERACTIVE. `PATTERNS.md`'s strongest
+                 onboarding pattern warns against routing the learner into
+                 "another browse surface". An outline orients; a menu of
+                 clickable chapters would compete with the primary action. -->
+            <div id="home_course_progress" class="home-rail-slot">
+              <!-- THE HEADING IS A FUNCTION LABEL, NOT THE SUBJECT.
+                   Changed 2026-07-31 at the product owner's direction. Slice 18
+                   had made this heading the course name, from data, to close
+                   the "what is this section about" report; the label now
+                   answers that question directly instead, and the course name
+                   is gone from this slot.
+
+                   WHY THE NAME CAN GO. The referent was never actually absent
+                   from the SCREEN — only from this slot. At wide width the Up
+                   Next card one column over is titled with the same course
+                   (`home_course_title`), so the rail was repeating a string the
+                   dominant object already carried. Slice 18 fixed the gap by
+                   duplicating; this fixes it by labelling.
+
+                   WHAT IT COSTS. The slot no longer names its own subject, so
+                   it depends on the Up Next card for that. Two ways this can be
+                   wrong, and both are testable: a learner who reads the rail
+                   without the card cannot tell which course the chapters belong
+                   to, and "learning path" is a word the data model does not
+                   have — there is no path entity, only a course and its
+                   chapters. It ships as a §2 assumption for the same reason the
+                   rest of Slice 18 does, with the same gate: a first-click
+                   test, plus a comprehension check asking learners which course
+                   the rail is describing.
+
+                   A LITERAL, deliberately. It labels the block's function
+                   rather than its content, so there is nothing for it to read
+                   from the handoff — which is why the setText() that filled it
+                   is gone from home.js rather than pointed at a new field.
+
+                   Rejected: "Course outline" (a fifth word for a thing the
+                   product calls a chapter, the drift the "unit" removal fixed)
+                   and "What you'll learn" (the rows are chapter titles, not
+                   learning outcomes).
+
+                   Hidden at 360px by the unchanged .home-rail-title rule. There
+                   the slot sits INSIDE the Up Next card, whose heading already
+                   establishes what the learner is working on, so a second
+                   heading introducing the same thing is the duplication Slice
+                   16 forbids — the reason is the same as before, even though
+                   the string is no longer the course name. -->
+              <!-- THE GOAL IS THE HEADLINE, as of 2026-07-31 at the product
+                   owner's direction. "Your current learning path" below it is
+                   now a FALLBACK, rendered only when there is no goal — see
+                   the note on it.
+
+                   Read from the handoff's `goalId`, never from a constant.
+
+                   IT IS NOT A DUPLICATE OF THE COURSE, which is the test §7.6's
+                   N-of-one rule sets for anything on this surface. The goal is
+                   what the learner ASKED FOR in their own words at intake; the
+                   course is what the system RESOLVED it to. Those are two
+                   facts, and showing them together is the closest this surface
+                   comes to answering the §2 worry that a learner cannot tell
+                   whether their intake answer was used. §2.1 F3 says the home
+                   renders the intake result — until now it did so only by
+                   implication, through a course title the learner never typed.
+
+                   HIDDEN, NOT FAKED, WHEN THERE IS NO GOAL. A program learner
+                   arrives without one, and a replayed handoff may predate the
+                   field. Printing a plausible goal there would be putting words
+                   in the learner's mouth about their own intent.
+
+                   IT STAYS VISIBLE AT 360px, unlike the heading it replaces.
+                   The old title was hidden there because the Up Next card it
+                   relocates into already establishes what the learner is
+                   working on — but that argument was about the COURSE, and the
+                   card never states the goal. Hiding this would drop the one
+                   fact on the surface the learner supplied themselves. -->
+              <p class="home-rail-goal is-hidden" id="home_course_goal">
+                <span class="home-rail-goal-label">Your goal</span>
+                <span class="home-rail-goal-value" id="home_course_goal_value"></span>
+              </p>
+
+              <!-- THE FALLBACK HEADING, and it is not the old heading kept out
+                   of caution. A program learner has no goal, so with the chip
+                   above hidden this slot would carry no label at all — which is
+                   exactly the complaint that produced a heading here in the
+                   first place ("users reported not knowing what the slot was
+                   about"). One of the two always renders. -->
+              <h3 class="home-rail-title" id="home_course_fallback_title">Your current learning path</h3>
+
+              <div class="up-next-progress">
+                <div class="up-next-track">
+                  <div id="home_course_fill" class="up-next-fill"></div>
+                </div>
+                <p id="home_course_count" class="up-next-count"></p>
+              </div>
+              <p id="home_course_condition" class="up-next-condition"></p>
+              <!-- Built from the handoff's courseChapters, never from a constant.
+                   An ordered list because the order is the course's, not a
+                   rendering accident. -->
+              <ol class="home-chapter-list" id="home_chapter_list"></ol>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         FIRST LEARNING ACTION
+         The stub the primary action routes into. It exists so the action has
+         somewhere real to go, and so finishing it can change the home.
+
+         Not production scope — the lesson player is a PRD non-goal — but it
+         carries the same navigation as the other two views, so the landmark
+         and aria-current work covers all three rather than leaving one
+         inconsistent in the demo the prototype exists to serve.
+         =================================================================== -->
+    <div id="chapter_screen" class="card home-card">
+      <header class="home-topbar" role="banner">
+        <div class="home-topbar-brand">
+          <img src="https://solveeducation.org/wp-content/uploads/SE-New-Updated-Logo-Color.png" alt="Solve Education!" class="home-brand-logo">
+        </div>
+        <nav class="home-nav" aria-label="Main">
+          <button type="button" class="home-nav-item" data-stub="Home"><span class="material-symbols-rounded" aria-hidden="true">home</span> Home</button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item active"  aria-current="page" data-family="learn" aria-expanded="false" aria-controls="panel_learn_3"><span class="material-symbols-rounded" aria-hidden="true">school</span> Learn</button>
+            <div class="home-nav-panel is-hidden" id="panel_learn_3">
+              <button type="button" class="home-nav-child" data-stub="Catalog">Catalog</button>
+              <button type="button" class="home-nav-child" data-stub="Ladders">Ladders</button>
+              <button type="button" class="home-nav-child" data-stub="Practice">Practice</button>
+              <button type="button" class="home-nav-child" data-stub="Challenges">Challenges</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="portfolio" aria-expanded="false" aria-controls="panel_portfolio_3"><span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span> Portfolio</button>
+            <div class="home-nav-panel is-hidden" id="panel_portfolio_3">
+              <button type="button" class="home-nav-child" data-stub="Evidence">Evidence</button>
+              <button type="button" class="home-nav-child" data-stub="Credentials">Credentials</button>
+            </div>
+          </div>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item" data-family="work" aria-expanded="false" aria-controls="panel_work_3"><span class="material-symbols-rounded" aria-hidden="true">work</span> Work</button>
+            <div class="home-nav-panel is-hidden" id="panel_work_3">
+              <button type="button" class="home-nav-child" data-stub="Opportunities">Opportunities</button>
+              <button type="button" class="home-nav-child" data-stub="Applications">Applications</button>
+            </div>
+          </div>
+        </nav>
+        <div class="home-topbar-utils">
+          <p class="home-xp" id="home_xp_3"><span class="material-symbols-rounded" aria-hidden="true">bolt</span> <span id="home_xp_value_3">0</span> XP</p>
+          <button type="button" class="home-icon-btn" id="inbox_btn_3" aria-label="Inbox" data-stub="Inbox"><span class="material-symbols-rounded" aria-hidden="true">notifications</span></button>
+          <div class="home-nav-family">
+            <button type="button" class="home-nav-item home-nav-item-icon" data-family="profile" aria-expanded="false" aria-controls="panel_profile_3" id="profile_btn_3" aria-label="Profile"><span class="material-symbols-rounded" aria-hidden="true">account_circle</span></button>
+            <div class="home-nav-panel home-nav-panel-right is-hidden" id="panel_profile_3">
+              <button type="button" class="home-nav-child" data-stub="Your profile">Your profile</button>
+              <button type="button" class="home-nav-child" data-stub="Settings">Settings</button>
+              <button type="button" class="home-nav-child" data-stub="Referral">Referral</button>
+              <span class="home-menu-divider"></span>
+              <button type="button" class="home-nav-child home-menu-row" id="lang_btn_3" aria-haspopup="dialog" aria-label="Change language, currently English">
+                <span class="material-symbols-rounded" aria-hidden="true">language</span>
+                <span class="home-menu-label" id="lang_name_3">English</span>
+                <span class="material-symbols-rounded home-menu-chevron" aria-hidden="true">chevron_right</span>
+              </button>
+              <button type="button" class="home-nav-child home-menu-row" id="theme_btn_3" role="switch" aria-checked="false"><span class="material-symbols-rounded" aria-hidden="true">dark_mode</span> <span class="home-menu-label">Dark mode</span><span class="home-menu-switch" aria-hidden="true"></span></button>
+              <span class="home-menu-divider"></span>
+              <!-- Log out actually navigates, like Home. It keeps data-stub so
+                   it stays in the one handler that owns every destination, and
+                   that handler special-cases it — the same shape Home uses. -->
+              <button type="button" class="home-nav-child home-menu-logout" data-stub="Log out">Log out</button>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="home-main">
+        <p class="home-nav-note is-hidden" role="status" aria-live="polite"></p>
+        <div class="home-greet">
+          <p class="subtitle home-greet-sub" id="chapter_course"></p>
+          <h1 class="title home-greet-title" id="chapter_title"></h1>
+        </div>
+        <section class="home-panel">
+          <p class="home-panel-body">
+            Lesson content is out of scope for this prototype. What matters here is that the
+            primary action resolved to a real destination, and that finishing it changes the
+            home you came from.
+          </p>
+        </section>
+        <div class="home-action-row">
+          <button class="btn btn-primary" id="chapter_done_btn">Mark this chapter complete</button>
+          <button class="btn btn-secondary" id="chapter_back_btn">Back without finishing</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================================================================
+       LANGUAGE PICKER
+       ONE instance for the page, not one per view. The three views each carry
+       their own top bar because each is a separate card, but a modal is not
+       part of a card: it is a page-level layer, and three copies would mean
+       three ids, three sets of handlers, and three chances for the ticks to
+       disagree about which language is current.
+
+       A dialog rather than a panel opening out of the profile menu. A menu that
+       opens a menu is the second level of depth the top bar exists to avoid,
+       and it would put the list back inside the panel's stacking context —
+       the failure that buried the family panels behind the content column.
+
+       Reuses the funnel's .modal-overlay, which already anchors to the top and
+       scrolls within itself rather than centring, so a list taller than a
+       keyboard-shortened viewport stays reachable (PRD 12, narrow width).
+       =================================================================== -->
+  <div id="lang_modal" class="modal-overlay">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="lang_modal_title" tabindex="-1">
+      <button class="modal-close" aria-label="Close" id="lang_modal_close">
+        <span class="material-symbols-rounded" aria-hidden="true">close</span>
+      </button>
+      <h1 class="title" id="lang_modal_title">Choose your language</h1>
+      <div class="lang-option-list">
+        <!-- Each option is named in its own language, so a learner who cannot
+             read the current interface can still recognise the one they want.
+             aria-current carries the selection; the tick is its visible half.
+
+             The flags are INLINE SVG, not emoji. A regional-indicator pair
+             (U+1F1EE U+1F1E9) renders as a colour flag on Android and as the
+             bare letters "ID" on Windows Chrome, so the one platform the team
+             reviews on is the one that would show it broken. Inline SVG also
+             keeps the page self-contained: no external host, which the funnel's
+             own rules forbid.
+
+             They are aria-hidden. The language name is the accessible name;
+             a flag adds nothing a screen reader can use, and announcing
+             "flag of the United Kingdom, English" is noise.
+
+             The hex values below are the flags' own specified colours. They are
+             the one place in this file that does not read a token, because a
+             national flag is not a themeable surface. -->
+        <button type="button" class="lang-option" data-lang="en" aria-current="true">
+          <svg class="lang-option-flag" viewBox="0 0 60 30" aria-hidden="true" focusable="false">
+            <clipPath id="uk_clip"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+            <clipPath id="uk_diag"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+            <g clip-path="url(#uk_clip)">
+              <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+              <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+              <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk_diag)" stroke="#c8102e" stroke-width="4"/>
+              <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+              <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" stroke-width="6"/>
+            </g>
+          </svg>
+          <span class="lang-option-name">English</span>
+          <span class="material-symbols-rounded lang-option-tick" aria-hidden="true">check</span>
+        </button>
+        <button type="button" class="lang-option" data-lang="id">
+          <svg class="lang-option-flag" viewBox="0 0 60 30" aria-hidden="true" focusable="false">
+            <path d="M0,0 h60 v15 h-60 z" fill="#ce1126"/>
+            <path d="M0,15 h60 v15 h-60 z" fill="#fff"/>
+          </svg>
+          <span class="lang-option-name">Bahasa Indonesia</span>
+          <span class="material-symbols-rounded lang-option-tick" aria-hidden="true">check</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="home.js"></script>
+</body>
+</html>
