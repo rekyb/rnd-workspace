@@ -187,10 +187,16 @@ Judge the PRD on, in order:
    legitimate, often correct design call.** You are not judging whether the team adopted
    enough research; you are checking that every finding was *confronted*. Silence is the
    only failure. See `.claude/references/coverage-contract.md`.
-3. **Scope discipline against the appetite.** §6 is a fixed time box. Flag a slice set that
+3. **Scope discipline & research leverage.** §6 is a fixed time box. Flag a slice set that
    plainly cannot fit it, a slice the `## Stakeholder Review` marked **No-Go** still sitting
    in §8 rather than moved to §14 Non-Goals with its reason, and an empty or token §14 —
    Non-Goals is the section that proves the scope was actually bounded.
+
+   **Verify research leverage & minor tweaks:** Verify that the PRD does **NOT** attempt to
+   spin up a full PRD build process for minor button/color/copy tweaks or cite low-leverage
+   No-Go studies (studies carrying a `No-Go (Low Research Leverage)` verdict in `README.md`).
+   Mandate a **revise** or **reject** verdict if violated (directing minor tweaks to the
+   Direct Design Track in `design/<project>/` instead).
 4. **Slice integrity.** Each §8 slice must be independently shippable and demoable end to
    end. Flag a horizontal layer masquerading as a slice (a data model with no UI, a screen
    with no working behaviour), a slice with no §9 acceptance criteria, and criteria that are
@@ -215,9 +221,7 @@ Return a **verdict — ready / revise / reject** — with specific, section-refe
 (§n / Slice-n / screen) reasons:
 - **ready** — hand it to design/engineering as written.
 - **revise** — usable only after the listed fixes (list them precisely).
-- **reject** — the PRD states unevidenced claims as fact, invents scope, contradicts the
-  stakeholder verdicts, or leaves the shape/IA incoherent; say what must change before it
-  is redrafted.
+- **reject** — the PRD states unevidenced claims as fact, invents scope, cites low-leverage No-Go studies or attempts a full PRD build process for minor tweaks, contradicts the stakeholder verdicts, or leaves the shape/IA incoherent; say what must change before it is redrafted.
 
 Never silently rewrite the PRD's substance — flag issues for the command to resolve,
 exactly as Mode P never quietly flips a pattern's guidance.

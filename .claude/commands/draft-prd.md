@@ -52,13 +52,9 @@ gate fails a PRD that states unevidenced claims as fact.
    than silently regenerating the document.
 
 3. **Evidence gate (soft, but honest).** Resolve what the PRD is allowed to claim:
-   - **Studies cited** (`Informed by:` names one or more) → each must be **reviewed**. Check
-     each study's `SYNTHESIS.md` for a `## Peer Review` section (or a legacy `## Agent
-     Review` from before the peer-review debate existed). A study with a synthesis but **no
-     review** may not be cited as settled evidence: STOP and offer the user the choice —
-     run `/review-research` on it first, drop it from `Informed by:`, or cite it with its
-     claims explicitly demoted to §2 assumptions. A PRD commits design and engineering
-     effort, so what it calls evidence must have been debated.
+   - **Studies cited** (`Informed by:` names one or more):
+     - **Verdict check:** Read each cited study's `README.md` header for `Verdict:`. If any cited study has a **`No-Go (Low Research Leverage)`** verdict (e.g. `- **Verdict:** No-Go (Low Research Leverage)`), **STOP and reject PRD creation**. Explain to the user that the research showed low leverage and direct them to the Direct Design Track (`design/<project>/`) for quick UI tweaks if needed.
+     - **Review check:** Each study must be **reviewed**. Check each study's `SYNTHESIS.md` for a `## Peer Review` section (or a legacy `## Agent Review` from before the peer-review debate existed). A study with a synthesis but **no review** may not be cited as settled evidence: STOP and offer the user the choice — run `/review-research` on it first, drop it from `Informed by:`, or cite it with its claims explicitly demoted to §2 assumptions. A PRD commits design and engineering effort, so what it calls evidence must have been debated.
      Then read each study's **`Coverage:`** line in its `README.md`. Reviewed tells you the
      findings were debated; coverage tells you how much of the study's own question set it
      actually answered — a peer-reviewed study that answered two questions of five passes
