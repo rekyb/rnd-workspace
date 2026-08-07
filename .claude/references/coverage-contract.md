@@ -82,6 +82,18 @@ moves the retracted finding. That refresh happens in `/review-research` step 6d;
 downstream re-checks the table, because the Principal Researcher's Mode B coverage pass
 runs inside `/synth-findings`, before the debate.
 
+### Structural UX Levers (finding quality requirement)
+
+Every finding (`F1`..`Fn`) defined in `SYNTHESIS.md` MUST explicitly map to at least one of four **Structural Levers**:
+
+1. **System Architecture & Flow Topology:** Eliminating unnecessary steps, re-ordering user journeys, changing navigation hierarchies or state transitions.
+2. **Cognitive Load & Mental Models:** Transforming how concepts, status, or progress are presented to reduce learner friction and drop-off.
+3. **Value Delivery & Time-to-Aha:** Accelerating first-value friction points in onboarding or core workflows.
+4. **Core Interaction Paradigm:** Re-imagining interaction mechanisms (e.g., replacing multi-page modal forms with inline canvas controls).
+
+**Prohibition of Surface-Level Findings:**
+Standalone findings that recommend trivial surface-level UI changes (e.g., "change CTA button color", "increase font size", "rename button label from Submit to Continue", "tweak spacing/padding") are **strictly prohibited** as valid research findings. Surface-level observations may only be included as incidental context within a broader structural finding. Minor styling, micro-copy, or button tweaks belong in the Direct Design Track (`design/<project>/`), which bypasses the research pipeline entirely.
+
 ## Vocabulary 1 — `Answerable?` (in `PLAN.md`)
 
 Set at plan time, before any capture is spent.
@@ -115,6 +127,17 @@ Set at synthesis time, one row per `Q#`.
 A `Status` may not be more generous than the plan's `Answerable?` value unless the row says
 what changed. A question planned as `No — deferred` that comes back `Answered` is either a
 genuine bonus (say so) or an over-claim (the reviewer's job to catch).
+
+## Verdict: No-Go (Low Research Leverage)
+
+A research study is not required to produce product changes if research demonstrates that no structural UX leverage exists.
+
+- **Criteria:** When benchmarking or synthesis reveals that existing platforms handle the flow optimally, or that proposed changes yield only surface-level tweaks without structural UX impact, the study MUST record an explicit **`No-Go: Low Research Leverage`** verdict in `SYNTHESIS.md`.
+- **Enforcement & Impact:**
+  - Recorded during `/synth-findings` and verified by the Principal Researcher during `/review-research`.
+  - Halts downstream PRD creation (`/draft-prd` will reject PRDs citing a study marked `No-Go`).
+  - Recorded in the study's `README.md` header alongside the `Coverage:` line (e.g., `- **Verdict:** No-Go (Low Research Leverage)`).
+  - Protects engineering bandwidth by preventing low-leverage research outputs from consuming build appetite.
 
 ## Vocabulary 3 — `Disposition` (in `PRD.md` §2.1)
 
@@ -213,6 +236,11 @@ restatement.
 | 3 | `.claude/personas/principal-designer.md` | Mode S criterion 2 — the per-value row checks and the "a `Deferred`, `Rejected`, `Contradicted`, or `Retired upstream` finding is legitimate" statement |
 | `F#` forms | `.claude/personas/principal-designer.md` | Mode S criterion 2 — the three-form list the set comparison reads, and the consequence of missing each |
 | `F#` forms | `.claude/commands/review-research.md` | Step 6b — the inline-bold retracted form, and why it is not a heading |
+| Structural Levers | `.claude/personas/principal-researcher.md` | Impact & Leverage Gate — verifying all findings map to structural levers and surface tweaks are excluded |
+| Structural Levers | `.claude/commands/synth-findings.md` | Template instructions requiring structural lever mapping for every F# item |
+| No-Go Verdict | `.claude/personas/principal-researcher.md` | Mode A/C criterion — issuing or confirming No-Go verdict when leverage is lacking |
+| No-Go Verdict | `.claude/commands/synth-findings.md` | Instructions for outputting No-Go verdict when research lacks structural leverage |
+| No-Go Verdict | `.claude/commands/draft-prd.md` | Rejection gate for PRDs attempting to cite No-Go studies |
 
 The `F#` form rows are here because their absence already cost us once. `/review-research`
 introduced the retracted inline-bold form while Mode S still enumerated two, and nothing
